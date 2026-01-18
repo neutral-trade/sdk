@@ -142,7 +142,7 @@ describe('types and Constants Validation', () => {
     })
 
     it('each bundle vault should have required fields', () => {
-      for (const [vaultIdStr, config] of Object.entries(bundle_vaults)) {
+      for (const config of Object.values(bundle_vaults)) {
         if (!config)
           continue
 
@@ -188,7 +188,7 @@ describe('types and Constants Validation', () => {
     })
 
     it('each drift vault should have required fields', () => {
-      for (const [vaultIdStr, config] of Object.entries(drift_vaults)) {
+      for (const config of Object.values(drift_vaults)) {
         if (!config)
           continue
 

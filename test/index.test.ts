@@ -1,37 +1,37 @@
 import { describe, expect, it } from 'vitest'
 import {
-  // Main class
-  NeutralTrade,
   // Constants
   bundle_vaults,
-  drift_vaults,
   BundleProgramId,
+  // Utilities
+  deriveOraclePDA,
+  deriveUserPDA,
+  drift_vaults,
+  getVaultDepositorAddressSync,
+  // Main class
+  NeutralTrade,
   // Types/Enums
   SupportedChain,
   SupportedToken,
   tokens,
   VaultId,
   VaultType,
-  // Utilities
-  deriveOraclePDA,
-  deriveUserPDA,
-  getVaultDepositorAddressSync,
 } from '../src'
 
-describe('SDK Exports', () => {
-  describe('NeutralTrade class', () => {
+describe('sDK Exports', () => {
+  describe('neutralTrade class', () => {
     it('should export NeutralTrade class', () => {
       expect(NeutralTrade).toBeDefined()
       expect(typeof NeutralTrade).toBe('function') // class is a function
     })
 
-    it('NeutralTrade should have create static method', () => {
+    it('neutralTrade should have create static method', () => {
       expect(NeutralTrade.create).toBeDefined()
       expect(typeof NeutralTrade.create).toBe('function')
     })
   })
 
-  describe('Constants exports', () => {
+  describe('constants exports', () => {
     it('should export bundle_vaults', () => {
       expect(bundle_vaults).toBeDefined()
       expect(typeof bundle_vaults).toBe('object')
@@ -49,7 +49,7 @@ describe('SDK Exports', () => {
     })
   })
 
-  describe('Type/Enum exports', () => {
+  describe('type/Enum exports', () => {
     it('should export SupportedChain enum', () => {
       expect(SupportedChain).toBeDefined()
       expect(SupportedChain.Solana).toBe('Solana')
@@ -77,7 +77,7 @@ describe('SDK Exports', () => {
     })
   })
 
-  describe('Utility function exports', () => {
+  describe('utility function exports', () => {
     it('should export deriveOraclePDA', () => {
       expect(deriveOraclePDA).toBeDefined()
       expect(typeof deriveOraclePDA).toBe('function')
@@ -93,5 +93,4 @@ describe('SDK Exports', () => {
       expect(typeof getVaultDepositorAddressSync).toBe('function')
     })
   })
-
 })

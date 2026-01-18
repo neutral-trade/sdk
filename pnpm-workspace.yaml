@@ -1,8 +1,18 @@
+catalogMode: prefer
+
+ignoreWorkspaceRootCheck: true
+
+shellEmulator: true
+
+trustPolicy: no-downgrade
 packages:
   - playground
   - docs
   - packages/*
   - examples/*
+overrides:
+  '@noble/ed25519': ^2.0.0
+  '@solana/web3.js': $@solana/web3.js
 
 catalog:
   '@coral-xyz/anchor': 0.29.0
@@ -10,11 +20,7 @@ catalog:
   '@drift-labs/sdk': 2.155.0-beta.5
   '@drift-labs/vaults-sdk': 0.9.264
   '@solana/web3.js': ^1.98.4
-  '@types/bn.js': ^5.2.0
   dotenv: ^17.2.3
-  global-agent: ^3.0.0
-
-catalogMode: prefer
 
 catalogs:
   cli:
@@ -39,19 +45,9 @@ catalogs:
   types:
     '@types/node': ^25.0.1
 
-ignoreWorkspaceRootCheck: true
-
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
-
-overrides:
-  '@noble/ed25519': ^2.0.0
-  '@solana/web3.js': $@solana/web3.js
-
-shellEmulator: true
-
-trustPolicy: no-downgrade
 
 trustedDependencies:
   - '@noble/ed25519'

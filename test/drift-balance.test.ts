@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { getZeroDriftBalance } from '../src/drift/balance'
 import { SupportedToken } from '../src/types/tokens'
 
-describe('Drift Balance Calculations', () => {
+describe('drift Balance Calculations', () => {
   describe('getZeroDriftBalance', () => {
     it('should return zero balance object with correct asset', () => {
       const result = getZeroDriftBalance(SupportedToken.USDC)
