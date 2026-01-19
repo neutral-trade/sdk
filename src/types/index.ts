@@ -1,5 +1,8 @@
 // Re-export all types
 
+import type { SupportedToken } from './tokens'
+import type { VaultId } from './vault-types'
+
 export * from './bundle-types'
 export * from './tokens'
 export * from './vault-types'
@@ -14,18 +17,17 @@ export interface VaultBalanceData {
   totalDepositUsd: number
   pendingDeposit?: number
   requestWithdrawToken?: number
-  highWaterMark?: number | null
-  profitShareFeePaid?: number | null
-  /** Alias for profitShareFeePaid (Bundle vault naming) */
-  totalFeeCharged?: number | null
+  highWaterMark?: number
+  /** Total profit share fee paid by the user */
+  feesPaid?: number
   pendingProfitShareFee?: number
   spotPrice: number
   /** User's vault shares (raw number, not divided by decimals) */
   vaultShares?: number
   /** User's net deposits in token amount (already divided by decimals) */
   netDeposit?: number
-  asset: import('./tokens').SupportedToken
+  asset: SupportedToken
 }
 
 // Result type for getUserBalanceByVaultIds
-export type UserBalanceResult = Record<import('./vault-types').VaultId, VaultBalanceData | null>
+export type UserBalanceResult = Record<VaultId, VaultBalanceData | null>

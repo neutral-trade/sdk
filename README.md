@@ -1,22 +1,118 @@
-# pkg-placeholder
+# @neutral-trade/sdk
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![bundle][bundle-src]][bundle-href]
-[![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
-_description_
+TypeScript SDK for [Neutral Trade](https://neutral.trade) vaults.
+
+📚 **[Documentation](https://sdk.neutral.trade)**
+
+## Installation
+
+```bash
+# npm
+npm install @neutral-trade/sdk @coral-xyz/anchor @coral-xyz/anchor-32 @drift-labs/sdk @drift-labs/vaults-sdk @solana/web3.js
+
+# pnpm
+pnpm add @neutral-trade/sdk @coral-xyz/anchor @coral-xyz/anchor-32 @drift-labs/sdk @drift-labs/vaults-sdk @solana/web3.js
+
+# yarn
+yarn add @neutral-trade/sdk @coral-xyz/anchor @coral-xyz/anchor-32 @drift-labs/sdk @drift-labs/vaults-sdk @solana/web3.js
+```
+
+## Quick Start
+
+```typescript
+import { NeutralTrade, VaultId } from '@neutral-trade/sdk'
+
+// Initialize the SDK
+const sdk = await NeutralTrade.create({
+  rpcUrl: 'https://api.mainnet-beta.solana.com'
+})
+
+// Get user balance for specific vaults
+const balances = await sdk.getUserBalanceByVaultIds({
+  vaultIds: [VaultId.solnl, VaultId.btcnl],
+  userAddress: 'YOUR_WALLET_ADDRESS'
+})
+
+console.log(balances)
+```
+
+## API
+
+### `NeutralTrade.create(config)`
+
+Creates a new SDK instance.
+
+```typescript
+const sdk = await NeutralTrade.create({
+  rpcUrl: string // Solana RPC endpoint
+})
+```
+
+### `sdk.getUserBalanceByVaultIds(options)`
+
+Get user balances for multiple vaults.
+
+```typescript
+const balances = await sdk.getUserBalanceByVaultIds({
+  vaultIds: VaultId[],      // Array of vault IDs
+  userAddress: string,      // User's Solana wallet address
+  usdcPrice?: number        // Optional USDC price (defaults to 1)
+})
+```
+
+Returns `UserBalanceResult` - a record mapping each vault ID to its balance data:
+
+```typescript
+interface VaultBalanceData {
+  balanceToken: number // Current balance in deposit token
+  balanceUsd: number // Current balance in USD
+  netEarnings: number // Net earnings in deposit token
+  netEarningsUsd: number // Net earnings in USD
+  totalDeposit: number // Total deposited amount
+  totalDepositUsd: number // Total deposited in USD
+  spotPrice: number // Current token price
+  asset: SupportedToken // Token symbol (USDC, SOL, BTC, etc.)
+  vaultShares?: number // User's vault shares
+  netDeposit?: number // Net deposits (deposits - withdrawals)
+}
+```
+
+## Available Vaults
+
+The SDK supports both **Drift** and **Bundle** vault types. Use the `VaultId` enum to reference vaults:
+
+```typescript
+import { VaultId } from '@neutral-trade/sdk'
+
+// Drift Vaults
+VaultId.solnl // SOL Neutral Long
+VaultId.btcnl // BTC Neutral Long
+VaultId.jlpdnv1 // JLP DN V1
+
+// Bundle Vaults
+VaultId.hlfundingarb // HL Funding Arbitrage
+VaultId.alpdn // ALP DN
+```
+
+See the [documentation](https://sdk.neutral.trade) for the complete list of available vaults.
+
+## Examples
+
+Check out the [examples](./examples) directory for more usage examples.
+
+## License
+
+[MIT](./LICENSE)
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/pkg-placeholder?style=flat&colorA=080f12&colorB=1fa669
-[npm-version-href]: https://npmjs.com/package/pkg-placeholder
-[npm-downloads-src]: https://img.shields.io/npm/dm/pkg-placeholder?style=flat&colorA=080f12&colorB=1fa669
-[npm-downloads-href]: https://npmjs.com/package/pkg-placeholder
-[bundle-src]: https://img.shields.io/bundlephobia/minzip/pkg-placeholder?style=flat&colorA=080f12&colorB=1fa669&label=minzip
-[bundle-href]: https://bundlephobia.com/result?p=pkg-placeholder
-[license-src]: https://img.shields.io/github/license/antfu/pkg-placeholder.svg?style=flat&colorA=080f12&colorB=1fa669
-[license-href]: https://github.com/antfu/pkg-placeholder/blob/main/LICENSE
-[jsdocs-src]: https://img.shields.io/badge/jsdocs-reference-080f12?style=flat&colorA=080f12&colorB=1fa669
-[jsdocs-href]: https://www.jsdocs.io/package/pkg-placeholder
+[npm-version-src]: https://img.shields.io/npm/v/@neutral-trade/sdk?style=flat&colorA=080f12&colorB=1fa669
+[npm-version-href]: https://npmjs.com/package/@neutral-trade/sdk
+[npm-downloads-src]: https://img.shields.io/npm/dm/@neutral-trade/sdk?style=flat&colorA=080f12&colorB=1fa669
+[npm-downloads-href]: https://npmjs.com/package/@neutral-trade/sdk
+[license-src]: https://img.shields.io/github/license/neutral-trade/sdk.svg?style=flat&colorA=080f12&colorB=1fa669
+[license-href]: https://github.com/neutral-trade/sdk/blob/main/LICENSE

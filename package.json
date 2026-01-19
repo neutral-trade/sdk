@@ -33,7 +33,10 @@
     "start": "tsx src/index.ts",
     "test": "vitest",
     "typecheck": "tsc",
+    "docs:build": "typedoc",
+    "docs:preview": "pnpm docs:build && npx serve docs",
     "prepare": "simple-git-hooks"
+
   },
   "peerDependencies": {
     "@coral-xyz/anchor": "catalog:",
@@ -60,6 +63,7 @@
     "tinyexec": "catalog:testing",
     "tsdown": "catalog:cli",
     "tsx": "catalog:cli",
+    "typedoc": "catalog:",
     "typescript": "catalog:cli",
     "vite": "catalog:cli",
     "vitest": "catalog:testing",

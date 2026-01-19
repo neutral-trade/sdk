@@ -16,7 +16,7 @@ describe('drift Balance Calculations', () => {
       expect(result.spotPrice).toBe(0)
       expect(result.netDeposit).toBe(0)
       expect(result.vaultShares).toBe(0)
-      expect(result.profitShareFeePaid).toBe(0)
+      expect(result.feesPaid).toBe(0)
       expect(result.highWaterMark).toBe(0)
       expect(result.pendingProfitShareFee).toBe(0)
       expect(result.requestWithdrawToken).toBe(0)
@@ -48,7 +48,7 @@ describe('drift Balance Calculations', () => {
         'spotPrice',
         'netDeposit',
         'vaultShares',
-        'profitShareFeePaid',
+        'feesPaid',
         'highWaterMark',
         'pendingProfitShareFee',
         'requestWithdrawToken',

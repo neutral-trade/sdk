@@ -21,7 +21,7 @@ describe('bundle Balance Calculations', () => {
       expect(result.totalDepositUsd).toBe(0)
       expect(result.pendingDeposit).toBe(0)
       expect(result.highWaterMark).toBe(0)
-      expect(result.profitShareFeePaid).toBe(0)
+      expect(result.feesPaid).toBe(0)
       expect(result.netDeposit).toBe(0)
       expect(result.asset).toBe(SupportedToken.USDC)
       expect(result.spotPrice).toBe(1) // default spot price
@@ -276,7 +276,7 @@ describe('bundle Balance Calculations', () => {
         asset: SupportedToken.USDC,
       })
 
-      expect(result.profitShareFeePaid).toBe(50)
+      expect(result.feesPaid).toBe(50)
     })
 
     it('should include vault shares in result', () => {
