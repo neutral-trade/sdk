@@ -1,0 +1,79 @@
+{
+  "name": "@neutral-trade/sdk",
+  "type": "module",
+  "version": "0.1.2",
+  "packageManager": "pnpm@10.25.0",
+  "description": "SDK for Neutral Trade vaults",
+  "license": "MIT",
+  "homepage": "https://github.com/neutral-trade/sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neutral-trade/sdk.git"
+  },
+  "bugs": "https://github.com/neutral-trade/sdk/issues",
+  "keywords": [],
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "lint": "eslint",
+    "prepublishOnly": "nr build",
+    "release": "bumpp",
+    "start": "tsx src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc",
+    "docs:build": "typedoc",
+    "docs:preview": "pnpm docs:build && npx serve docs",
+    "prepare": "simple-git-hooks"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "catalog:",
+    "@coral-xyz/anchor-32": "catalog:",
+    "@drift-labs/sdk": "catalog:",
+    "@drift-labs/vaults-sdk": "catalog:",
+    "@solana/web3.js": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:cli",
+    "@antfu/ni": "catalog:cli",
+    "@antfu/utils": "catalog:inlined",
+    "@coral-xyz/anchor": "catalog:",
+    "@coral-xyz/anchor-32": "catalog:",
+    "@drift-labs/sdk": "catalog:",
+    "@solana/web3.js": "catalog:",
+    "@types/node": "catalog:types",
+    "bumpp": "catalog:cli",
+    "dotenv": "catalog:",
+    "eslint": "catalog:cli",
+    "lint-staged": "catalog:cli",
+    "publint": "catalog:cli",
+    "simple-git-hooks": "catalog:cli",
+    "tinyexec": "catalog:testing",
+    "tsdown": "catalog:cli",
+    "tsx": "catalog:cli",
+    "typedoc": "catalog:",
+    "typescript": "catalog:cli",
+    "vite": "catalog:cli",
+    "vitest": "catalog:testing",
+    "vitest-package-exports": "catalog:testing",
+    "yaml": "catalog:testing",
+    "zod": "catalog:"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  }
+}
