@@ -21,8 +21,8 @@ export interface NeutralTradeConfig {
   rpcUrl: string
   /** Optional registry URL to fetch vault configurations from. If provided, fetched vaults will override built-in vaults. */
   registryUrl?: string
-  /** Optional prices map. If not provided, prices will be fetched from Pyth Network automatically */
-  prices?: Partial<Record<SupportedToken, number>>
+  /** Optional fallback prices map. Prices are fetched from Pyth Network first; fallback is used only if Pyth returns incomplete data */
+  fallbackPrices?: Partial<Record<SupportedToken, number>>
 }
 
 export class NeutralTrade {
@@ -111,7 +111,7 @@ export class NeutralTrade {
     }
 
     // Initialize prices
-    const priceMap = await initializePrices(vaults, config.prices)
+    const priceMap = await initializePrices(vaults, config.fallbackPrices)
 
     return new NeutralTrade(connection, bundleProgramV1, bundleProgramV2, driftVaultClient, vaults, priceMap)
   }

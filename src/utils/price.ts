@@ -17,74 +17,78 @@ const TOKEN_TO_PYTH_FEED_ID: Record<SupportedToken, string> = {
 
 /**
  * Fetch prices from Pyth Network Hermes API
- * @throws Error if fetch fails or price parsing fails
+ * Returns a partial map - missing prices will not be included (no throw)
  */
 export async function fetchPricesFromPyth(
   tokens: SupportedToken[],
 ): Promise<Map<SupportedToken, number>> {
-  // Build query string with all feed IDs
-  const feedIds = tokens.map(token => TOKEN_TO_PYTH_FEED_ID[token])
-  const queryParams = feedIds.map(id => `ids[]=${encodeURIComponent(id)}`).join('&')
-  const url = `https://hermes.pyth.network/v2/updates/price/latest?${queryParams}`
-
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch prices from Pyth Network: ${response.status} ${response.statusText}`)
-  }
-
-  const data = await response.json() as {
-    parsed?: Array<{
-      id: string
-      price: {
-        price: string
-        conf: string
-        expo: number
-      }
-    }>
-  }
-
-  if (!data.parsed || data.parsed.length === 0) {
-    throw new Error('No price data returned from Pyth Network')
-  }
-
-  // Parse prices and create map
   const priceMap = new Map<SupportedToken, number>()
 
-  for (const token of tokens) {
-    const feedId = TOKEN_TO_PYTH_FEED_ID[token]
-    const feed = data.parsed.find(f => f.id === feedId)
+  if (tokens.length === 0) {
+    return priceMap
+  }
 
-    if (!feed) {
-      throw new Error(`Price feed not found for ${token} (${feedId})`)
+  try {
+    // Build query string with all feed IDs
+    const feedIds = tokens.map(token => TOKEN_TO_PYTH_FEED_ID[token])
+    const queryParams = feedIds.map(id => `ids[]=${encodeURIComponent(id)}`).join('&')
+    const url = `https://hermes.pyth.network/v2/updates/price/latest?${queryParams}`
+
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      console.warn(`Failed to fetch prices from Pyth Network: ${response.status} ${response.statusText}`)
+      return priceMap
     }
 
-    // Parse price: price = price * 10^expo
-    const price = Number.parseFloat(feed.price.price) * (10 ** feed.price.expo)
-    priceMap.set(token, price)
+    const data = await response.json() as {
+      parsed?: Array<{
+        id: string
+        price: {
+          price: string
+          conf: string
+          expo: number
+        }
+      }>
+    }
+
+    if (!data.parsed || data.parsed.length === 0) {
+      console.warn('No price data returned from Pyth Network')
+      return priceMap
+    }
+
+    // Parse prices and create map (skip missing feeds instead of throwing)
+    for (const token of tokens) {
+      const feedId = TOKEN_TO_PYTH_FEED_ID[token]
+      const feed = data.parsed.find(f => f.id === feedId)
+
+      if (!feed) {
+        console.warn(`Price feed not found for ${token} (${feedId})`)
+        continue
+      }
+
+      // Parse price: price = price * 10^expo
+      const price = Number.parseFloat(feed.price.price) * (10 ** feed.price.expo)
+      priceMap.set(token, price)
+    }
+  }
+  catch (error) {
+    console.warn('Error fetching prices from Pyth Network:', error)
   }
 
   return priceMap
 }
 
 /**
- * Initialize price map from user-provided prices and fetch missing prices from Pyth Network
- * @throws Error if Pyth fetch fails
+ * Initialize price map by fetching from Pyth Network first, then using fallback prices for any missing
+ * @param vaults - Vault configurations to determine which tokens need prices
+ * @param fallbackPrices - Optional fallback prices to use if Pyth fetch fails or returns incomplete data
  */
 export async function initializePrices(
   vaults: Partial<Record<VaultId, VaultConfig>>,
-  userPrices?: Partial<Record<SupportedToken, number>>,
+  fallbackPrices?: Partial<Record<SupportedToken, number>>,
 ): Promise<Map<SupportedToken, number>> {
-  const priceMap = new Map<SupportedToken, number>()
-
-  // 1. If user provided prices, fill them first
-  if (userPrices) {
-    for (const [token, price] of Object.entries(userPrices)) {
-      priceMap.set(token as SupportedToken, price)
-    }
-  }
-
-  // 2. Collect all unique deposit tokens from vaults
+  // 1. Collect all unique deposit tokens from vaults
   const allDepositTokens = new Set<SupportedToken>()
   for (const vault of Object.values(vaults)) {
     if (vault) {
@@ -92,16 +96,21 @@ export async function initializePrices(
     }
   }
 
-  // 3. Find missing prices
-  const missingTokens = Array.from(allDepositTokens).filter(
-    token => !priceMap.has(token),
-  )
+  const tokensNeeded = Array.from(allDepositTokens)
 
-  // 4. Fetch missing prices from Pyth if any
-  if (missingTokens.length > 0) {
-    const pythPrices = await fetchPricesFromPyth(missingTokens)
-    for (const [token, price] of pythPrices) {
-      priceMap.set(token, price)
+  // 2. Fetch all prices from Pyth first
+  const priceMap = await fetchPricesFromPyth(tokensNeeded)
+
+  // 3. Fill missing prices from fallback
+  if (fallbackPrices) {
+    for (const token of tokensNeeded) {
+      if (!priceMap.has(token) && token in fallbackPrices) {
+        const fallbackPrice = fallbackPrices[token]
+        if (fallbackPrice !== undefined) {
+          console.warn(`Using fallback price for ${token}: ${fallbackPrice}`)
+          priceMap.set(token, fallbackPrice)
+        }
+      }
     }
   }
 
