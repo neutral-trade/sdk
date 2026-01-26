@@ -6,7 +6,7 @@
 
 TypeScript SDK for [Neutral Trade](https://neutral.trade) vaults.
 
-📚 **[Documentation](https://sdk-neutral-trade.vercel.app/)**
+📚 **[Documentation](https://sdk.neutral.trade/)**
 
 ## Installation
 
