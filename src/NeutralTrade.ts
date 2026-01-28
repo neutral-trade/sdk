@@ -1,6 +1,6 @@
 // NeutralTrade - Main SDK class
 
-import type { Program } from '@coral-xyz/anchor'
+import type { Program } from '@coral-xyz/anchor-29'
 import type { Program as Program32 } from '@coral-xyz/anchor-32'
 import type { DriftVaults } from '@drift-labs/vaults-sdk'
 import type { Connection } from '@solana/web3.js'
@@ -89,7 +89,7 @@ export class NeutralTrade {
     await driftClient.subscribe()
 
     // Create Drift vault client
-    const vaultProgram = new (await import('@coral-xyz/anchor')).Program<DriftVaults>(
+    const vaultProgram = new (await import('@coral-xyz/anchor-29')).Program<DriftVaults>(
       IDL,
       VAULT_PROGRAM_ID,
       providerV29,

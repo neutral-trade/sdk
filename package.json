@@ -37,7 +37,7 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "catalog:",
+    "@coral-xyz/anchor-29": "catalog:",
     "@coral-xyz/anchor-32": "catalog:",
     "@drift-labs/sdk": "catalog:",
     "@drift-labs/vaults-sdk": "catalog:",
@@ -48,7 +48,7 @@
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
-    "@coral-xyz/anchor": "catalog:",
+    "@coral-xyz/anchor-29": "catalog:",
     "@coral-xyz/anchor-32": "catalog:",
     "@drift-labs/sdk": "catalog:",
     "@solana/web3.js": "catalog:",

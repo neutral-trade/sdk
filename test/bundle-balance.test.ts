@@ -1,5 +1,5 @@
 import type { BundleAccount, OracleData, UserBundleAccount } from '../src/types/bundle-types'
-import { BN } from '@coral-xyz/anchor'
+import { BN } from '@coral-xyz/anchor-29'
 import { describe, expect, it } from 'vitest'
 import { SupportedToken } from '../src/types/tokens'
 import {

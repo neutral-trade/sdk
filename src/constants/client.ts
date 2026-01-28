@@ -1,7 +1,7 @@
 // constants/client.ts
 
-import type { Wallet } from '@coral-xyz/anchor'
-import { AnchorProvider } from '@coral-xyz/anchor'
+import type { Wallet } from '@coral-xyz/anchor-29'
+import { AnchorProvider } from '@coral-xyz/anchor-29'
 import { AnchorProvider as AnchorProvider32 } from '@coral-xyz/anchor-32'
 import { Connection, Keypair } from '@solana/web3.js'
 import { ZERO_ADDRESS } from './addr'

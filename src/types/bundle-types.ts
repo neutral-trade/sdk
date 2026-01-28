@@ -1,4 +1,4 @@
-import type { IdlAccounts } from '@coral-xyz/anchor'
+import type { IdlAccounts } from '@coral-xyz/anchor-29'
 import type { IdlAccounts as IdlAccounts32 } from '@coral-xyz/anchor-32'
 import type { NtbundleV1 } from '../idl/bundle-v1'
 import type { NtbundleV2 } from '../idl/bundle-v2'

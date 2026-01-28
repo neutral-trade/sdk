@@ -40,8 +40,8 @@ catalogs:
       specifier: ^7.2.7
       version: 7.2.7
   default:
-    '@coral-xyz/anchor':
-      specifier: 0.29.0
+    '@coral-xyz/anchor-29':
+      specifier: npm:@coral-xyz/anchor@0.29.0
       version: 0.29.0
     '@coral-xyz/anchor-32':
       specifier: npm:@coral-xyz/anchor@0.32.0
@@ -95,9 +95,9 @@ importers:
 
   .:
     dependencies:
-      '@coral-xyz/anchor':
+      '@coral-xyz/anchor-29':
         specifier: 'catalog:'
-        version: 0.29.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        version: '@coral-xyz/anchor@0.29.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)'
       '@coral-xyz/anchor-32':
         specifier: 'catalog:'
         version: '@coral-xyz/anchor@0.32.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)'

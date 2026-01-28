@@ -19,7 +19,7 @@ overrides:
   nanoid: '>=3.3.8'
 
 catalog:
-  '@coral-xyz/anchor': 0.29.0
+  '@coral-xyz/anchor-29': npm:@coral-xyz/anchor@0.29.0
   '@coral-xyz/anchor-32': npm:@coral-xyz/anchor@0.32.0
   '@drift-labs/sdk': 2.155.0-beta.5
   '@drift-labs/vaults-sdk': 0.9.264

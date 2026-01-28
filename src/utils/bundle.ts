@@ -1,6 +1,6 @@
 // Bundle vault balance calculation (using on-chain PPS)
 
-import type { Program } from '@coral-xyz/anchor'
+import type { Program } from '@coral-xyz/anchor-29'
 import type { Program as Program32 } from '@coral-xyz/anchor-32'
 import type { NtbundleV1 } from '../idl/bundle-v1'
 

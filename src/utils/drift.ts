@@ -2,7 +2,7 @@
 
 import type { Vault, VaultClient, VaultDepositor } from '@drift-labs/vaults-sdk'
 import type { VaultBalanceData, VaultConfig, VaultId } from '../types'
-import { BN } from '@coral-xyz/anchor'
+import { BN } from '@coral-xyz/anchor-29'
 import { convertToNumber, QUOTE_PRECISION, TEN } from '@drift-labs/sdk'
 import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
 

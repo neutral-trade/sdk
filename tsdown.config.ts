@@ -9,7 +9,7 @@ export default defineConfig({
   publint: true,
   external: [
     '@solana/web3.js',
-    '@coral-xyz/anchor',
+    '@coral-xyz/anchor-29',
     '@coral-xyz/anchor-32',
     '@drift-labs/sdk',
     '@drift-labs/vaults-sdk',
