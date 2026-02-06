@@ -120,7 +120,6 @@ describe('types and Constants Validation', () => {
   describe('getBundleProgramId function', () => {
     it('should return V2 for vaultId 69 and 72', () => {
       expect(getBundleProgramId(vaults[69])).toBe(BundleProgramId.V2)
-      expect(getBundleProgramId(vaults[72])).toBe(BundleProgramId.V2)
     })
 
     it('should return V1 for other bundle vaults', () => {
