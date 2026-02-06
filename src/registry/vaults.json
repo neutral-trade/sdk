@@ -5,8 +5,7 @@
     "subname": "Atlas Research",
     "type": "Bundle",
     "vaultAddress": "Eo3m78EQcHnwMyHtxaiz1vw4nwHa85RuGE8jLsrELhxj",
-    "depositToken": "USDC",
-    "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9"
+    "depositToken": "USDC"
   },
   {
     "vaultId": 71,
