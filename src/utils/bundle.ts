@@ -7,7 +7,7 @@ import type { NtbundleV1 } from '../idl/bundle-v1'
 // Get Bundle vault balances using fetchMultiple (with on-chain PPS)
 
 import type { NtbundleV2 } from '../idl/bundle-v2'
-import type { SupportedToken, VaultBalanceData, VaultConfig, VaultConfigRecord } from '../types'
+import type { SupportedToken, VaultBalanceData, VaultRegistry, VaultRegistryEntry } from '../types'
 import type { BundleAccount, OracleData, UserBundleAccount } from '../types/bundle-types'
 
 import { PublicKey } from '@solana/web3.js'
@@ -120,7 +120,7 @@ export async function getBundleBalances({
 }: {
   vaultIds: number[]
   userAddress: string
-  vaults: VaultConfigRecord
+  vaults: VaultRegistry
   bundleProgramV1: Program<NtbundleV1>
   bundleProgramV2: Program32<NtbundleV2>
   priceMap: Map<SupportedToken, number>
@@ -129,8 +129,8 @@ export async function getBundleBalances({
   const userPublicKey = new PublicKey(userAddress)
 
   // Group vaults by program version
-  const v1Vaults: { vaultId: number, config: VaultConfig }[] = []
-  const v2Vaults: { vaultId: number, config: VaultConfig }[] = []
+  const v1Vaults: { vaultId: number, config: VaultRegistryEntry }[] = []
+  const v2Vaults: { vaultId: number, config: VaultRegistryEntry }[] = []
 
   for (const vaultId of vaultIds) {
     const config = vaults[vaultId]

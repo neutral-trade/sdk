@@ -38,7 +38,7 @@ const sdk = await NeutralTrade.create({
 
 // Get user balance for specific vaults
 const balances = await sdk.getUserBalanceByVaultIds({
-  vaultIds: [VaultId.solnl, VaultId.btcnl],
+  vaultIds: [VaultId.sol_super_staking_1, VaultId.btc_super_staking_3],
   userAddress: 'YOUR_WALLET_ADDRESS'
 })
 
@@ -53,16 +53,49 @@ The SDK supports both **Drift** and **Bundle** vault types. Use the `VaultId` en
 import { VaultId } from '@neutral-trade/sdk'
 
 // Drift Vaults
-VaultId.solnl // SOL Neutral Long
-VaultId.btcnl // BTC Neutral Long
-VaultId.jlpdnv1 // JLP DN V1
+VaultId.sol_super_staking_1 // SOL Super Staking
+VaultId.btc_super_staking_3 // BTC Super Staking
+VaultId.jlp_delta_neutral_vault_1_0 // JLP Delta Neutral (vault-1)
 
 // Bundle Vaults
-VaultId.hlfundingarb // HL Funding Arbitrage
-VaultId.alpdn // ALP DN
+VaultId.hyperliquid_funding_arb_48 // Hyperliquid Funding Arb
+VaultId.alp_delta_neutral_49 // ALP Delta Neutral
 ```
 
 See the [documentation](https://sdk.neutral.trade) for the complete list of available vaults.
+
+## Configuration Registry
+
+The SDK includes built-in vault configurations, but you can also fetch the latest configurations from a remote registry. This is useful if you don't upgrade the SDK package frequently.
+
+### Registry URLs
+
+- **GitHub Raw**: `https://raw.githubusercontent.com/neutral-trade/sdk/main/src/registry/vaults.json`
+- **jsDelivr CDN**: `https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json`
+
+### Usage
+
+**Use the registry URL if you don't upgrade the SDK frequently:**
+
+```typescript
+const sdk = await NeutralTrade.create({
+  rpcUrl: 'YOUR_RPC_URL_HERE',
+  registryUrl: 'https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json'
+})
+```
+
+This ensures you always have the latest vault configurations without needing to update the SDK package.
+
+**Use built-in configs if you upgrade the SDK regularly:**
+
+```typescript
+const sdk = await NeutralTrade.create({
+  rpcUrl: 'YOUR_RPC_URL_HERE'
+  // No registryUrl - uses built-in configurations
+})
+```
+
+This is simpler and doesn't require an additional network request at initialization.
 
 ## Examples
 

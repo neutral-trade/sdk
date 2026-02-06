@@ -1,7 +1,7 @@
-import type { VaultConfig, VaultConfigRecord, VaultRegistryEntry } from '../types'
+import type { VaultRegistry, VaultRegistryEntry } from '../types'
 import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
 import vaultsJson from '../registry/vaults.json'
-import { VaultRegistryArraySchema } from '../types'
+import { VaultRegistryArraySchema, VaultType } from '../types'
 import { BundleProgramId } from './programs'
 
 // =============================================================================
@@ -12,7 +12,10 @@ import { BundleProgramId } from './programs'
  * Get Bundle Program ID for a vault config
  * Uses registry value if present, otherwise defaults to V1
  */
-export function getBundleProgramId(vault: VaultRegistryEntry): BundleProgramId {
+export function getBundleProgramId(vault: VaultRegistryEntry): BundleProgramId | undefined {
+  if (vault.type !== VaultType.Bundle) {
+    return undefined
+  }
   if (vault.bundleProgramId) {
     // Return as-is if it's already a valid BundleProgramId
     if (Object.values(BundleProgramId).includes(vault.bundleProgramId as BundleProgramId)) {
@@ -26,7 +29,10 @@ export function getBundleProgramId(vault: VaultRegistryEntry): BundleProgramId {
  * Get Drift Program ID for a vault config as PublicKey
  * Uses registry value if present, otherwise defaults to VAULT_PROGRAM_ID
  */
-export function getDriftProgramId(vault: VaultRegistryEntry): string {
+export function getDriftProgramId(vault: VaultRegistryEntry): string | undefined {
+  if (vault.type !== VaultType.Drift) {
+    return undefined
+  }
   if (vault.driftProgramId) {
     return vault.driftProgramId
   }
@@ -42,7 +48,7 @@ export function getDriftProgramId(vault: VaultRegistryEntry): string {
  * - Drift vaults get driftProgramId
  * - Bundle vaults get bundleProgramId
  */
-export function toVaultConfig(entry: VaultRegistryEntry): VaultConfig {
+export function toVaultConfig(entry: VaultRegistryEntry): VaultRegistryEntry {
   return {
     ...entry,
     driftProgramId: getDriftProgramId(entry),
@@ -53,7 +59,7 @@ export function toVaultConfig(entry: VaultRegistryEntry): VaultConfig {
 /**
  * Transform an array of registry entries to VaultRegistry
  */
-export function toVaultRegistry(entries: VaultRegistryEntry[]): VaultConfigRecord {
+export function toVaultRegistry(entries: VaultRegistryEntry[]): VaultRegistry {
   return Object.fromEntries(
     entries.map(entry => [entry.vaultId, toVaultConfig(entry)]),
   )
@@ -66,7 +72,7 @@ export function toVaultRegistry(entries: VaultRegistryEntry[]): VaultConfigRecor
 // Validate and transform JSON array to Record<number, VaultConfig>
 const parsedVaults = VaultRegistryArraySchema.parse(vaultsJson)
 
-export const vaults: VaultConfigRecord = toVaultRegistry(parsedVaults)
+export const vaults: VaultRegistry = toVaultRegistry(parsedVaults)
 
 // =============================================================================
 // UTILITY FUNCTIONS
@@ -78,10 +84,10 @@ export function isValidVaultAddress(address: string): boolean {
     .includes(address)
 }
 
-export function getVaultByAddress(address: string): VaultConfig | undefined {
+export function getVaultByAddress(address: string): VaultRegistryEntry | undefined {
   return Object.values(vaults).find(v => v.vaultAddress === address)
 }
 
-export function getVaultById(vaultId: number): VaultConfig | undefined {
+export function getVaultById(vaultId: number): VaultRegistryEntry | undefined {
   return vaults[vaultId]
 }

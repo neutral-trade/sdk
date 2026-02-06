@@ -6,7 +6,7 @@ import type { DriftVaults } from '@drift-labs/vaults-sdk'
 import type { Connection } from '@solana/web3.js'
 import type { NtbundleV1 } from './idl/bundle-v1'
 import type { NtbundleV2 } from './idl/bundle-v2'
-import type { SupportedToken, UserBalanceResult, VaultConfigRecord } from './types'
+import type { SupportedToken, UserBalanceResult, VaultRegistry } from './types'
 import { BulkAccountLoader, DriftClient } from '@drift-labs/sdk'
 import { IDL, VAULT_PROGRAM_ID, VaultClient } from '@drift-labs/vaults-sdk'
 import { createAnchorProviderV29, createAnchorProviderV32, createConnection, createDummyWallet } from './constants/client'
@@ -31,7 +31,7 @@ export class NeutralTrade {
   public readonly bundleProgramV2: Program32<NtbundleV2>
   public readonly driftVaultClient: VaultClient
   /** Vault configurations (built-in merged with remote if registryUrl was provided) */
-  public readonly vaults: VaultConfigRecord
+  public readonly vaults: VaultRegistry
   /** Price map for deposit tokens */
   public readonly priceMap: Map<SupportedToken, number>
 
@@ -40,7 +40,7 @@ export class NeutralTrade {
     bundleProgramV1: Program<NtbundleV1>,
     bundleProgramV2: Program32<NtbundleV2>,
     driftVaultClient: VaultClient,
-    vaults: VaultConfigRecord,
+    vaults: VaultRegistry,
     priceMap: Map<SupportedToken, number>,
   ) {
     this.connection = connection
@@ -102,7 +102,7 @@ export class NeutralTrade {
     })
 
     // Fetch and merge vaults from registry if URL is provided
-    let vaults: VaultConfigRecord = { ...builtInVaults }
+    let vaults: VaultRegistry = { ...builtInVaults }
 
     if (config.registryUrl) {
       const remoteVaults = await NeutralTrade.fetchVaultsFromRegistry(config.registryUrl)
@@ -123,7 +123,7 @@ export class NeutralTrade {
    */
   private static async fetchVaultsFromRegistry(
     registryUrl: string,
-  ): Promise<VaultConfigRecord> {
+  ): Promise<VaultRegistry> {
     const response = await fetch(registryUrl)
 
     if (!response.ok) {

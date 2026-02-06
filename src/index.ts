@@ -18,8 +18,8 @@ export type {
   UserBalanceResult,
   UserBundleAccount,
   VaultBalanceData,
-  VaultConfig,
-  VaultConfigRecord,
+  VaultRegistryEntry as VaultConfig,
+  VaultRegistry as VaultConfigRecord,
 } from './types'
 export {
   SupportedChain,

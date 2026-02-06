@@ -68,17 +68,5 @@ export const VaultRegistryArraySchema = z.array(VaultRegistryEntrySchema).superR
   },
 )
 
-// =============================================================================
-// CONFIG TYPES (transformed with required program IDs)
-// =============================================================================
-
-/** Vault config (same as registry entry, program IDs are optional) */
-export interface VaultConfig extends VaultRegistryEntry {
-  /** Required for Drift vaults */
-  driftProgramId: string
-  /** Required for Bundle vaults */
-  bundleProgramId: string
-}
-
 /** Vault registry as a record keyed by vaultId */
-export type VaultConfigRecord = Record<number, VaultConfig>
+export type VaultRegistry = Record<number, VaultRegistryEntry>

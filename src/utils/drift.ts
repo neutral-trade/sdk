@@ -1,9 +1,10 @@
 // Drift vault balance calculation
 
 import type { Vault, VaultClient, VaultDepositor } from '@drift-labs/vaults-sdk'
-import type { VaultBalanceData, VaultConfig, VaultConfigRecord } from '../types'
+import type { VaultBalanceData, VaultRegistry, VaultRegistryEntry } from '../types'
 import { BN } from '@coral-xyz/anchor'
 import { convertToNumber, QUOTE_PRECISION, TEN } from '@drift-labs/sdk'
+import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
 
 // Get Drift vault balances using fetchMultiple
 
@@ -158,7 +159,7 @@ export async function getDriftBalances({
 }: {
   vaultIds: number[]
   userAddress: string
-  vaults: VaultConfigRecord
+  vaults: VaultRegistry
   driftVaultClient: VaultClient
 }): Promise<Record<number, VaultBalanceData | null>> {
   const result: Record<number, VaultBalanceData | null> = {}
@@ -167,7 +168,7 @@ export async function getDriftBalances({
   // Get all vault configs with their IDs
   const vaultEntries = vaultIds
     .map(id => ({ vaultId: id, config: vaults[id] }))
-    .filter((entry): entry is { vaultId: number, config: VaultConfig } => entry.config !== undefined)
+    .filter((entry): entry is { vaultId: number, config: VaultRegistryEntry } => entry.config !== undefined)
 
   if (vaultEntries.length === 0) {
     return result
@@ -178,7 +179,7 @@ export async function getDriftBalances({
 
   const vaultDepositorPDAs = vaultEntries.map(({ config }) => {
     const vaultPubkey = new PublicKey(config.vaultAddress)
-    const programId = new PublicKey(config.driftProgramId)
+    const programId = config.driftProgramId ? new PublicKey(config.driftProgramId) : VAULT_PROGRAM_ID
     return getVaultDepositorAddressSync(programId, vaultPubkey, userPublicKey)
   })
 
