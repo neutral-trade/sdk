@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { bundle_vaults } from '../src/constants/bundle-vaults'
-import { drift_vaults } from '../src/constants/drift-vaults'
 import { BundleProgramId } from '../src/constants/programs'
+import { getBundleProgramId, vaults } from '../src/constants/vaults'
 import {
   SupportedChain,
   SupportedToken,
   tokens,
-  VaultId,
   VaultType,
 } from '../src/types'
 
@@ -39,26 +37,6 @@ describe('types and Constants Validation', () => {
     })
   })
 
-  describe('vaultId enum', () => {
-    it('should have Drift vault IDs', () => {
-      expect(VaultId.jlpdnv1).toBeDefined()
-      expect(VaultId.solnl).toBeDefined()
-      expect(VaultId.btcnl).toBeDefined()
-    })
-
-    it('should have Bundle vault IDs', () => {
-      expect(VaultId.hlfundingarb).toBeDefined()
-      expect(VaultId.termmax).toBeDefined()
-      expect(VaultId.ntearnusdc).toBeDefined()
-      expect(VaultId.jlpdnbundle).toBeDefined()
-    })
-
-    it('should be numeric enum', () => {
-      expect(typeof VaultId.jlpdnv1).toBe('number')
-      expect(typeof VaultId.hlfundingarb).toBe('number')
-    })
-  })
-
   describe('vaultType enum', () => {
     it('should have all vault types', () => {
       expect(VaultType.Drift).toBe('Drift')
@@ -84,124 +62,70 @@ describe('types and Constants Validation', () => {
     })
   })
 
-  describe('bundle_vaults configuration', () => {
-    it('should have at least one bundle vault', () => {
-      const vaultIds = Object.keys(bundle_vaults)
+  describe('vaults registry', () => {
+    it('should have vaults loaded from registry', () => {
+      const vaultIds = Object.keys(vaults)
       expect(vaultIds.length).toBeGreaterThan(0)
     })
 
-    it('each bundle vault should have required fields', () => {
-      for (const config of Object.values(bundle_vaults)) {
-        if (!config)
-          continue
+    it('each vault should have required fields', () => {
+      for (const [vaultIdStr, config] of Object.entries(vaults)) {
+        const vaultId = Number(vaultIdStr)
 
         // Required fields
-        expect(config.vaultId).toBeDefined()
+        expect(config.vaultId).toBe(vaultId)
         expect(config.name).toBeTruthy()
         expect(typeof config.name).toBe('string')
+
         // subname is optional
         if (config.subname !== undefined) {
           expect(typeof config.subname).toBe('string')
         }
-        expect(config.type).toBe(VaultType.Bundle)
+
+        expect([VaultType.Drift, VaultType.Bundle, VaultType.Hyperliquid, VaultType.Kamino]).toContain(config.type)
         expect(config.vaultAddress).toBeTruthy()
         expect(config.depositToken).toBeDefined()
-        expect(config.bundleProgramId).toBeDefined()
-        expect(typeof config.pfee).toBe('number')
 
-        // pfee should be within valid range (0 to 1)
-        expect(config.pfee).toBeGreaterThanOrEqual(0)
-        expect(config.pfee).toBeLessThanOrEqual(1)
+        // pfee is optional but should be within valid range if present
+        if (config.pfee !== undefined) {
+          expect(config.pfee).toBeGreaterThanOrEqual(0)
+          expect(config.pfee).toBeLessThanOrEqual(1)
+        }
       }
     })
 
-    it('bundle vaults should have valid bundleProgramId', () => {
-      for (const config of Object.values(bundle_vaults)) {
-        if (!config)
-          continue
-
-        expect([BundleProgramId.V1, BundleProgramId.V2]).toContain(config.bundleProgramId)
-      }
-    })
-
-    it('bundle vault addresses should be valid Solana addresses', () => {
-      for (const config of Object.values(bundle_vaults)) {
-        if (!config)
-          continue
-
+    it('vault addresses should be valid Solana addresses', () => {
+      for (const config of Object.values(vaults)) {
         // Base58 addresses are typically 32-44 characters
         expect(config.vaultAddress.length).toBeGreaterThanOrEqual(32)
         expect(config.vaultAddress.length).toBeLessThanOrEqual(44)
       }
     })
-  })
 
-  describe('drift_vaults configuration', () => {
-    it('should have at least one drift vault', () => {
-      const vaultIds = Object.keys(drift_vaults)
-      expect(vaultIds.length).toBeGreaterThan(0)
+    it('should have both Drift and Bundle vaults', () => {
+      const driftVaults = Object.values(vaults).filter(v => v.type === VaultType.Drift)
+      const bundleVaults = Object.values(vaults).filter(v => v.type === VaultType.Bundle)
+
+      expect(driftVaults.length).toBeGreaterThan(0)
+      expect(bundleVaults.length).toBeGreaterThan(0)
     })
 
-    it('each drift vault should have required fields', () => {
-      for (const config of Object.values(drift_vaults)) {
-        if (!config)
-          continue
-
-        // Required fields
-        expect(config.vaultId).toBeDefined()
-        expect(config.name).toBeTruthy()
-        expect(typeof config.name).toBe('string')
-        // subname is optional
-        if (config.subname !== undefined) {
-          expect(typeof config.subname).toBe('string')
-        }
-        expect(config.type).toBe(VaultType.Drift)
-        expect(config.vaultAddress).toBeTruthy()
-        expect(config.depositToken).toBeDefined()
-        expect(typeof config.pfee).toBe('number')
-
-        // pfee should be within valid range (0 to 1)
-        expect(config.pfee).toBeGreaterThanOrEqual(0)
-        expect(config.pfee).toBeLessThanOrEqual(1)
-
-        // driftProgramId is optional (only jlpdnv1 has it)
-        if (config.driftProgramId) {
-          expect(typeof config.driftProgramId).toBe('string')
-          expect(config.driftProgramId.length).toBeGreaterThanOrEqual(32)
-        }
-      }
-    })
-
-    it('drift vaults should NOT have bundleProgramId', () => {
-      for (const config of Object.values(drift_vaults)) {
-        if (!config)
-          continue
-
-        // Drift vaults shouldn't have bundleProgramId
-        expect(config.bundleProgramId).toBeUndefined()
-      }
-    })
-
-    it('drift vault addresses should be valid Solana addresses', () => {
-      for (const config of Object.values(drift_vaults)) {
-        if (!config)
-          continue
-
-        // Base58 addresses are typically 32-44 characters
-        expect(config.vaultAddress.length).toBeGreaterThanOrEqual(32)
-        expect(config.vaultAddress.length).toBeLessThanOrEqual(44)
-      }
+    it('vaultIds should be unique', () => {
+      const vaultIds = Object.values(vaults).map(v => v.vaultId)
+      const uniqueIds = new Set(vaultIds)
+      expect(uniqueIds.size).toBe(vaultIds.length)
     })
   })
 
-  describe('vault ID uniqueness', () => {
-    it('bundle and drift vaults should not overlap', () => {
-      const bundleIds = new Set(Object.keys(bundle_vaults).map(Number))
-      const driftIds = new Set(Object.keys(drift_vaults).map(Number))
+  describe('getBundleProgramId function', () => {
+    it('should return V2 for vaultId 69 and 72', () => {
+      expect(getBundleProgramId(69)).toBe(BundleProgramId.V2)
+      expect(getBundleProgramId(72)).toBe(BundleProgramId.V2)
+    })
 
-      for (const id of bundleIds) {
-        expect(driftIds.has(id)).toBe(false)
-      }
+    it('should return V1 for other bundle vaults', () => {
+      expect(getBundleProgramId(48)).toBe(BundleProgramId.V1)
+      expect(getBundleProgramId(60)).toBe(BundleProgramId.V1)
     })
   })
 })

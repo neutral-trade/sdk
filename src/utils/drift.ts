@@ -1,14 +1,14 @@
 // Drift vault balance calculation
 
 import type { Vault, VaultClient, VaultDepositor } from '@drift-labs/vaults-sdk'
-import type { VaultBalanceData, VaultConfig, VaultId } from '../types'
+import type { VaultBalanceData, VaultConfig, VaultConfigRecord } from '../types'
 import { BN } from '@coral-xyz/anchor'
 import { convertToNumber, QUOTE_PRECISION, TEN } from '@drift-labs/sdk'
-import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
 
 // Get Drift vault balances using fetchMultiple
 
 import { PublicKey } from '@solana/web3.js'
+import { getDriftProgramPK } from '../constants/vaults'
 import { SupportedToken } from '../types'
 import { getVaultDepositorAddressSync } from './pda'
 
@@ -157,29 +157,29 @@ export async function getDriftBalances({
   vaults,
   driftVaultClient,
 }: {
-  vaultIds: VaultId[]
+  vaultIds: number[]
   userAddress: string
-  vaults: Partial<Record<VaultId, VaultConfig>>
+  vaults: VaultConfigRecord
   driftVaultClient: VaultClient
-}): Promise<Record<VaultId, VaultBalanceData | null>> {
-  const result: Record<VaultId, VaultBalanceData | null> = {} as Record<VaultId, VaultBalanceData | null>
+}): Promise<Record<number, VaultBalanceData | null>> {
+  const result: Record<number, VaultBalanceData | null> = {}
   const userPublicKey = new PublicKey(userAddress)
 
-  // Get all vault configs
-  const vaultConfigs = vaultIds.map(id => vaults[id]!).filter(Boolean)
+  // Get all vault configs with their IDs
+  const vaultEntries = vaultIds
+    .map(id => ({ vaultId: id, config: vaults[id] }))
+    .filter((entry): entry is { vaultId: number, config: VaultConfig } => entry.config !== undefined)
 
-  if (vaultConfigs.length === 0) {
+  if (vaultEntries.length === 0) {
     return result
   }
 
   // Prepare vault addresses and depositor PDAs
-  const vaultAddresses = vaultConfigs.map(c => new PublicKey(c.vaultAddress))
+  const vaultAddresses = vaultEntries.map(({ config }) => new PublicKey(config.vaultAddress))
 
-  const vaultDepositorPDAs = vaultConfigs.map((c) => {
-    const vaultPubkey = new PublicKey(c.vaultAddress)
-    const programId = c.driftProgramId
-      ? new PublicKey(c.driftProgramId)
-      : VAULT_PROGRAM_ID
+  const vaultDepositorPDAs = vaultEntries.map(({ vaultId, config }) => {
+    const vaultPubkey = new PublicKey(config.vaultAddress)
+    const programId = getDriftProgramPK(vaultId)
     return getVaultDepositorAddressSync(programId, vaultPubkey, userPublicKey)
   })
 
@@ -190,9 +190,8 @@ export async function getDriftBalances({
   ])
 
   // Calculate balance for each vault
-  for (let i = 0; i < vaultIds.length; i++) {
-    const vaultId = vaultIds[i]
-    const config = vaultConfigs[i]
+  for (let i = 0; i < vaultEntries.length; i++) {
+    const { vaultId, config } = vaultEntries[i]
     const vault = vaultsData[i]
     const vaultDepositor = vaultDepositors[i]
 

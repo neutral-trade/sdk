@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import process from 'node:process'
-import { NeutralTrade, VaultId } from '../src/index'
+import { NeutralTrade, vaults } from '../src/index'
 import 'dotenv/config'
 /**
  * Example: Get user balance for one or more vaults
@@ -23,20 +23,20 @@ async function main(): Promise<void> {
   // Replace with your user's Solana wallet address
   const userAddress = 'YOUR_WALLET_ADDRESS_HERE'
 
-  // Example 1: Get balance for a single Drift vault
-  console.log('Example 1: Getting balance for a single Drift vault (SOLNL)...')
+  // Example 1: Get balance for a single Drift vault (vaultId: 1 = SOL Super Staking)
+  console.log('Example 1: Getting balance for a single Drift vault (SOL Super Staking)...')
   const singleVaultBalance = await sdk.getUserBalanceByVaultIds({
-    vaultIds: [VaultId.solnl],
+    vaultIds: [1], // SOL Super Staking
     userAddress,
   })
 
   console.log('Single Vault Balance:', JSON.stringify(singleVaultBalance, null, 2))
   console.log()
 
-  // Example 2: Get balance for a single Bundle vault
-  console.log('Example 2: Getting balance for a single Bundle vault (HLFUNDINGARB)...')
+  // Example 2: Get balance for a single Bundle vault (vaultId: 48 = Hyperliquid Funding Arb)
+  console.log('Example 2: Getting balance for a single Bundle vault (Hyperliquid Funding Arb)...')
   const bundleVaultBalance = await sdk.getUserBalanceByVaultIds({
-    vaultIds: [VaultId.hlfundingarb],
+    vaultIds: [48], // Hyperliquid Funding Arb
     userAddress,
   })
 
@@ -45,10 +45,9 @@ async function main(): Promise<void> {
 
   // Example 3: Get balance for multiple vaults (both Drift and Bundle)
   console.log('Example 3: Getting balance for multiple vaults...')
+  const allVaultIds = Object.keys(vaults).map(Number)
   const multipleVaultsBalance = await sdk.getUserBalanceByVaultIds({
-    vaultIds: [
-      ...Object.values(VaultId) as VaultId[],
-    ],
+    vaultIds: allVaultIds,
     userAddress,
   })
 

@@ -15,7 +15,6 @@ import {
   SupportedChain,
   SupportedToken,
   tokens,
-  VaultId,
   vaults,
   VaultType,
 } from '../src'
@@ -71,15 +70,19 @@ describe('sDK Exports', () => {
       expect(tokens[SupportedToken.USDC]).toBeDefined()
     })
 
-    it('should export VaultId enum', () => {
-      expect(VaultId).toBeDefined()
-      expect(typeof VaultId.jlpdnv1).toBe('number')
-    })
-
     it('should export VaultType enum', () => {
       expect(VaultType).toBeDefined()
       expect(VaultType.Drift).toBe('Drift')
       expect(VaultType.Bundle).toBe('Bundle')
+    })
+
+    it('vaults should use numeric keys', () => {
+      const vaultKeys = Object.keys(vaults)
+      expect(vaultKeys.length).toBeGreaterThan(0)
+      // All keys should be numeric strings
+      vaultKeys.forEach((key) => {
+        expect(Number.isNaN(Number(key))).toBe(false)
+      })
     })
   })
 

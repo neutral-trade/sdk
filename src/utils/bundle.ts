@@ -7,11 +7,12 @@ import type { NtbundleV1 } from '../idl/bundle-v1'
 // Get Bundle vault balances using fetchMultiple (with on-chain PPS)
 
 import type { NtbundleV2 } from '../idl/bundle-v2'
-import type { SupportedToken, VaultBalanceData, VaultConfig, VaultId } from '../types'
+import type { SupportedToken, VaultBalanceData, VaultConfig, VaultConfigRecord } from '../types'
 import type { BundleAccount, OracleData, UserBundleAccount } from '../types/bundle-types'
 
 import { PublicKey } from '@solana/web3.js'
 import { BundleProgramId } from '../constants/programs'
+import { getBundleProgramId } from '../constants/vaults'
 import { tokens } from '../types'
 import { deriveOraclePDA, deriveUserPDA } from './pda'
 
@@ -118,26 +119,26 @@ export async function getBundleBalances({
   bundleProgramV2,
   priceMap,
 }: {
-  vaultIds: VaultId[]
+  vaultIds: number[]
   userAddress: string
-  vaults: Partial<Record<VaultId, VaultConfig>>
+  vaults: VaultConfigRecord
   bundleProgramV1: Program<NtbundleV1>
   bundleProgramV2: Program32<NtbundleV2>
   priceMap: Map<SupportedToken, number>
-}): Promise<Record<VaultId, VaultBalanceData | null>> {
-  const result: Record<VaultId, VaultBalanceData | null> = {} as Record<VaultId, VaultBalanceData | null>
+}): Promise<Record<number, VaultBalanceData | null>> {
+  const result: Record<number, VaultBalanceData | null> = {}
   const userPublicKey = new PublicKey(userAddress)
 
   // Group vaults by program version
-  const v1Vaults: { vaultId: VaultId, config: VaultConfig }[] = []
-  const v2Vaults: { vaultId: VaultId, config: VaultConfig }[] = []
+  const v1Vaults: { vaultId: number, config: VaultConfig }[] = []
+  const v2Vaults: { vaultId: number, config: VaultConfig }[] = []
 
   for (const vaultId of vaultIds) {
     const config = vaults[vaultId]
     if (!config)
       continue
 
-    if (config.bundleProgramId === BundleProgramId.V2) {
+    if (getBundleProgramId(vaultId) === BundleProgramId.V2) {
       v2Vaults.push({ vaultId, config })
     }
     else {

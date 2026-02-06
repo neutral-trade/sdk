@@ -1,7 +1,10 @@
 // Constants
 export { BundleProgramId } from './constants/programs'
 
-export { getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
+// Auto-generated vault IDs (for backward compatibility)
+export { VaultId } from './constants/vault-ids'
+
+export { getBundleProgramId, getDriftProgramPK, getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
 
 // Main class
 export { NeutralTrade } from './NeutralTrade'
@@ -16,12 +19,12 @@ export type {
   UserBundleAccount,
   VaultBalanceData,
   VaultConfig,
+  VaultConfigRecord,
 } from './types'
 export {
   SupportedChain,
   SupportedToken,
   tokens,
-  VaultId,
   VaultType,
 } from './types'
 

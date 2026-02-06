@@ -1,7 +1,6 @@
 // Re-export all types
 
 import type { SupportedToken } from './tokens'
-import type { VaultId } from './vault-types'
 
 export * from './bundle-types'
 export * from './tokens'
@@ -30,4 +29,4 @@ export interface VaultBalanceData {
 }
 
 // Result type for getUserBalanceByVaultIds
-export type UserBalanceResult = Record<VaultId, VaultBalanceData | null>
+export type UserBalanceResult = Record<number, VaultBalanceData | null>

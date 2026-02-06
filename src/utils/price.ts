@@ -1,6 +1,5 @@
 // Price fetching utilities for Pyth Network
 
-import type { VaultConfig, VaultId } from '../types'
 import { SupportedToken } from '../types'
 
 /**
@@ -85,25 +84,14 @@ export async function fetchPricesFromPyth(
  * @param fallbackPrices - Optional fallback prices to use if Pyth fetch fails or returns incomplete data
  */
 export async function initializePrices(
-  vaults: Partial<Record<VaultId, VaultConfig>>,
   fallbackPrices?: Partial<Record<SupportedToken, number>>,
 ): Promise<Map<SupportedToken, number>> {
-  // 1. Collect all unique deposit tokens from vaults
-  const allDepositTokens = new Set<SupportedToken>()
-  for (const vault of Object.values(vaults)) {
-    if (vault) {
-      allDepositTokens.add(vault.depositToken)
-    }
-  }
-
-  const tokensNeeded = Array.from(allDepositTokens)
-
   // 2. Fetch all prices from Pyth first
-  const priceMap = await fetchPricesFromPyth(tokensNeeded)
+  const priceMap = await fetchPricesFromPyth(Object.values(SupportedToken))
 
   // 3. Fill missing prices from fallback
   if (fallbackPrices) {
-    for (const token of tokensNeeded) {
+    for (const token of Object.values(SupportedToken)) {
       if (!priceMap.has(token) && token in fallbackPrices) {
         const fallbackPrice = fallbackPrices[token]
         if (fallbackPrice !== undefined) {

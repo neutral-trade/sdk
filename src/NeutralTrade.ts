@@ -6,13 +6,13 @@ import type { DriftVaults } from '@drift-labs/vaults-sdk'
 import type { Connection } from '@solana/web3.js'
 import type { NtbundleV1 } from './idl/bundle-v1'
 import type { NtbundleV2 } from './idl/bundle-v2'
-import type { SupportedToken, UserBalanceResult, VaultConfig, VaultId } from './types'
+import type { SupportedToken, UserBalanceResult, VaultConfigRecord } from './types'
 import { BulkAccountLoader, DriftClient } from '@drift-labs/sdk'
 import { IDL, VAULT_PROGRAM_ID, VaultClient } from '@drift-labs/vaults-sdk'
 import { createAnchorProviderV29, createAnchorProviderV32, createConnection, createDummyWallet } from './constants/client'
 import { createBundleProgramV1, createBundleProgramV2 } from './constants/programs'
-import { vaults as builtInVaults } from './constants/vaults'
-import { VaultRegistrySchema, VaultType } from './types'
+import { vaults as builtInVaults, toVaultRegistry } from './constants/vaults'
+import { VaultRegistryArraySchema, VaultType } from './types'
 import { getBundleBalances } from './utils/bundle'
 import { getDriftBalances } from './utils/drift'
 import { initializePrices } from './utils/price'
@@ -31,7 +31,7 @@ export class NeutralTrade {
   public readonly bundleProgramV2: Program32<NtbundleV2>
   public readonly driftVaultClient: VaultClient
   /** Vault configurations (built-in merged with remote if registryUrl was provided) */
-  public readonly vaults: Partial<Record<VaultId, VaultConfig>>
+  public readonly vaults: VaultConfigRecord
   /** Price map for deposit tokens */
   public readonly priceMap: Map<SupportedToken, number>
 
@@ -40,7 +40,7 @@ export class NeutralTrade {
     bundleProgramV1: Program<NtbundleV1>,
     bundleProgramV2: Program32<NtbundleV2>,
     driftVaultClient: VaultClient,
-    vaults: Partial<Record<VaultId, VaultConfig>>,
+    vaults: VaultConfigRecord,
     priceMap: Map<SupportedToken, number>,
   ) {
     this.connection = connection
@@ -102,7 +102,7 @@ export class NeutralTrade {
     })
 
     // Fetch and merge vaults from registry if URL is provided
-    let vaults: Partial<Record<VaultId, VaultConfig>> = { ...builtInVaults }
+    let vaults: VaultConfigRecord = { ...builtInVaults }
 
     if (config.registryUrl) {
       const remoteVaults = await NeutralTrade.fetchVaultsFromRegistry(config.registryUrl)
@@ -111,18 +111,19 @@ export class NeutralTrade {
     }
 
     // Initialize prices
-    const priceMap = await initializePrices(vaults, config.fallbackPrices)
+    const priceMap = await initializePrices(config.fallbackPrices)
 
     return new NeutralTrade(connection, bundleProgramV1, bundleProgramV2, driftVaultClient, vaults, priceMap)
   }
 
   /**
    * Fetch vault configurations from a remote registry URL
+   * Expects JSON array format and transforms to Record<number, VaultConfig>
    * @throws Error if fetch fails or validation fails
    */
   private static async fetchVaultsFromRegistry(
     registryUrl: string,
-  ): Promise<Partial<Record<VaultId, VaultConfig>>> {
+  ): Promise<VaultConfigRecord> {
     const response = await fetch(registryUrl)
 
     if (!response.ok) {
@@ -131,21 +132,15 @@ export class NeutralTrade {
 
     const data = await response.json()
 
-    // Validate with zod schema
-    const parseResult = VaultRegistrySchema.safeParse(data)
+    // Validate with zod schema (expects array format)
+    const parseResult = VaultRegistryArraySchema.safeParse(data)
 
     if (!parseResult.success) {
       throw new Error(`Invalid vault registry data: ${parseResult.error.message}`)
     }
 
-    // Convert string keys to VaultId numbers
-    const vaults: Partial<Record<VaultId, VaultConfig>> = {}
-    for (const [key, value] of Object.entries(parseResult.data)) {
-      const vaultId = Number.parseInt(key, 10) as VaultId
-      vaults[vaultId] = value as VaultConfig
-    }
-
-    return vaults
+    // Transform array to VaultRegistry with program IDs
+    return toVaultRegistry(parseResult.data)
   }
 
   /**
@@ -155,7 +150,7 @@ export class NeutralTrade {
     vaultIds,
     userAddress,
   }: {
-    vaultIds: VaultId[]
+    vaultIds: number[]
     userAddress: string
   }): Promise<UserBalanceResult> {
     // Separate drift and bundle vault IDs

@@ -24,6 +24,8 @@
     "dist"
   ],
   "scripts": {
+    "generate": "tsx scripts/generate-vault-ids.ts",
+    "prebuild": "pnpm generate",
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "eslint",
