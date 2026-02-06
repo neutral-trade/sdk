@@ -1,7 +1,7 @@
 {
   "name": "@neutral-trade/sdk",
   "type": "module",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "packageManager": "pnpm@10.25.0",
   "description": "SDK for Neutral Trade vaults",
   "license": "MIT",
