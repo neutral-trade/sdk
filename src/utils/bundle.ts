@@ -12,7 +12,6 @@ import type { BundleAccount, OracleData, UserBundleAccount } from '../types/bund
 
 import { PublicKey } from '@solana/web3.js'
 import { BundleProgramId } from '../constants/programs'
-import { getBundleProgramId } from '../constants/vaults'
 import { tokens } from '../types'
 import { deriveOraclePDA, deriveUserPDA } from './pda'
 
@@ -138,7 +137,7 @@ export async function getBundleBalances({
     if (!config)
       continue
 
-    if (getBundleProgramId(vaultId) === BundleProgramId.V2) {
+    if (config.bundleProgramId === BundleProgramId.V2) {
       v2Vaults.push({ vaultId, config })
     }
     else {

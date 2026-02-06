@@ -5,7 +5,8 @@
     "subname": "Atlas Research",
     "type": "Bundle",
     "vaultAddress": "Eo3m78EQcHnwMyHtxaiz1vw4nwHa85RuGE8jLsrELhxj",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9"
   },
   {
     "vaultId": 71,
@@ -27,7 +28,8 @@
     "subname": "vault-jupiter",
     "type": "Bundle",
     "vaultAddress": "GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9"
   },
   {
     "vaultId": 68,
@@ -614,6 +616,7 @@
     "type": "Drift",
     "vaultAddress": "3Nkctq19AW7gs5hkxixUDjS9UVjmCwcNCo7rqPpub87c",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "driftProgramId": "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj"
   }
 ]

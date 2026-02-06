@@ -1,40 +1,36 @@
 import type { VaultConfig, VaultConfigRecord, VaultRegistryEntry } from '../types'
 import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
-import { PublicKey } from '@solana/web3.js'
 import vaultsJson from '../registry/vaults.json'
-import { VaultRegistryArraySchema, VaultType } from '../types'
+import { VaultRegistryArraySchema } from '../types'
 import { BundleProgramId } from './programs'
 
 // =============================================================================
-// PROGRAM ID CONSTANTS
+// PROGRAM ID HELPERS
 // =============================================================================
 
-/** Special Drift Program ID for jlpdnv1 (vaultId: 0) */
-const JLPDNV1_DRIFT_PROGRAM_ID = '9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj'
-
-/** V2 Bundle vault IDs */
-const V2_BUNDLE_VAULT_IDS = [69, 72] // jlpdnjupiter, ctamomentumatlas
-
 /**
- * Get Bundle Program ID for a vault
- * All bundle vaults use V1 except vaultId 69 and 72 which use V2
+ * Get Bundle Program ID for a vault config
+ * Uses registry value if present, otherwise defaults to V1
  */
-export function getBundleProgramId(vaultId: number): BundleProgramId {
-  if (V2_BUNDLE_VAULT_IDS.includes(vaultId)) {
-    return BundleProgramId.V2
+export function getBundleProgramId(vault: VaultRegistryEntry): BundleProgramId {
+  if (vault.bundleProgramId) {
+    // Return as-is if it's already a valid BundleProgramId
+    if (Object.values(BundleProgramId).includes(vault.bundleProgramId as BundleProgramId)) {
+      return vault.bundleProgramId as BundleProgramId
+    }
   }
   return BundleProgramId.V1
 }
 
 /**
- * Get Drift Program ID for a vault
- * All drift vaults use default program ID except vaultId 0
+ * Get Drift Program ID for a vault config as PublicKey
+ * Uses registry value if present, otherwise defaults to VAULT_PROGRAM_ID
  */
-export function getDriftProgramPK(vaultId: number): PublicKey {
-  if (vaultId === 0) {
-    return new PublicKey(JLPDNV1_DRIFT_PROGRAM_ID)
+export function getDriftProgramId(vault: VaultRegistryEntry): string {
+  if (vault.driftProgramId) {
+    return vault.driftProgramId
   }
-  return VAULT_PROGRAM_ID
+  return VAULT_PROGRAM_ID.toBase58()
 }
 
 // =============================================================================
@@ -49,12 +45,8 @@ export function getDriftProgramPK(vaultId: number): PublicKey {
 export function toVaultConfig(entry: VaultRegistryEntry): VaultConfig {
   return {
     ...entry,
-    driftProgramId: entry.type === VaultType.Drift
-      ? getDriftProgramPK(entry.vaultId).toBase58()
-      : undefined,
-    bundleProgramId: entry.type === VaultType.Bundle
-      ? getBundleProgramId(entry.vaultId)
-      : undefined,
+    driftProgramId: getDriftProgramId(entry),
+    bundleProgramId: getBundleProgramId(entry),
   }
 }
 

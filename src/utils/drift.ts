@@ -8,7 +8,6 @@ import { convertToNumber, QUOTE_PRECISION, TEN } from '@drift-labs/sdk'
 // Get Drift vault balances using fetchMultiple
 
 import { PublicKey } from '@solana/web3.js'
-import { getDriftProgramPK } from '../constants/vaults'
 import { SupportedToken } from '../types'
 import { getVaultDepositorAddressSync } from './pda'
 
@@ -177,9 +176,9 @@ export async function getDriftBalances({
   // Prepare vault addresses and depositor PDAs
   const vaultAddresses = vaultEntries.map(({ config }) => new PublicKey(config.vaultAddress))
 
-  const vaultDepositorPDAs = vaultEntries.map(({ vaultId, config }) => {
+  const vaultDepositorPDAs = vaultEntries.map(({ config }) => {
     const vaultPubkey = new PublicKey(config.vaultAddress)
-    const programId = getDriftProgramPK(vaultId)
+    const programId = new PublicKey(config.driftProgramId)
     return getVaultDepositorAddressSync(programId, vaultPubkey, userPublicKey)
   })
 

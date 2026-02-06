@@ -4,7 +4,7 @@ export { BundleProgramId } from './constants/programs'
 // Auto-generated vault IDs (for backward compatibility)
 export { VaultId } from './constants/vault-ids'
 
-export { getBundleProgramId, getDriftProgramPK, getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
+export { getBundleProgramId, getDriftProgramId, getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
 
 // Main class
 export { NeutralTrade } from './NeutralTrade'

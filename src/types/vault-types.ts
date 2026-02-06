@@ -24,7 +24,7 @@ export enum VaultType {
 // REGISTRY TYPES (raw data from JSON, no program IDs)
 // =============================================================================
 
-/** Raw vault entry from registry JSON (without program IDs) */
+/** Raw vault entry from registry JSON */
 export interface VaultRegistryEntry {
   vaultId: number
   name: string
@@ -33,6 +33,10 @@ export interface VaultRegistryEntry {
   vaultAddress: string
   depositToken: SupportedToken
   pfee?: number
+  /** Optional Drift program ID (only for Drift vaults with non-default program) */
+  driftProgramId?: string
+  /** Optional Bundle program ID (only for Bundle vaults with non-default V2 program) */
+  bundleProgramId?: string
 }
 
 /** Zod schema for validating registry entries */
@@ -44,6 +48,8 @@ export const VaultRegistryEntrySchema = z.object({
   vaultAddress: z.string().min(32).max(44),
   depositToken: z.nativeEnum(SupportedToken),
   pfee: z.number().min(0).max(1).optional(),
+  driftProgramId: z.string().min(32).max(44).optional(),
+  bundleProgramId: z.string().min(32).max(44).optional(),
 })
 
 /** Schema for validating array of registry entries */
@@ -66,12 +72,12 @@ export const VaultRegistryArraySchema = z.array(VaultRegistryEntrySchema).superR
 // CONFIG TYPES (transformed with required program IDs)
 // =============================================================================
 
-/** Vault config with required program IDs (transformed from registry entry) */
+/** Vault config (same as registry entry, program IDs are optional) */
 export interface VaultConfig extends VaultRegistryEntry {
   /** Required for Drift vaults */
-  driftProgramId?: string
+  driftProgramId: string
   /** Required for Bundle vaults */
-  bundleProgramId?: string
+  bundleProgramId: string
 }
 
 /** Vault registry as a record keyed by vaultId */
