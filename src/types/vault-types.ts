@@ -20,6 +20,17 @@ export enum VaultType {
   Kamino = 'Kamino',
 }
 
+export enum VaultCategory {
+  marketNeutral = 'Market Neutral',
+  directional = 'Directional',
+  etf = 'Index',
+  bet = 'Bet',
+  savings = 'Savings',
+  privateCredit = 'Private Credit',
+  airdropFarming = 'Airdrop Farming',
+  yieldEnhancement = 'Yield Enhancement',
+}
+
 // =============================================================================
 // REGISTRY TYPES (raw data from JSON, no program IDs)
 // =============================================================================
@@ -30,6 +41,7 @@ export interface VaultRegistryEntry {
   name: string
   subname?: string
   type: VaultType
+  category: VaultCategory
   vaultAddress: string
   depositToken: SupportedToken
   pfee?: number
@@ -45,6 +57,7 @@ export const VaultRegistryEntrySchema = z.object({
   name: z.string().min(1).max(100),
   subname: z.string().max(100).optional(),
   type: z.nativeEnum(VaultType),
+  category: z.nativeEnum(VaultCategory),
   vaultAddress: z.string().min(32).max(44),
   depositToken: z.nativeEnum(SupportedToken),
   pfee: z.number().min(0).max(1).optional(),

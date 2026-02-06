@@ -25,6 +25,7 @@ export {
   SupportedChain,
   SupportedToken,
   tokens,
+  VaultCategory,
   VaultType,
 } from './types'
 

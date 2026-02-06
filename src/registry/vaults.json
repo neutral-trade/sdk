@@ -4,6 +4,7 @@
     "name": "CTA-Adaptive Alpha",
     "subname": "Atlas Research",
     "type": "Bundle",
+    "category": "Directional",
     "vaultAddress": "Eo3m78EQcHnwMyHtxaiz1vw4nwHa85RuGE8jLsrELhxj",
     "depositToken": "USDC"
   },
@@ -11,6 +12,7 @@
     "vaultId": 71,
     "name": "Hyperithm Cross-Exchange Arb",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "2bPiNfGc7exUcGkvV5nbsSkuNH3inFU18kgNEkB8fiaT",
     "depositToken": "USDC"
   },
@@ -18,6 +20,7 @@
     "vaultId": 70,
     "name": "Lighter LLP",
     "type": "Bundle",
+    "category": "Private Credit",
     "vaultAddress": "dvsWTBqogw1cou8ducadzc3YCmUssjrrio8LmMtNWmz",
     "depositToken": "USDC"
   },
@@ -26,6 +29,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vault-jupiter",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY",
     "depositToken": "USDC",
     "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9"
@@ -35,6 +39,7 @@
     "name": "SOL Super Staking",
     "subname": "Perps",
     "type": "Drift",
+    "category": "Yield Enhancement",
     "vaultAddress": "DiZ2RKDmCxMwPy8tEQzeh6dhKDEB9F5yezyJpEYqQyk9",
     "depositToken": "SOL",
     "pfee": 0.25
@@ -43,6 +48,7 @@
     "vaultId": 67,
     "name": "Aster Funding Arb",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "976iyYPcj5obNC25A4SRP3quDLbDPeXLjF1cgUamMKBK",
     "depositToken": "USDT"
   },
@@ -50,6 +56,7 @@
     "vaultId": 66,
     "name": "Moon LP",
     "type": "Bundle",
+    "category": "Index",
     "vaultAddress": "FMtgtataz4L2efYanxTGpVjg4njNe2j8QLLsnw5zeBPx",
     "depositToken": "USDC"
   },
@@ -58,6 +65,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Vault-CEX",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "9cMB2bMsLa9hZjRnjxFhg2DM9CLmjabMsGvfQUtdgupk",
     "depositToken": "USDC"
   },
@@ -66,6 +74,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip24",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "2Z2YH1RAXS8CNJo3QkYpQ4WHGH9jzNQ5m8YunRkY65mf",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -75,6 +84,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip23",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "8oZhUFmrA7p3SkVX7o4nFfSLsmt3KfCyW8grFydtvvuj",
     "depositToken": "USDC",
     "pfee": 0.1
@@ -84,6 +94,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip22",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "HhhFKvtkbz9v7nDxsFVD8Z3qSY2r9Ncc9rnKopFaGCkb",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -93,6 +104,7 @@
     "name": "USDC Max Yield",
     "subname": "Kamino Lending",
     "type": "Kamino",
+    "category": "Savings",
     "vaultAddress": "67dqmR76uAbjX6e81A1ganKv3ou31WUMEdeWJkwVfeXy",
     "depositToken": "USDC"
   },
@@ -100,6 +112,7 @@
     "vaultId": 60,
     "name": "NT Earn",
     "type": "Bundle",
+    "category": "Savings",
     "vaultAddress": "HWjMfYfc7KoPchoEDa5UFyVSpJxY3aV1RAccKvABYb9z",
     "depositToken": "USDC"
   },
@@ -108,6 +121,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Perena",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "9vmBYT7hcjexuHM3iML3buTz3PchvULH5EfAjG12TtRZ",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -117,6 +131,7 @@
     "name": "Memes ETF",
     "subname": "Generational Wealth",
     "type": "Drift",
+    "category": "Index",
     "vaultAddress": "AHfaqTwFhWiX2DZrYbTivBpbrstNJRyjHG4mFPVpJS5n",
     "depositToken": "USDC",
     "pfee": 0
@@ -126,6 +141,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip21",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "7qPbUA5HmxjpoxniqoH8r5SZ5dY1hqYXGr8QSZsRXynX",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -134,6 +150,7 @@
     "vaultId": 56,
     "name": "BTC Dominance",
     "type": "Hyperliquid",
+    "category": "Bet",
     "vaultAddress": "0x799e0112977c37f8d93a768cf5a2305bdd3ae6f9",
     "depositToken": "USDC"
   },
@@ -141,6 +158,7 @@
     "vaultId": 55,
     "name": "Alt Dominance",
     "type": "Hyperliquid",
+    "category": "Bet",
     "vaultAddress": "0xb03715bec4514ae7d338fcd85053ca227a1fb823",
     "depositToken": "USDC"
   },
@@ -148,6 +166,7 @@
     "vaultId": 54,
     "name": "HYPE / SOL Pairs Trade",
     "type": "Hyperliquid",
+    "category": "Bet",
     "vaultAddress": "0xaae8a508a5e39c134a4d6a49d7dce82a17f84651",
     "depositToken": "USDC"
   },
@@ -155,6 +174,7 @@
     "vaultId": 53,
     "name": "The Big Short",
     "type": "Hyperliquid",
+    "category": "Bet",
     "vaultAddress": "0xb2246d6f3ddeeca74cfd29dc3cce05c1746fcd68",
     "depositToken": "USDC",
     "pfee": 0.1
@@ -164,6 +184,7 @@
     "name": "CTA Momentum",
     "subname": "R* Research",
     "type": "Bundle",
+    "category": "Directional",
     "vaultAddress": "HDDrsNSYpfHHfr646T4vfZvXDKcbzYYBEGTietGgi7rh",
     "depositToken": "USDC"
   },
@@ -171,6 +192,7 @@
     "vaultId": 51,
     "name": "Term Max",
     "type": "Bundle",
+    "category": "Private Credit",
     "vaultAddress": "AvK6eRQNXiFfGSibrA96qDEtACkPyoouGrRGseryZFdE",
     "depositToken": "USDC"
   },
@@ -178,6 +200,7 @@
     "vaultId": 50,
     "name": "ALP Delta Neutral Forest",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "HELqBHiykXecZqYEHSKFh7mzythQoM8CaXQuR6TESdPB",
     "depositToken": "USDC"
   },
@@ -185,6 +208,7 @@
     "vaultId": 49,
     "name": "ALP Delta Neutral",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "5XNsfSeuB3SgknCHrbrv47UgcNNUMoG8CBzUJnwPcSej",
     "depositToken": "USDC"
   },
@@ -192,6 +216,7 @@
     "vaultId": 48,
     "name": "Hyperliquid Funding Arb",
     "type": "Bundle",
+    "category": "Market Neutral",
     "vaultAddress": "nE1x7KQq2sm3GQrafQUUdBkSPPT52FmiMM9qAS1dgnC",
     "depositToken": "USDC"
   },
@@ -199,6 +224,7 @@
     "vaultId": 47,
     "name": "Long BONK, Short PUMP",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "7uUJtfVzhu6aXZypsARsAK8sjWsDxWJYUkaNzm3hTgid",
     "depositToken": "USDC",
     "pfee": 0
@@ -207,6 +233,7 @@
     "vaultId": 46,
     "name": "Hyper JLP",
     "type": "Drift",
+    "category": "Index",
     "vaultAddress": "A1B9MVput3r1jS91iu8ckdDiMSugXbQeEtvJEQsUHsPi",
     "depositToken": "USDC",
     "pfee": 0.15
@@ -216,6 +243,7 @@
     "name": "FART Dominance",
     "subname": "Hot Air Rises",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "5cbTtvNVg1qc5L5Fcnz9R3X2QsYTtMCwBZRwBbuoEhn5",
     "depositToken": "USDC",
     "pfee": 0
@@ -224,6 +252,7 @@
     "vaultId": 44,
     "name": "BTC Dominance",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "5BCDLjnQXv92AYySpdEpENgYhABaVf92fym1MYNyhVuo",
     "depositToken": "USDC",
     "pfee": 0
@@ -233,6 +262,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip team",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "FBYp9toQEqNiGeP8BzyvRD1FUauJBFk5eYUEkgqvigZ5",
     "depositToken": "USDC",
     "pfee": 0
@@ -242,6 +272,7 @@
     "name": "BTC Savings",
     "subname": "Drawdown Protected",
     "type": "Drift",
+    "category": "Savings",
     "vaultAddress": "494C23vX4h7Bhfyz92hScg71PXn9huG9SqY8mFYhRJoK",
     "depositToken": "WBTC",
     "pfee": 0
@@ -251,6 +282,7 @@
     "name": "ETH Savings",
     "subname": "Drawdown Protected",
     "type": "Drift",
+    "category": "Savings",
     "vaultAddress": "8JjFwxduSVCY91s2yBVGgKSAKPwPkuTKEchjRw74Du5w",
     "depositToken": "WETH",
     "pfee": 0
@@ -260,6 +292,7 @@
     "name": "SOL Savings",
     "subname": "Drawdown Protected",
     "type": "Drift",
+    "category": "Savings",
     "vaultAddress": "A6cPV4DrePTUUamBM87MDqK9kBy9vbucjhrCxtxzExK9",
     "depositToken": "SOL",
     "pfee": 0
@@ -269,6 +302,7 @@
     "name": "USDC Savings",
     "subname": "Drawdown Protected",
     "type": "Drift",
+    "category": "Savings",
     "vaultAddress": "4i2L5zvzUM5LXqUYm35Ytv4BGSmnFVTqG5xtFfJesm14",
     "depositToken": "USDC",
     "pfee": 0
@@ -277,6 +311,7 @@
     "vaultId": 38,
     "name": "FUEL Maxi",
     "type": "Drift",
+    "category": "Airdrop Farming",
     "vaultAddress": "DzaHA2zD7XQhj2Z6tG9YxVtgcvJ4sqzeLYr8dszyQTEq",
     "depositToken": "USDC",
     "pfee": 0
@@ -286,6 +321,7 @@
     "name": "Inverse JLP DN",
     "subname": "The Big Short",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "2csxi2M4uMijHW3CvnHqAYJ9CcLcZbGmDNKSz1qjRAVQ",
     "depositToken": "USDC",
     "pfee": 0
@@ -295,6 +331,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Neutralized JLP",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "CG2zv4wsSetgs6mAucEKnHPwSoZSLYMwGroembTUNeaU",
     "depositToken": "JLP",
     "pfee": 0
@@ -304,6 +341,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip20",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "AAiykf4cgdFxz4kyRNuCFf9xFwy7c1gHiWacydmi1jLS",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -313,6 +351,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip19",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "5DPwSqEfaEsBH4zzZha35TpWRRPnWFfVgYZyK3zNswT7",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -322,6 +361,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Project Super",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "6un71hP7xhpc8nqWWnbYPiamjAckEGH1A6zzenpGdZLf",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -331,6 +371,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip pool 1",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "5FqiXogZCcyZoNeTZzNvywY5s9ZRzNsPPkZ2Q4YRu6ww",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -340,6 +381,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Drift-5",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "9omhWDzVxpX1vPBxAhJpVao7baoVzZpNib32vozZLxGm",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -349,6 +391,7 @@
     "name": "Long SOL, Short ETH",
     "subname": "Solana Flippening",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "2zsHAfvD2BpmZbuPhc32dija8cXu8ow6n2yzyZTMvQ8V",
     "depositToken": "USDC",
     "pfee": 0.1
@@ -358,6 +401,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Drift-4",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "46fQeq1UX5djNkrY5d942inhRHjp1cTZmWBeCUZoqWT3",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -367,6 +411,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip18",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "1CUvZgVGaxV6sDUjFrWHyzukWBD2amUi3dQkvh9KKVA",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -376,6 +421,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip17",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "3UhqS9P4AhKMrCv7yE1LujgQS2xjFnRhANC5dPf2bZem",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -385,6 +431,7 @@
     "name": "BTC Super Staking",
     "subname": "tangem",
     "type": "Drift",
+    "category": "Yield Enhancement",
     "vaultAddress": "6E2sh7ygUzXFJAafXX5sMeSj7eK6YkYqpoAzXm7bYtCw",
     "depositToken": "WBTC",
     "pfee": 0.2
@@ -394,6 +441,7 @@
     "name": "JLP Delta Neutral",
     "subname": "tangem",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "HS2anXrdps1S2DZCHepgzfcoaqSUWBBuuqTRMugJisP2",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -403,6 +451,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip16",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "4H3wAK5tkT7G1vFrj6J9jWGvbaqVGkzPPBsp9qyKUYz9",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -412,6 +461,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip15",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "AwVR9y8Qw5erzrzE8hcs1j1se86yBwmrRidWb1qzaAy2",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -421,6 +471,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip14",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "4iSH214QLwWnJQNwTH6VfH4oNcPccr7HnMmsybjnTtez",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -430,6 +481,7 @@
     "name": "SOL Momentum",
     "subname": "CTA-Marco",
     "type": "Drift",
+    "category": "Directional",
     "vaultAddress": "DbAX9qNiHrtrngLz8e5nBNWbmeGGVRKUQtxfGdENCFJS",
     "depositToken": "USDC",
     "pfee": 0
@@ -439,6 +491,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip13",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "9V2LggfMo1EjaBbq3qBRBifD287m8zryrZgTR72grcCp",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -448,6 +501,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip12",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "GpMcLVnUqE1RyEB5rRFsFQJGKiPBBXqrpFsdbfUPgbqv",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -457,6 +511,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip11",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "HhLwXF15V3MTVG9ucGGmT6mcEuqt2BjHuTCJBi4Zvi4K",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -466,6 +521,7 @@
     "name": "USDC Staking",
     "subname": "vip10",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "5Wv7V9zLGD3g7JTXfYjpzFEs42kjowXqUHh7wQ5ryVef",
     "depositToken": "USDC",
     "pfee": 0
@@ -475,6 +531,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Drift-3",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "7ngzeBygEksaBvKzHEeihqoLpDpWqTNRMVh2wCyb6NP8",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -484,6 +541,7 @@
     "name": "SOL Super Staking",
     "subname": "vip8",
     "type": "Drift",
+    "category": "Yield Enhancement",
     "vaultAddress": "CYUyHzu6Z3JyBhfkQpZZwWqa2zpcmzaK1xXS96n8ea1U",
     "depositToken": "SOL",
     "pfee": 0.2
@@ -493,6 +551,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip7",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "HTLvAjqc6Wkzh4i4QNLHhQHZAnrtVvkGyYeyCiUWLe9b",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -502,6 +561,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip6",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "6DFDj66PbPoTC16Sh51MJijoTTMYCbMCVC85tnc5UfQ3",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -511,6 +571,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip5",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "9BMEyctGvajEubk5iCRBnM9fkeTXUhrxaweYq34jZdC8",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -520,6 +581,7 @@
     "name": "USDC Basis",
     "subname": "Perps Basket",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "4cvgasNfbJ36yeMVJSkscgL2Yco9dFGdj52Wrg91fmHv",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -529,6 +591,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip3",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "Fd3k4c6Dv7m9673ae87P6duQrftY9UVfwiCxngNbJrUQ",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -538,6 +601,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip2",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "DUW6uWcrsjYmsYDjp9iGDN4JdRa2MqznjuxjKVok5Fsj",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -546,6 +610,7 @@
     "vaultId": 8,
     "name": "Drift funding arb",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "CxL8eQmGhN9LKSoHj7bU95JekFPtyZoUc57mbehb5A56",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -554,6 +619,7 @@
     "vaultId": 7,
     "name": "JLP Traders Print",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "85XuR4kE5yxp1hk91WHAawinXZsuJowxy59STYYpM9pK",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -562,6 +628,7 @@
     "vaultId": 6,
     "name": "ETH Super Staking",
     "type": "Drift",
+    "category": "Yield Enhancement",
     "vaultAddress": "ENr5e1BMN5vFUHf4iCCPzR4GjWCKgtHnQcdniRQqMdEL",
     "depositToken": "WETH",
     "pfee": 0.2
@@ -571,6 +638,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vip1",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "CZU38L2NyL6tqFxzYAGYkmkf2JG98tZfZ2CnUapVgXQe",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -580,6 +648,7 @@
     "name": "JLP Delta Neutral",
     "subname": "Drift-2",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "41Y8C4oxk4zgJT1KXyQr35UhZcfsp5mP86Z2G7UUzojU",
     "depositToken": "USDC",
     "pfee": 0.25
@@ -588,6 +657,7 @@
     "vaultId": 3,
     "name": "BTC Super Staking",
     "type": "Drift",
+    "category": "Yield Enhancement",
     "vaultAddress": "BVddkVtFJLCihbVrtLo8e3iEd9NftuLunaznAxFFW8vf",
     "depositToken": "WBTC",
     "pfee": 0.2
@@ -596,6 +666,7 @@
     "vaultId": 2,
     "name": "JLP Traders Rekt",
     "type": "Drift",
+    "category": "Bet",
     "vaultAddress": "2r81MPMDjGSrbmGRwzDg6aqhe3t3vbKcrYfpes5bXckS",
     "depositToken": "USDC",
     "pfee": 0.2
@@ -604,6 +675,7 @@
     "vaultId": 1,
     "name": "SOL Super Staking",
     "type": "Drift",
+    "category": "Yield Enhancement",
     "vaultAddress": "EuSLjg23BrtwYAk1t4TFe5ArYSXCVXLBqrHRBfWQiTeJ",
     "depositToken": "SOL",
     "pfee": 0.2
@@ -613,6 +685,7 @@
     "name": "JLP Delta Neutral",
     "subname": "vault-1",
     "type": "Drift",
+    "category": "Market Neutral",
     "vaultAddress": "3Nkctq19AW7gs5hkxixUDjS9UVjmCwcNCo7rqPpub87c",
     "depositToken": "USDC",
     "pfee": 0.25,
