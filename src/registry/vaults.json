@@ -1,5 +1,13 @@
 [
   {
+    "vaultId": 73,
+    "name": "Great Debasement",
+    "type": "Bundle",
+    "category": "Index",
+    "vaultAddress": "7jEMJqWsHCkMDqChEuBwFo4yg27TSWFDooB8NorkGcjD",
+    "depositToken": "USDC"
+  },
+  {
     "vaultId": 72,
     "name": "CTA-Adaptive Alpha",
     "subname": "Atlas Research",

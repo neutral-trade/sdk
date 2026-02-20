@@ -7,6 +7,8 @@
  * These are auto-generated from the vault registry
  */
 export enum VaultId {
+  /** Great Debasement */
+  great_debasement_73 = 73,
   /** CTA-Adaptive Alpha - Atlas Research */
   cta_adaptive_alpha_atlas_research_72 = 72,
   /** Hyperithm Cross-Exchange Arb */
