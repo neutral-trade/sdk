@@ -24,6 +24,7 @@ export type {
   Token,
   UserBalanceResult,
   UserBundleAccount,
+  UserBundleTempData,
   VaultBalanceData,
   VaultRegistryEntry as VaultConfig,
   VaultRegistry as VaultConfigRecord,
