@@ -1,9 +1,11 @@
+export { getPointsVaults } from './constants/points-vaults'
+
+export type { PointsVaultEntry } from './constants/points-vaults'
+
 // Constants
 export { BundleProgramId } from './constants/programs'
-
 // Auto-generated vault IDs (for backward compatibility)
 export { VaultId } from './constants/vault-ids'
-
 export { getBundleProgramId, getDriftProgramId, getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
 
 // Main class

@@ -49,6 +49,10 @@ export interface VaultRegistryEntry {
   driftProgramId?: string
   /** Optional Bundle program ID (only for Bundle vaults with non-default V2 program) */
   bundleProgramId?: string
+  /** Points: eTVL multiplier (default 1) */
+  pointsMultiplier?: number
+  /** Points: include in points calculation (default true) */
+  pointsEnabled?: boolean
 }
 
 /** Zod schema for validating registry entries */
@@ -63,6 +67,8 @@ export const VaultRegistryEntrySchema = z.object({
   pfee: z.number().min(0).max(1).optional(),
   driftProgramId: z.string().min(32).max(44).optional(),
   bundleProgramId: z.string().min(32).max(44).optional(),
+  pointsMultiplier: z.number().min(0).optional(),
+  pointsEnabled: z.boolean().optional(),
 })
 
 /** Schema for validating array of registry entries */
