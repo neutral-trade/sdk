@@ -2,13 +2,13 @@
 
 import type { Vault, VaultClient, VaultDepositor } from '@drift-labs/vaults-sdk'
 import type { VaultBalanceData, VaultRegistry, VaultRegistryEntry } from '../types'
-import { BN } from '@coral-xyz/anchor'
 import { convertToNumber, QUOTE_PRECISION, TEN } from '@drift-labs/sdk'
 import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
+import { PublicKey } from '@solana/web3.js'
 
 // Get Drift vault balances using fetchMultiple
 
-import { PublicKey } from '@solana/web3.js'
+import { BN } from 'bn.js'
 import { SupportedToken } from '../types'
 import { getVaultDepositorAddressSync } from './pda'
 

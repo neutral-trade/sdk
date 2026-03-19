@@ -44,6 +44,8 @@
     "@drift-labs/sdk": "catalog:",
     "@drift-labs/vaults-sdk": "catalog:",
     "@solana/web3.js": "catalog:",
+    "@types/bn.js": "catalog:",
+    "bn.js": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
