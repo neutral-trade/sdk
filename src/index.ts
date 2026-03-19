@@ -1,9 +1,16 @@
-// Constants
-export { BundleProgramId } from './constants/programs'
+export { getPointsVaults } from './constants/points-vaults'
 
+export type { PointsVaultEntry } from './constants/points-vaults'
+
+// Constants
+export {
+  BundleProgramId,
+  createBundlePrograms,
+  createBundleProgramV1,
+  createBundleProgramV2,
+} from './constants/programs'
 // Auto-generated vault IDs (for backward compatibility)
 export { VaultId } from './constants/vault-ids'
-
 export { getBundleProgramId, getDriftProgramId, getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
 
 // Main class
@@ -17,6 +24,7 @@ export type {
   Token,
   UserBalanceResult,
   UserBundleAccount,
+  UserBundleTempData,
   VaultBalanceData,
   VaultRegistryEntry as VaultConfig,
   VaultRegistry as VaultConfigRecord,

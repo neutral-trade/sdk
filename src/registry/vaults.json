@@ -5,6 +5,8 @@
     "type": "Bundle",
     "category": "Index",
     "vaultAddress": "7jEMJqWsHCkMDqChEuBwFo4yg27TSWFDooB8NorkGcjD",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true,
     "depositToken": "USDC"
   },
   {
@@ -14,7 +16,9 @@
     "type": "Bundle",
     "category": "Directional",
     "vaultAddress": "Eo3m78EQcHnwMyHtxaiz1vw4nwHa85RuGE8jLsrELhxj",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 71,
@@ -22,7 +26,9 @@
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "2bPiNfGc7exUcGkvV5nbsSkuNH3inFU18kgNEkB8fiaT",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 70,
@@ -30,7 +36,9 @@
     "type": "Bundle",
     "category": "Private Credit",
     "vaultAddress": "dvsWTBqogw1cou8ducadzc3YCmUssjrrio8LmMtNWmz",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 69,
@@ -40,7 +48,9 @@
     "category": "Market Neutral",
     "vaultAddress": "GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY",
     "depositToken": "USDC",
-    "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9"
+    "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 68,
@@ -50,7 +60,9 @@
     "category": "Yield Enhancement",
     "vaultAddress": "DiZ2RKDmCxMwPy8tEQzeh6dhKDEB9F5yezyJpEYqQyk9",
     "depositToken": "SOL",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
   },
   {
     "vaultId": 67,
@@ -58,7 +70,9 @@
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "976iyYPcj5obNC25A4SRP3quDLbDPeXLjF1cgUamMKBK",
-    "depositToken": "USDT"
+    "depositToken": "USDT",
+    "pointsMultiplier": 2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 66,
@@ -66,7 +80,9 @@
     "type": "Bundle",
     "category": "Index",
     "vaultAddress": "FMtgtataz4L2efYanxTGpVjg4njNe2j8QLLsnw5zeBPx",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 65,
@@ -75,7 +91,9 @@
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "9cMB2bMsLa9hZjRnjxFhg2DM9CLmjabMsGvfQUtdgupk",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 64,
@@ -85,7 +103,9 @@
     "category": "Market Neutral",
     "vaultAddress": "2Z2YH1RAXS8CNJo3QkYpQ4WHGH9jzNQ5m8YunRkY65mf",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 63,
@@ -95,7 +115,9 @@
     "category": "Market Neutral",
     "vaultAddress": "8oZhUFmrA7p3SkVX7o4nFfSLsmt3KfCyW8grFydtvvuj",
     "depositToken": "USDC",
-    "pfee": 0.1
+    "pfee": 0.1,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 62,
@@ -105,7 +127,9 @@
     "category": "Market Neutral",
     "vaultAddress": "HhhFKvtkbz9v7nDxsFVD8Z3qSY2r9Ncc9rnKopFaGCkb",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 61,
@@ -114,7 +138,9 @@
     "type": "Kamino",
     "category": "Savings",
     "vaultAddress": "67dqmR76uAbjX6e81A1ganKv3ou31WUMEdeWJkwVfeXy",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 60,
@@ -122,7 +148,9 @@
     "type": "Bundle",
     "category": "Savings",
     "vaultAddress": "HWjMfYfc7KoPchoEDa5UFyVSpJxY3aV1RAccKvABYb9z",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 3,
+    "pointsEnabled": true
   },
   {
     "vaultId": 59,
@@ -132,7 +160,9 @@
     "category": "Market Neutral",
     "vaultAddress": "9vmBYT7hcjexuHM3iML3buTz3PchvULH5EfAjG12TtRZ",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 58,
@@ -142,7 +172,8 @@
     "category": "Index",
     "vaultAddress": "AHfaqTwFhWiX2DZrYbTivBpbrstNJRyjHG4mFPVpJS5n",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 57,
@@ -152,7 +183,9 @@
     "category": "Market Neutral",
     "vaultAddress": "7qPbUA5HmxjpoxniqoH8r5SZ5dY1hqYXGr8QSZsRXynX",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 56,
@@ -160,7 +193,8 @@
     "type": "Hyperliquid",
     "category": "Bet",
     "vaultAddress": "0x799e0112977c37f8d93a768cf5a2305bdd3ae6f9",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsEnabled": false
   },
   {
     "vaultId": 55,
@@ -168,7 +202,8 @@
     "type": "Hyperliquid",
     "category": "Bet",
     "vaultAddress": "0xb03715bec4514ae7d338fcd85053ca227a1fb823",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsEnabled": false
   },
   {
     "vaultId": 54,
@@ -176,7 +211,8 @@
     "type": "Hyperliquid",
     "category": "Bet",
     "vaultAddress": "0xaae8a508a5e39c134a4d6a49d7dce82a17f84651",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsEnabled": false
   },
   {
     "vaultId": 53,
@@ -185,7 +221,8 @@
     "category": "Bet",
     "vaultAddress": "0xb2246d6f3ddeeca74cfd29dc3cce05c1746fcd68",
     "depositToken": "USDC",
-    "pfee": 0.1
+    "pfee": 0.1,
+    "pointsEnabled": false
   },
   {
     "vaultId": 52,
@@ -194,7 +231,9 @@
     "type": "Bundle",
     "category": "Directional",
     "vaultAddress": "HDDrsNSYpfHHfr646T4vfZvXDKcbzYYBEGTietGgi7rh",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 51,
@@ -202,7 +241,9 @@
     "type": "Bundle",
     "category": "Private Credit",
     "vaultAddress": "AvK6eRQNXiFfGSibrA96qDEtACkPyoouGrRGseryZFdE",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 3,
+    "pointsEnabled": false
   },
   {
     "vaultId": 50,
@@ -210,7 +251,8 @@
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "HELqBHiykXecZqYEHSKFh7mzythQoM8CaXQuR6TESdPB",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsEnabled": false
   },
   {
     "vaultId": 49,
@@ -218,7 +260,8 @@
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "5XNsfSeuB3SgknCHrbrv47UgcNNUMoG8CBzUJnwPcSej",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsEnabled": false
   },
   {
     "vaultId": 48,
@@ -226,7 +269,9 @@
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "nE1x7KQq2sm3GQrafQUUdBkSPPT52FmiMM9qAS1dgnC",
-    "depositToken": "USDC"
+    "depositToken": "USDC",
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 47,
@@ -235,7 +280,8 @@
     "category": "Bet",
     "vaultAddress": "7uUJtfVzhu6aXZypsARsAK8sjWsDxWJYUkaNzm3hTgid",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 46,
@@ -244,7 +290,9 @@
     "category": "Index",
     "vaultAddress": "A1B9MVput3r1jS91iu8ckdDiMSugXbQeEtvJEQsUHsPi",
     "depositToken": "USDC",
-    "pfee": 0.15
+    "pfee": 0.15,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 45,
@@ -254,7 +302,8 @@
     "category": "Bet",
     "vaultAddress": "5cbTtvNVg1qc5L5Fcnz9R3X2QsYTtMCwBZRwBbuoEhn5",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 44,
@@ -263,7 +312,8 @@
     "category": "Bet",
     "vaultAddress": "5BCDLjnQXv92AYySpdEpENgYhABaVf92fym1MYNyhVuo",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 43,
@@ -273,7 +323,8 @@
     "category": "Market Neutral",
     "vaultAddress": "FBYp9toQEqNiGeP8BzyvRD1FUauJBFk5eYUEkgqvigZ5",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 42,
@@ -283,7 +334,8 @@
     "category": "Savings",
     "vaultAddress": "494C23vX4h7Bhfyz92hScg71PXn9huG9SqY8mFYhRJoK",
     "depositToken": "WBTC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 41,
@@ -293,7 +345,8 @@
     "category": "Savings",
     "vaultAddress": "8JjFwxduSVCY91s2yBVGgKSAKPwPkuTKEchjRw74Du5w",
     "depositToken": "WETH",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 40,
@@ -303,7 +356,8 @@
     "category": "Savings",
     "vaultAddress": "A6cPV4DrePTUUamBM87MDqK9kBy9vbucjhrCxtxzExK9",
     "depositToken": "SOL",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 39,
@@ -313,7 +367,8 @@
     "category": "Savings",
     "vaultAddress": "4i2L5zvzUM5LXqUYm35Ytv4BGSmnFVTqG5xtFfJesm14",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 38,
@@ -322,7 +377,8 @@
     "category": "Airdrop Farming",
     "vaultAddress": "DzaHA2zD7XQhj2Z6tG9YxVtgcvJ4sqzeLYr8dszyQTEq",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 37,
@@ -332,7 +388,8 @@
     "category": "Bet",
     "vaultAddress": "2csxi2M4uMijHW3CvnHqAYJ9CcLcZbGmDNKSz1qjRAVQ",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 36,
@@ -342,7 +399,9 @@
     "category": "Market Neutral",
     "vaultAddress": "CG2zv4wsSetgs6mAucEKnHPwSoZSLYMwGroembTUNeaU",
     "depositToken": "JLP",
-    "pfee": 0
+    "pfee": 0,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 35,
@@ -352,7 +411,8 @@
     "category": "Market Neutral",
     "vaultAddress": "AAiykf4cgdFxz4kyRNuCFf9xFwy7c1gHiWacydmi1jLS",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 34,
@@ -362,7 +422,9 @@
     "category": "Market Neutral",
     "vaultAddress": "5DPwSqEfaEsBH4zzZha35TpWRRPnWFfVgYZyK3zNswT7",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 33,
@@ -372,7 +434,9 @@
     "category": "Market Neutral",
     "vaultAddress": "6un71hP7xhpc8nqWWnbYPiamjAckEGH1A6zzenpGdZLf",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 32,
@@ -382,7 +446,9 @@
     "category": "Market Neutral",
     "vaultAddress": "5FqiXogZCcyZoNeTZzNvywY5s9ZRzNsPPkZ2Q4YRu6ww",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 31,
@@ -392,7 +458,8 @@
     "category": "Market Neutral",
     "vaultAddress": "9omhWDzVxpX1vPBxAhJpVao7baoVzZpNib32vozZLxGm",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsEnabled": false
   },
   {
     "vaultId": 30,
@@ -402,7 +469,9 @@
     "category": "Bet",
     "vaultAddress": "2zsHAfvD2BpmZbuPhc32dija8cXu8ow6n2yzyZTMvQ8V",
     "depositToken": "USDC",
-    "pfee": 0.1
+    "pfee": 0.1,
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 29,
@@ -412,7 +481,9 @@
     "category": "Market Neutral",
     "vaultAddress": "46fQeq1UX5djNkrY5d942inhRHjp1cTZmWBeCUZoqWT3",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 28,
@@ -422,7 +493,8 @@
     "category": "Market Neutral",
     "vaultAddress": "1CUvZgVGaxV6sDUjFrWHyzukWBD2amUi3dQkvh9KKVA",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 27,
@@ -432,7 +504,8 @@
     "category": "Market Neutral",
     "vaultAddress": "3UhqS9P4AhKMrCv7yE1LujgQS2xjFnRhANC5dPf2bZem",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 26,
@@ -442,7 +515,9 @@
     "category": "Yield Enhancement",
     "vaultAddress": "6E2sh7ygUzXFJAafXX5sMeSj7eK6YkYqpoAzXm7bYtCw",
     "depositToken": "WBTC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 25,
@@ -452,7 +527,9 @@
     "category": "Market Neutral",
     "vaultAddress": "HS2anXrdps1S2DZCHepgzfcoaqSUWBBuuqTRMugJisP2",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 24,
@@ -462,7 +539,8 @@
     "category": "Market Neutral",
     "vaultAddress": "4H3wAK5tkT7G1vFrj6J9jWGvbaqVGkzPPBsp9qyKUYz9",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 23,
@@ -472,7 +550,9 @@
     "category": "Market Neutral",
     "vaultAddress": "AwVR9y8Qw5erzrzE8hcs1j1se86yBwmrRidWb1qzaAy2",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 22,
@@ -482,7 +562,8 @@
     "category": "Market Neutral",
     "vaultAddress": "4iSH214QLwWnJQNwTH6VfH4oNcPccr7HnMmsybjnTtez",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 21,
@@ -492,7 +573,8 @@
     "category": "Directional",
     "vaultAddress": "DbAX9qNiHrtrngLz8e5nBNWbmeGGVRKUQtxfGdENCFJS",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 20,
@@ -502,7 +584,8 @@
     "category": "Market Neutral",
     "vaultAddress": "9V2LggfMo1EjaBbq3qBRBifD287m8zryrZgTR72grcCp",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 19,
@@ -512,7 +595,8 @@
     "category": "Market Neutral",
     "vaultAddress": "GpMcLVnUqE1RyEB5rRFsFQJGKiPBBXqrpFsdbfUPgbqv",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 18,
@@ -522,7 +606,8 @@
     "category": "Market Neutral",
     "vaultAddress": "HhLwXF15V3MTVG9ucGGmT6mcEuqt2BjHuTCJBi4Zvi4K",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 17,
@@ -532,7 +617,8 @@
     "category": "Market Neutral",
     "vaultAddress": "5Wv7V9zLGD3g7JTXfYjpzFEs42kjowXqUHh7wQ5ryVef",
     "depositToken": "USDC",
-    "pfee": 0
+    "pfee": 0,
+    "pointsEnabled": false
   },
   {
     "vaultId": 16,
@@ -542,7 +628,9 @@
     "category": "Market Neutral",
     "vaultAddress": "7ngzeBygEksaBvKzHEeihqoLpDpWqTNRMVh2wCyb6NP8",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 15,
@@ -552,7 +640,8 @@
     "category": "Yield Enhancement",
     "vaultAddress": "CYUyHzu6Z3JyBhfkQpZZwWqa2zpcmzaK1xXS96n8ea1U",
     "depositToken": "SOL",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 14,
@@ -562,7 +651,8 @@
     "category": "Market Neutral",
     "vaultAddress": "HTLvAjqc6Wkzh4i4QNLHhQHZAnrtVvkGyYeyCiUWLe9b",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 13,
@@ -572,7 +662,8 @@
     "category": "Market Neutral",
     "vaultAddress": "6DFDj66PbPoTC16Sh51MJijoTTMYCbMCVC85tnc5UfQ3",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 12,
@@ -582,7 +673,8 @@
     "category": "Market Neutral",
     "vaultAddress": "9BMEyctGvajEubk5iCRBnM9fkeTXUhrxaweYq34jZdC8",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 11,
@@ -592,7 +684,8 @@
     "category": "Market Neutral",
     "vaultAddress": "4cvgasNfbJ36yeMVJSkscgL2Yco9dFGdj52Wrg91fmHv",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsEnabled": false
   },
   {
     "vaultId": 10,
@@ -602,7 +695,8 @@
     "category": "Market Neutral",
     "vaultAddress": "Fd3k4c6Dv7m9673ae87P6duQrftY9UVfwiCxngNbJrUQ",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 9,
@@ -612,7 +706,9 @@
     "category": "Market Neutral",
     "vaultAddress": "DUW6uWcrsjYmsYDjp9iGDN4JdRa2MqznjuxjKVok5Fsj",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 8,
@@ -621,7 +717,9 @@
     "category": "Market Neutral",
     "vaultAddress": "CxL8eQmGhN9LKSoHj7bU95JekFPtyZoUc57mbehb5A56",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
   },
   {
     "vaultId": 7,
@@ -630,7 +728,8 @@
     "category": "Bet",
     "vaultAddress": "85XuR4kE5yxp1hk91WHAawinXZsuJowxy59STYYpM9pK",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 6,
@@ -639,7 +738,9 @@
     "category": "Yield Enhancement",
     "vaultAddress": "ENr5e1BMN5vFUHf4iCCPzR4GjWCKgtHnQcdniRQqMdEL",
     "depositToken": "WETH",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 5,
@@ -649,7 +750,8 @@
     "category": "Market Neutral",
     "vaultAddress": "CZU38L2NyL6tqFxzYAGYkmkf2JG98tZfZ2CnUapVgXQe",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsEnabled": false
   },
   {
     "vaultId": 4,
@@ -659,7 +761,9 @@
     "category": "Market Neutral",
     "vaultAddress": "41Y8C4oxk4zgJT1KXyQr35UhZcfsp5mP86Z2G7UUzojU",
     "depositToken": "USDC",
-    "pfee": 0.25
+    "pfee": 0.25,
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 3,
@@ -668,7 +772,9 @@
     "category": "Yield Enhancement",
     "vaultAddress": "BVddkVtFJLCihbVrtLo8e3iEd9NftuLunaznAxFFW8vf",
     "depositToken": "WBTC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 2,
@@ -677,7 +783,9 @@
     "category": "Bet",
     "vaultAddress": "2r81MPMDjGSrbmGRwzDg6aqhe3t3vbKcrYfpes5bXckS",
     "depositToken": "USDC",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
   },
   {
     "vaultId": 1,
@@ -686,7 +794,9 @@
     "category": "Yield Enhancement",
     "vaultAddress": "EuSLjg23BrtwYAk1t4TFe5ArYSXCVXLBqrHRBfWQiTeJ",
     "depositToken": "SOL",
-    "pfee": 0.2
+    "pfee": 0.2,
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   },
   {
     "vaultId": 0,
@@ -697,6 +807,7 @@
     "vaultAddress": "3Nkctq19AW7gs5hkxixUDjS9UVjmCwcNCo7rqPpub87c",
     "depositToken": "USDC",
     "pfee": 0.25,
-    "driftProgramId": "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj"
+    "driftProgramId": "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj",
+    "pointsEnabled": false
   }
 ]
