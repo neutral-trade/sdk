@@ -1,7 +1,7 @@
 {
   "name": "@neutral-trade/sdk",
   "type": "module",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "packageManager": "pnpm@10.25.0",
   "description": "SDK for Neutral Trade vaults",
   "license": "MIT",
@@ -44,6 +44,8 @@
     "@drift-labs/sdk": "catalog:",
     "@drift-labs/vaults-sdk": "catalog:",
     "@solana/web3.js": "catalog:",
+    "@types/bn.js": "catalog:",
+    "bn.js": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
