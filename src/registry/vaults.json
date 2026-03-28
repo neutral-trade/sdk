@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 74,
+    "name": "Volatility Alpha",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "4QBTzqUbn1crLg2PDUGt8abJfqHjeuZkjNLjCCit69ui",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 73,
     "name": "Great Debasement",
     "type": "Bundle",
