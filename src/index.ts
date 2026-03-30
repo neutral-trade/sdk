@@ -37,6 +37,7 @@ export {
   VaultType,
 } from './types'
 
+export { estimatePendingBundleFeeToken } from './utils/bundle'
 // Utils (for advanced users)
 export {
   deriveOraclePDA,

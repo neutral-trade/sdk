@@ -20,6 +20,9 @@ export interface VaultBalanceData {
   /** Total profit share fee paid by the user */
   feesPaid?: number
   pendingProfitShareFee?: number
+  /** Unpaid / accrued fees in deposit token; null if not applicable. Bundle: mgmt+perf estimate; Drift: pending profit share. */
+  pendingFee: number | null
+  pendingFeeUsd: number | null
   spotPrice: number
   /** User's vault shares (raw number, not divided by decimals) */
   vaultShares?: number

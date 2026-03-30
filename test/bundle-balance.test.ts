@@ -5,6 +5,7 @@ import { SupportedToken } from '../src/types/tokens'
 import {
   calculateBundleUserBalance,
   calculateOnChainPps,
+  estimatePendingBundleFeeToken,
   getZeroBundleBalance,
 } from '../src/utils/bundle'
 
@@ -22,6 +23,8 @@ describe('bundle Balance Calculations', () => {
       expect(result.pendingDeposit).toBe(0)
       expect(result.highWaterMark).toBe(0)
       expect(result.feesPaid).toBe(0)
+      expect(result.pendingFee).toBe(0)
+      expect(result.pendingFeeUsd).toBe(0)
       expect(result.netDeposit).toBe(0)
       expect(result.asset).toBe(SupportedToken.USDC)
       expect(result.spotPrice).toBe(1) // default spot price
@@ -119,12 +122,14 @@ describe('bundle Balance Calculations', () => {
       pendingDeposit: string,
       totalFeeCharged: string,
       hwmPerShare: string,
+      lastManagementFeeTimestamp = '0',
     ): UserBundleAccount => ({
       shares: new BN(shares),
       netDeposits: new BN(netDeposits),
       pendingDeposit: new BN(pendingDeposit),
       totalFeeCharged: new BN(totalFeeCharged),
       hwmPerShare: new BN(hwmPerShare),
+      lastManagementFeeTimestamp: new BN(lastManagementFeeTimestamp),
     }) as unknown as UserBundleAccount
 
     it('should calculate user balance correctly', () => {
@@ -153,6 +158,8 @@ describe('bundle Balance Calculations', () => {
       expect(result.balanceUsd).toBe(1000) // spotPrice = 1
       expect(result.netDeposit).toBe(900)
       expect(result.netEarnings).toBe(100) // 1000 - 900 = 100
+      expect(result.pendingFee).toBe(0)
+      expect(result.pendingFeeUsd).toBe(0)
       expect(result.asset).toBe(SupportedToken.USDC)
     })
 
@@ -325,6 +332,38 @@ describe('bundle Balance Calculations', () => {
       // PPS = (9,000 + 1,000) / 10,000 = 1.0
       // User balance = 1,000 shares * 1.0 = 1,000 USDC
       expect(result.balanceToken).toBe(1000)
+    })
+
+    it('should estimate management pending fee after one year at 100 bps', () => {
+      const oracleData = createMockOracleData('10000000000')
+      const bundleData = {
+        bundleUnderlyingBalance: new BN('0'),
+        totalShares: new BN('10000000000'),
+        assetPrecision: new BN('1000000'),
+        managementFeeBps: 100,
+        performanceFee: 0,
+      } as unknown as BundleAccount
+
+      const year = 31536000
+      const nowUnix = 2_000_000_000
+      const userBundle = createMockUserBundle(
+        '1000000000',
+        '900000000',
+        '0',
+        '0',
+        '1000000',
+        String(nowUnix - year),
+      )
+
+      const pending = estimatePendingBundleFeeToken({
+        oracleData,
+        bundleData,
+        userBundle,
+        assetDecimals: 6,
+        nowUnixSeconds: nowUnix,
+      })
+
+      expect(pending).toBeCloseTo(10, 5)
     })
   })
 })

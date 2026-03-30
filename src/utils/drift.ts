@@ -52,6 +52,8 @@ export function getZeroDriftBalance(asset: SupportedToken): VaultBalanceData {
     feesPaid: 0,
     highWaterMark: 0,
     pendingProfitShareFee: 0,
+    pendingFee: 0,
+    pendingFeeUsd: 0,
     requestWithdrawToken: 0,
     asset,
   }
@@ -130,7 +132,7 @@ export async function calculateDriftVaultBalance({
     balanceToken,
   })
 
-  const netEarnings = totalEarnings - pendingProfitShareFee
+  const netEarnings = totalEarnings
   const totalDeposit = balanceToken + requestWithdrawToken
 
   return {
@@ -147,6 +149,8 @@ export async function calculateDriftVaultBalance({
     feesPaid: profitShareFeePaid,
     highWaterMark,
     pendingProfitShareFee,
+    pendingFee: pendingProfitShareFee,
+    pendingFeeUsd: pendingProfitShareFee * spotPrice,
     asset,
   }
 }

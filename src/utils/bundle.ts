@@ -15,6 +15,91 @@ import { BundleProgramId } from '../constants/programs'
 import { tokens } from '../types'
 import { deriveOraclePDA, deriveUserPDA } from './pda'
 
+const SECONDS_PER_YEAR = 365n * 24n * 60n * 60n
+
+function bnToBigInt(v: { toString: () => string } | null | undefined): bigint {
+  if (v == null)
+    return 0n
+  return BigInt(v.toString())
+}
+
+interface BundleFeeFields {
+  managementFeeBps?: number
+  performanceFee?: number
+  assetPrecision?: { toString: () => string }
+}
+
+/**
+ * Estimated unpaid bundle fees in deposit token (mgmt + performance), matching on-chain `charge_user_fees`.
+ */
+export function estimatePendingBundleFeeToken({
+  oracleData,
+  bundleData,
+  userBundle,
+  assetDecimals,
+  nowUnixSeconds = Math.floor(Date.now() / 1000),
+}: {
+  oracleData: OracleData
+  bundleData: BundleAccount
+  userBundle: UserBundleAccount
+  assetDecimals: number
+  nowUnixSeconds?: number
+}): number {
+  const userShares = bnToBigInt(userBundle.shares)
+  if (userShares <= 0n)
+    return 0
+
+  const totalShares = bnToBigInt(bundleData.totalShares)
+  const totalAssets
+    = bnToBigInt(oracleData.averageExternalEquity)
+      + bnToBigInt(bundleData.bundleUnderlyingBalance)
+
+  const extra = bundleData as BundleAccount & BundleFeeFields
+  const assetPrec = extra.assetPrecision != null
+    ? BigInt(extra.assetPrecision.toString())
+    : BigInt(10 ** assetDecimals)
+
+  const sharePrice = totalShares > 0n
+    ? (totalAssets * assetPrec) / totalShares
+    : assetPrec
+
+  const managementFeeBps = BigInt(Number(extra.managementFeeBps ?? 0))
+  const performanceFeeBps = BigInt(Number(extra.performanceFee ?? 0))
+
+  const lastMgmtTs = bnToBigInt(userBundle.lastManagementFeeTimestamp)
+  const nowTs = BigInt(nowUnixSeconds)
+
+  let managementFeeShares = 0n
+  if (lastMgmtTs > 0n && managementFeeBps > 0n) {
+    const secondsElapsed = nowTs > lastMgmtTs ? nowTs - lastMgmtTs : 0n
+    if (secondsElapsed > 0n) {
+      const numerator = userShares * secondsElapsed * managementFeeBps
+      const denominator = SECONDS_PER_YEAR * 10000n
+      managementFeeShares = numerator / denominator
+    }
+  }
+
+  const hwmPerShare = bnToBigInt(userBundle.hwmPerShare)
+  let performanceFeeShares = 0n
+  if (performanceFeeBps > 0n && sharePrice > 0n) {
+    const hwmValue = hwmPerShare === 0n ? sharePrice : hwmPerShare
+    if (sharePrice > hwmValue) {
+      const pnlPerShare = sharePrice - hwmValue
+      const numerator = pnlPerShare * userShares * performanceFeeBps
+      const denominator = sharePrice * 10000n
+      performanceFeeShares = numerator / denominator
+    }
+  }
+
+  const totalFeeShares = managementFeeShares + performanceFeeShares
+  if (totalFeeShares === 0n)
+    return 0
+
+  const feeValueRaw = (totalFeeShares * sharePrice) / assetPrec
+  const divisor = 10 ** assetDecimals
+  return Number(feeValueRaw) / divisor
+}
+
 /**
  * Helper function to return zero balance for Bundle vault
  */
@@ -29,6 +114,8 @@ export function getZeroBundleBalance(asset: SupportedToken, spotPrice: number): 
     pendingDeposit: 0,
     highWaterMark: 0,
     feesPaid: 0,
+    pendingFee: 0,
+    pendingFeeUsd: 0,
     spotPrice,
     vaultShares: 0,
     netDeposit: 0,
@@ -93,6 +180,13 @@ export function calculateBundleUserBalance({
   const highWaterMark
     = Math.floor((Number(userBundle.hwmPerShare.toString()) * userSharesNum) / divisor) / divisor
 
+  const pendingFeeToken = estimatePendingBundleFeeToken({
+    oracleData,
+    bundleData,
+    userBundle,
+    assetDecimals,
+  })
+
   return {
     balanceToken: userBalance,
     balanceUsd: userBalance * spotPrice,
@@ -103,6 +197,8 @@ export function calculateBundleUserBalance({
     pendingDeposit,
     highWaterMark: highWaterMark + pendingDeposit,
     feesPaid,
+    pendingFee: pendingFeeToken,
+    pendingFeeUsd: pendingFeeToken * spotPrice,
     spotPrice,
     vaultShares: userSharesNum,
     netDeposit: netDeposits,

@@ -19,6 +19,8 @@ describe('drift Balance Calculations', () => {
       expect(result.feesPaid).toBe(0)
       expect(result.highWaterMark).toBe(0)
       expect(result.pendingProfitShareFee).toBe(0)
+      expect(result.pendingFee).toBe(0)
+      expect(result.pendingFeeUsd).toBe(0)
       expect(result.requestWithdrawToken).toBe(0)
       expect(result.asset).toBe(SupportedToken.USDC)
     })
@@ -51,6 +53,8 @@ describe('drift Balance Calculations', () => {
         'feesPaid',
         'highWaterMark',
         'pendingProfitShareFee',
+        'pendingFee',
+        'pendingFeeUsd',
         'requestWithdrawToken',
         'asset',
       ]
