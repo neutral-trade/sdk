@@ -7,7 +7,7 @@
  * These are auto-generated from the vault registry
  */
 export enum VaultId {
-  /** Volatility Alpha - PW-USDC-Bundle */
+  /** Multi-Asset Volatility Arbitrage - PW-USDC-Bundle */
   volatility_alpha_pw_usdc_bundle_74 = 74,
   /** Great Debasement */
   great_debasement_73 = 73,

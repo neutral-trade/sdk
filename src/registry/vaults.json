@@ -1,7 +1,7 @@
 [
   {
     "vaultId": 74,
-    "name": "Volatility Alpha",
+    "name": "Multi-Asset Volatility Arbitrage",
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "4QBTzqUbn1crLg2PDUGt8abJfqHjeuZkjNLjCCit69ui",
