@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 75,
+    "name": "AdverseGuard Alpha",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "46gSEJLNTdDFq7DPjH8RbcTmG1gyw4JCKCr1XfuAfYvh",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 74,
     "name": "Multi-Asset Volatility Arbitrage",
     "type": "Bundle",
