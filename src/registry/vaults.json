@@ -10,6 +10,16 @@
     "pointsEnabled": true
   },
   {
+    "vaultId": 76,
+    "name": "Master Bundle",
+    "type": "Bundle",
+    "category": "Fund Of Fund",
+    "vaultAddress": "J7qhMAKnB6G5dvoAN9281ufabajKbyGQxxd2bq6R7fPJ",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 74,
     "name": "Multi-Asset Volatility Arbitrage",
     "type": "Bundle",

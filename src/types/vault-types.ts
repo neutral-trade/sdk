@@ -1,16 +1,8 @@
 import type { Token } from './tokens'
 import { z } from 'zod'
-import {
-  SupportedChain,
-  SupportedToken,
-  tokens,
-} from './tokens'
+import { SupportedChain, SupportedToken, tokens } from './tokens'
 
-export {
-  SupportedChain,
-  SupportedToken,
-  tokens,
-}
+export { SupportedChain, SupportedToken, tokens }
 export type { Token }
 
 export enum VaultType {
@@ -29,6 +21,7 @@ export enum VaultCategory {
   privateCredit = 'Private Credit',
   airdropFarming = 'Airdrop Farming',
   yieldEnhancement = 'Yield Enhancement',
+  fundOfFund = 'Fund Of Fund',
 }
 
 // =============================================================================
@@ -72,8 +65,9 @@ export const VaultRegistryEntrySchema = z.object({
 })
 
 /** Schema for validating array of registry entries */
-export const VaultRegistryArraySchema = z.array(VaultRegistryEntrySchema).superRefine(
-  (vaults, ctx) => {
+export const VaultRegistryArraySchema = z
+  .array(VaultRegistryEntrySchema)
+  .superRefine((vaults, ctx) => {
     const seen = new Set<number>()
     for (const vault of vaults) {
       if (seen.has(vault.vaultId)) {
@@ -84,8 +78,7 @@ export const VaultRegistryArraySchema = z.array(VaultRegistryEntrySchema).superR
       }
       seen.add(vault.vaultId)
     }
-  },
-)
+  })
 
 /** Vault registry as a record keyed by vaultId */
 export type VaultRegistry = Record<number, VaultRegistryEntry>
