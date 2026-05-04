@@ -135,7 +135,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 63,
@@ -147,7 +147,7 @@
     "depositToken": "USDC",
     "pfee": 0.1,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 62,
@@ -159,7 +159,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 61,
@@ -192,7 +192,7 @@
     "depositToken": "USDC",
     "pfee": 0.25,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 58,
@@ -215,7 +215,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 56,
@@ -322,7 +322,7 @@
     "depositToken": "USDC",
     "pfee": 0.15,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 45,
@@ -431,7 +431,7 @@
     "depositToken": "JLP",
     "pfee": 0,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 35,
@@ -454,7 +454,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 33,
@@ -466,7 +466,7 @@
     "depositToken": "USDC",
     "pfee": 0.25,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 32,
@@ -478,7 +478,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 31,
@@ -501,7 +501,7 @@
     "depositToken": "USDC",
     "pfee": 0.1,
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 29,
@@ -513,7 +513,7 @@
     "depositToken": "USDC",
     "pfee": 0.25,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 28,
@@ -547,7 +547,7 @@
     "depositToken": "WBTC",
     "pfee": 0.2,
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 25,
@@ -559,7 +559,7 @@
     "depositToken": "USDC",
     "pfee": 0.25,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 24,
@@ -582,7 +582,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 22,
@@ -660,7 +660,7 @@
     "depositToken": "USDC",
     "pfee": 0.25,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 15,
@@ -738,7 +738,7 @@
     "depositToken": "USDC",
     "pfee": 0.2,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 8,
@@ -770,7 +770,7 @@
     "depositToken": "WETH",
     "pfee": 0.2,
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 5,
@@ -793,7 +793,7 @@
     "depositToken": "USDC",
     "pfee": 0.25,
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 3,
@@ -804,7 +804,7 @@
     "depositToken": "WBTC",
     "pfee": 0.2,
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 2,
@@ -826,7 +826,7 @@
     "depositToken": "SOL",
     "pfee": 0.2,
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 0,
