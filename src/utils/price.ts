@@ -80,7 +80,6 @@ export async function fetchPricesFromPyth(
 
 /**
  * Initialize price map by fetching from Pyth Network first, then using fallback prices for any missing
- * @param vaults - Vault configurations to determine which tokens need prices
  * @param fallbackPrices - Optional fallback prices to use if Pyth fetch fails or returns incomplete data
  */
 export async function initializePrices(

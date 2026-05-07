@@ -9,8 +9,8 @@
 export enum VaultId {
   /** AdverseGuard Alpha */
   adverseguard_alpha_75 = 75,
-  /** NT-Master-USDC-Bundle */
-  nt_master_usdc_bundle_76 = 76,
+  /** Master Bundle */
+  master_bundle_76 = 76,
   /** Multi-Asset Volatility Arbitrage */
   multi_asset_volatility_arbitrage_74 = 74,
   /** Great Debasement */

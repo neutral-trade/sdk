@@ -1,7 +1,13 @@
+export {
+  createAnchorProviderV29,
+  createAnchorProviderV32,
+  createConnection,
+  createDummyWallet,
+} from './constants/client'
+
 export { getPointsVaults } from './constants/points-vaults'
 
 export type { PointsVaultEntry } from './constants/points-vaults'
-
 // Constants
 export {
   BundleProgramId,
@@ -11,7 +17,13 @@ export {
 } from './constants/programs'
 // Auto-generated vault IDs (for backward compatibility)
 export { VaultId } from './constants/vault-ids'
-export { getBundleProgramId, getDriftProgramId, getVaultByAddress, getVaultById, isValidVaultAddress, vaults } from './constants/vaults'
+export {
+  getBundleProgramId,
+  getVaultByAddress,
+  getVaultById,
+  isValidVaultAddress,
+  vaults,
+} from './constants/vaults'
 
 // Main class
 export { NeutralTrade } from './NeutralTrade'

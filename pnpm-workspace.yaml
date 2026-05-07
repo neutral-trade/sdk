@@ -21,10 +21,9 @@ overrides:
 catalog:
   '@coral-xyz/anchor': 0.29.0
   '@coral-xyz/anchor-32': npm:@coral-xyz/anchor@0.32.0
-  '@drift-labs/sdk': 2.155.0-beta.5
-  '@drift-labs/vaults-sdk': 0.9.264
   '@solana/web3.js': ^1.98.4
   '@types/bn.js': ^5.2.0
+  baseline-browser-mapping: ^2.10.27
   bn.js: ^5.2.3
   dotenv: ^17.2.3
   typedoc: ^0.28.16

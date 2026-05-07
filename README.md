@@ -4,9 +4,13 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 
-TypeScript SDK for [Neutral Trade](https://neutral.trade) vaults.
+TypeScript SDK for [Neutral Trade](https://neutral.trade) **Bundle** vaults (on-chain reads, balances, registry).
 
 📚 **[Documentation](https://sdk.neutral.trade/)**
+
+## Drift vault balances (legacy)
+
+This package **does not** depend on `@drift-labs/*`. The public registry may still list historical Drift vault metadata, but **`NeutralTrade.getUserBalanceByVaultIds` only returns Bundle vaults**. Drift depositor balances are outside this package’s scope.
 
 ## Installation
 
@@ -24,7 +28,7 @@ pnpm add @neutral-trade/sdk
 bun add @neutral-trade/sdk
 ```
 
-All dependencies are bundled with the SDK, so no additional peer dependencies are required.
+Runtime dependencies are declared normally (Anchor, Solana web3, etc.); consumers should not need extra setup for Bundle flows.
 
 ## Quick Start
 
@@ -36,33 +40,28 @@ const sdk = await NeutralTrade.create({
   rpcUrl: 'YOUR_RPC_URL_HERE'
 })
 
-// Get user balance for specific vaults
+// Get user balance for Bundle vaults only
 const balances = await sdk.getUserBalanceByVaultIds({
-  vaultIds: [VaultId.sol_super_staking_1, VaultId.btc_super_staking_3],
+  vaultIds: [VaultId.hyperliquid_funding_arb_48, VaultId.alp_delta_neutral_49],
   userAddress: 'YOUR_WALLET_ADDRESS'
 })
 
 console.log(balances)
 ```
 
-## Available Vaults
+## Vault registry
 
-The SDK supports both **Drift** and **Bundle** vault types. Use the `VaultId` enum to reference vaults:
+Built-in configs include multiple vault **types** in metadata (`VaultType` may still include `Drift` for historical entries). **Balance queries** in this package apply only to **`VaultType.Bundle`** rows.
 
 ```typescript
 import { VaultId } from '@neutral-trade/sdk'
 
-// Drift Vaults
-VaultId.sol_super_staking_1 // SOL Super Staking
-VaultId.btc_super_staking_3 // BTC Super Staking
-VaultId.jlp_delta_neutral_vault_1_0 // JLP Delta Neutral (vault-1)
-
-// Bundle Vaults
+// Examples — Bundle vaults (balances supported here)
 VaultId.hyperliquid_funding_arb_48 // Hyperliquid Funding Arb
 VaultId.alp_delta_neutral_49 // ALP Delta Neutral
 ```
 
-See the [documentation](https://sdk.neutral.trade) for the complete list of available vaults.
+See the [documentation](https://sdk.neutral.trade) for the complete list of vault IDs.
 
 ## Configuration Registry
 

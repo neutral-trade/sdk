@@ -1,7 +1,7 @@
 {
   "name": "@neutral-trade/sdk",
   "type": "module",
-  "version": "0.1.21",
+  "version": "0.2.0",
   "packageManager": "pnpm@10.25.0",
   "description": "SDK for Neutral Trade vaults",
   "license": "MIT",
@@ -41,8 +41,6 @@
   "dependencies": {
     "@coral-xyz/anchor": "catalog:",
     "@coral-xyz/anchor-32": "catalog:",
-    "@drift-labs/sdk": "catalog:",
-    "@drift-labs/vaults-sdk": "catalog:",
     "@solana/web3.js": "catalog:",
     "@types/bn.js": "catalog:",
     "bn.js": "catalog:",
@@ -54,9 +52,9 @@
     "@antfu/utils": "catalog:inlined",
     "@coral-xyz/anchor": "catalog:",
     "@coral-xyz/anchor-32": "catalog:",
-    "@drift-labs/sdk": "catalog:",
     "@solana/web3.js": "catalog:",
     "@types/node": "catalog:types",
+    "baseline-browser-mapping": "catalog:",
     "bumpp": "catalog:cli",
     "dotenv": "catalog:",
     "eslint": "catalog:cli",
@@ -78,6 +76,6 @@
     "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "*.{js,cjs,mjs,ts,mts,cts,tsx,jsx}": "eslint --fix"
   }
 }

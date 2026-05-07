@@ -1,57 +1,54 @@
 /* eslint-disable no-console */
 import process from 'node:process'
-import { NeutralTrade, vaults } from '../src/index'
+import { NeutralTrade, VaultId, vaults, VaultType } from '../src/index'
 import 'dotenv/config'
 /**
- * Example: Get user balance for one or more vaults
+ * Example: Get user balance for one or more Bundle vaults
  *
  * This example demonstrates how to:
  * 1. Initialize the NeutralTrade SDK
- * 2. Get user balance for specific vaults
+ * 2. Get user balance for specific Bundle vaults
  * 3. Display the balance information
+ *
+ * Note: Drift vault balances are not available from @neutral-trade/sdk.
  */
 
 async function main(): Promise<void> {
-  // Initialize the SDK with your RPC URL
-  // You can use any Solana RPC endpoint (e.g., Helius, QuickNode, public RPC)
   const rpcUrl = 'YOUR_RPC_URL_HERE'
   console.log(rpcUrl)
   console.log('Initializing NeutralTrade SDK...')
   const sdk = await NeutralTrade.create({ rpcUrl })
   console.log('SDK initialized successfully!\n')
 
-  // Replace with your user's Solana wallet address
   const userAddress = 'YOUR_WALLET_ADDRESS_HERE'
 
-  // Example 1: Get balance for a single Drift vault (vaultId: 1 = SOL Super Staking)
-  console.log('Example 1: Getting balance for a single Drift vault (SOL Super Staking)...')
+  console.log('Example 1: Single Bundle vault (Hyperliquid Funding Arb)...')
   const singleVaultBalance = await sdk.getUserBalanceByVaultIds({
-    vaultIds: [1], // SOL Super Staking
+    vaultIds: [VaultId.hyperliquid_funding_arb_48],
     userAddress,
   })
-
   console.log('Single Vault Balance:', JSON.stringify(singleVaultBalance, null, 2))
   console.log()
 
-  // Example 2: Get balance for a single Bundle vault (vaultId: 48 = Hyperliquid Funding Arb)
-  console.log('Example 2: Getting balance for a single Bundle vault (Hyperliquid Funding Arb)...')
+  console.log('Example 2: Another Bundle vault (ALP Delta Neutral)...')
   const bundleVaultBalance = await sdk.getUserBalanceByVaultIds({
-    vaultIds: [48], // Hyperliquid Funding Arb
+    vaultIds: [VaultId.alp_delta_neutral_49],
     userAddress,
   })
-
   console.log('Bundle Vault Balance:', JSON.stringify(bundleVaultBalance, null, 2))
   console.log()
 
-  // Example 3: Get balance for multiple vaults (both Drift and Bundle)
-  console.log('Example 3: Getting balance for multiple vaults...')
-  const allVaultIds = Object.keys(vaults).map(Number)
+  console.log('Example 3: All Bundle vault IDs from registry...')
+  const bundleVaultIds = Object.values(vaults)
+    .filter(v => v.type === VaultType.Bundle)
+    .map(v => v.vaultId)
+
   const multipleVaultsBalance = await sdk.getUserBalanceByVaultIds({
-    vaultIds: allVaultIds,
+    vaultIds: bundleVaultIds,
     userAddress,
   })
 
-  console.log('Multiple Vaults Balance:')
+  console.log('Bundle vault balances:')
   for (const [vaultId, balance] of Object.entries(multipleVaultsBalance)) {
     if (balance) {
       console.log(`\n${vaultId}:`)
@@ -71,9 +68,7 @@ async function main(): Promise<void> {
   }
 }
 
-// Run the example
 main().catch((error) => {
   console.error('Error:', error)
-
   process.exit(1)
 })

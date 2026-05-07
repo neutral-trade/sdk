@@ -1,5 +1,5 @@
 import type { VaultRegistry, VaultRegistryEntry } from '../types'
-import { VAULT_PROGRAM_ID } from '@drift-labs/vaults-sdk'
+import { PublicKey } from '@solana/web3.js'
 import vaultsJson from '../registry/vaults.json'
 import { VaultRegistryArraySchema, VaultType } from '../types'
 import { BundleProgramId } from './programs'
@@ -7,6 +7,9 @@ import { BundleProgramId } from './programs'
 // =============================================================================
 // PROGRAM ID HELPERS
 // =============================================================================
+export const VAULT_PROGRAM_ID = new PublicKey(
+  'vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR',
+)
 
 /**
  * Get Bundle Program ID for a vault config
