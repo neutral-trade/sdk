@@ -21,6 +21,14 @@ export interface NeutralTradeConfig {
   fallbackPrices?: Partial<Record<SupportedToken, number>>
 }
 
+export interface NeutralTradeCoreContext {
+  connection: Connection
+  bundleProgramV1: Program<NtbundleV1>
+  bundleProgramV2: Program32<NtbundleV2>
+  vaults: VaultRegistry
+  priceMap: Map<SupportedToken, number>
+}
+
 export class NeutralTrade {
   public readonly connection: Connection
   public readonly bundleProgramV1: Program<NtbundleV1>
@@ -30,7 +38,7 @@ export class NeutralTrade {
   /** Price map for deposit tokens */
   public readonly priceMap: Map<SupportedToken, number>
 
-  private constructor(
+  protected constructor(
     connection: Connection,
     bundleProgramV1: Program<NtbundleV1>,
     bundleProgramV2: Program32<NtbundleV2>,
@@ -48,7 +56,7 @@ export class NeutralTrade {
    * Create a new NeutralTrade instance
    * @throws Error if registryUrl is provided but fetch fails or validation fails
    */
-  static async create(config: NeutralTradeConfig): Promise<NeutralTrade> {
+  protected static async initCore(config: NeutralTradeConfig): Promise<NeutralTradeCoreContext> {
     const connection = createConnection(config.rpcUrl)
 
     // Create Anchor providers
@@ -71,7 +79,24 @@ export class NeutralTrade {
     // Initialize prices
     const priceMap = await initializePrices(config.fallbackPrices)
 
-    return new NeutralTrade(connection, bundleProgramV1, bundleProgramV2, vaults, priceMap)
+    return {
+      connection,
+      bundleProgramV1,
+      bundleProgramV2,
+      vaults,
+      priceMap,
+    }
+  }
+
+  static async create(config: NeutralTradeConfig): Promise<NeutralTrade> {
+    const core = await this.initCore(config)
+    return new NeutralTrade(
+      core.connection,
+      core.bundleProgramV1,
+      core.bundleProgramV2,
+      core.vaults,
+      core.priceMap,
+    )
   }
 
   /**

@@ -28,7 +28,7 @@ export {
 // Main class
 export { NeutralTrade } from './NeutralTrade'
 
-export type { NeutralTradeConfig } from './NeutralTrade'
+export type { NeutralTradeConfig, NeutralTradeCoreContext } from './NeutralTrade'
 // Types
 export type {
   BundleAccount,
