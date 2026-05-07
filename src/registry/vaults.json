@@ -1,13 +1,13 @@
 [
   {
-    "vaultId": 75,
-    "name": "AdverseGuard Alpha",
+    "vaultId": 77,
+    "name": "Hyperithm-CTA-USDC-Bundle",
     "type": "Bundle",
-    "category": "Market Neutral",
-    "vaultAddress": "46gSEJLNTdDFq7DPjH8RbcTmG1gyw4JCKCr1XfuAfYvh",
+    "category": "Directional",
+    "vaultAddress": "Ec6uSz5EsffwfXp43pvpz4rf9ttJRFKES4ZSVX7gVVkQ",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 76,
@@ -19,6 +19,17 @@
     "pointsMultiplier": 1,
     "pointsEnabled": false
   },
+  {
+    "vaultId": 75,
+    "name": "AdverseGuard Alpha",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "46gSEJLNTdDFq7DPjH8RbcTmG1gyw4JCKCr1XfuAfYvh",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  
   {
     "vaultId": 74,
     "name": "Multi-Asset Volatility Arbitrage",
