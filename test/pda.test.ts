@@ -1,6 +1,9 @@
 import { PublicKey } from '@solana/web3.js'
 import { describe, expect, it } from 'vitest'
-import { BundleProgramId } from '../src/constants/programs'
+import {
+  DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
+  DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
+} from '../src/constants/programs'
 import {
   deriveOraclePDA,
   deriveUserPDA,
@@ -11,7 +14,7 @@ describe('pda utility functions', () => {
   // Test constants
   const testBundlePDA = new PublicKey('nE1x7KQq2sm3GQrafQUUdBkSPPT52FmiMM9qAS1dgnC')
   const testUserKey = new PublicKey('HhVo8kHYr89vR1B1Z98ipbxXtmAKZ23EfETUbKyyFBtu')
-  const testProgramId = new PublicKey(BundleProgramId.V1)
+  const testProgramId = new PublicKey(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET)
 
   describe('deriveOraclePDA', () => {
     it('should derive a valid Oracle PDA', () => {
@@ -37,7 +40,7 @@ describe('pda utility functions', () => {
     })
 
     it('should return different PDAs for different program IDs', () => {
-      const anotherProgramId = new PublicKey(BundleProgramId.V2)
+      const anotherProgramId = new PublicKey(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
       const pda1 = deriveOraclePDA(testBundlePDA, testProgramId)
       const pda2 = deriveOraclePDA(testBundlePDA, anotherProgramId)
 

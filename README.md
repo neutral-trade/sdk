@@ -67,12 +67,39 @@ See the [documentation](https://sdk.neutral.trade) for the complete list of vaul
 
 The SDK includes built-in vault configurations, but you can also fetch the latest configurations from a remote registry. This is useful if you don't upgrade the SDK package frequently.
 
+Merge order is:
+
+- built-in configs
+- `registry` (local array you provide)
+- `registryUrl` (remote, highest priority)
+
+Use `bundleCluster` to select fixed default Bundle program ID by cluster (`mainnet` or `devnet`).
+If a vault entry includes `bundleProgramId`, that vault-specific program ID is used instead.
+
 ### Registry URLs
 
 - **GitHub Raw**: `https://raw.githubusercontent.com/neutral-trade/sdk/main/src/registry/vaults.json`
 - **jsDelivr CDN**: `https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json`
 
 ### Usage
+
+**Use a local registry array (good for custom/new vaults):**
+
+```typescript
+const sdk = await NeutralTrade.create({
+  rpcUrl: 'YOUR_RPC_URL_HERE',
+  registry: [
+    {
+      vaultId: 9999,
+      name: 'My Custom Vault',
+      type: 'Bundle',
+      category: 'Market Neutral',
+      vaultAddress: 'YOUR_VAULT_ADDRESS',
+      depositToken: 'USDC'
+    }
+  ]
+})
+```
 
 **Use the registry URL if you don't upgrade the SDK frequently:**
 
@@ -85,12 +112,34 @@ const sdk = await NeutralTrade.create({
 
 This ensures you always have the latest vault configurations without needing to update the SDK package.
 
+**Use both local + registry URL (URL overrides local when same vaultId exists):**
+
+```typescript
+const sdk = await NeutralTrade.create({
+  rpcUrl: 'YOUR_RPC_URL_HERE',
+  registry: [
+    // Local overrides built-in
+  ],
+  registryUrl: 'https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json'
+  // Remote overrides local
+})
+```
+
 **Use built-in configs if you upgrade the SDK regularly:**
 
 ```typescript
 const sdk = await NeutralTrade.create({
   rpcUrl: 'YOUR_RPC_URL_HERE'
   // No registryUrl - uses built-in configurations
+})
+```
+
+**Select devnet default Bundle program ID:**
+
+```typescript
+const sdk = await NeutralTrade.create({
+  rpcUrl: 'YOUR_RPC_URL_HERE',
+  bundleCluster: 'devnet'
 })
 ```
 

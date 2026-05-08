@@ -1,50 +1,50 @@
 import type { AnchorProvider } from '@coral-xyz/anchor'
-import type { AnchorProvider as AnchorProvider32 } from '@coral-xyz/anchor-32'
-import type { Connection } from '@solana/web3.js'
-import type { NtbundleV1 } from '../idl/bundle-v1'
-import type { NtbundleV2 } from '../idl/bundle-v2'
+import type { Ntbundle } from '../idl/ntbundle'
 import { Program } from '@coral-xyz/anchor'
-import { Program as Program32 } from '@coral-xyz/anchor-32'
 import { PublicKey } from '@solana/web3.js'
-import idlV1 from '../idl/bundle-v1.json'
-import idlV2 from '../idl/bundle-v2.json'
-import { createAnchorProviderV29, createAnchorProviderV32 } from './client'
+import ntbundleIdl from '../idl/ntbundle.json'
 
-export type BundleProgram = Program<NtbundleV1> | Program32<NtbundleV2>
-export type BundleProvider = AnchorProvider | AnchorProvider32
+export type BundleProgram = Program<Ntbundle>
+export type BundleProvider = AnchorProvider
 
-export enum BundleProgramId {
-  V1 = 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU',
-  V2 = 'BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9',
+export type BundleCluster = 'mainnet' | 'devnet'
+
+function toCustomProgramPublicKey(programId: string): PublicKey {
+  try {
+    return new PublicKey(programId)
+  }
+  catch {
+    throw new Error(`Invalid custom bundle program id: ${programId}`)
+  }
+}
+
+export const DEFAULT_BUNDLE_PROGRAM_ID_MAINNET = 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU'
+// Source: bundle-sc/Anchor.toml [programs.devnet]
+export const DEFAULT_BUNDLE_PROGRAM_ID_DEVNET = '7trSyt7d1ZRnvfGh9JaQZwZMWtfAXMvMwN3UxgMzVFbv'
+
+export const DEFAULT_BUNDLE_PROGRAM_IDS_BY_CLUSTER: Record<BundleCluster, string> = {
+  mainnet: DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
+  devnet: DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
+}
+
+export function getDefaultBundleProgramIdByCluster(cluster: BundleCluster = 'mainnet'): string {
+  return DEFAULT_BUNDLE_PROGRAM_IDS_BY_CLUSTER[cluster]
 }
 
 /**
- * Create Bundle Program instances for a given provider
+ * Create Bundle Program client for a specific program id.
  */
-export function createBundleProgramV1(provider: AnchorProvider): Program<NtbundleV1> {
-  return new Program<NtbundleV1>(
-    idlV1 as NtbundleV1,
-    new PublicKey(BundleProgramId.V1),
+export function createBundleProgramById(
+  provider: AnchorProvider,
+  programId: string,
+): Program<Ntbundle> {
+  const resolved = toCustomProgramPublicKey(programId).toBase58()
+  const idlWithAddress = {
+    ...ntbundleIdl,
+    address: resolved,
+  } as Ntbundle
+  return new Program<Ntbundle>(
+    idlWithAddress,
     provider,
   )
-}
-
-export function createBundleProgramV2(provider: AnchorProvider32): Program32<NtbundleV2> {
-  return new Program32<NtbundleV2>(idlV2 as NtbundleV2, provider)
-}
-
-/**
- * Create both Bundle Program instances from a connection.
- * Use bundleProgramV1 for V1 vaults, bundleProgramV2 for V2 vaults (e.g. vault 69).
- */
-export function createBundlePrograms(connection: Connection): {
-  bundleProgramV1: Program<NtbundleV1>
-  bundleProgramV2: Program32<NtbundleV2>
-} {
-  const providerV29 = createAnchorProviderV29(connection)
-  const providerV32 = createAnchorProviderV32(connection)
-  return {
-    bundleProgramV1: createBundleProgramV1(providerV29),
-    bundleProgramV2: createBundleProgramV2(providerV32),
-  }
 }

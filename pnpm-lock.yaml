@@ -41,10 +41,7 @@ catalogs:
       version: 7.2.7
   default:
     '@coral-xyz/anchor':
-      specifier: 0.29.0
-      version: 0.29.0
-    '@coral-xyz/anchor-32':
-      specifier: npm:@coral-xyz/anchor@0.32.0
+      specifier: 0.32.0
       version: 0.32.0
     '@solana/spl-token':
       specifier: ^0.4.14
@@ -103,10 +100,7 @@ importers:
     dependencies:
       '@coral-xyz/anchor':
         specifier: 'catalog:'
-        version: 0.29.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@coral-xyz/anchor-32':
-        specifier: 'catalog:'
-        version: '@coral-xyz/anchor@0.32.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)'
+        version: 0.32.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@solana/spl-token':
         specifier: 'catalog:'
         version: 0.4.14(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -287,19 +281,9 @@ packages:
     resolution: {integrity: sha512-NhNEku4F3zzUSBtrYz84FzYWm48+9OvmT1Hhnwr6GnPQry2dsEqH/ti/7ASjjpoFTWRnPXrjAIT1qM6Isop+LQ==}
     engines: {node: '>=10'}
 
-  '@coral-xyz/anchor@0.29.0':
-    resolution: {integrity: sha512-eny6QNG0WOwqV0zQ7cs/b1tIuzZGmP7U7EcH+ogt4Gdbl8HDmIYVMh/9aTmYZPaFWjtUaI8qSn73uYEXWfATdA==}
-    engines: {node: '>=11'}
-
   '@coral-xyz/anchor@0.32.0':
     resolution: {integrity: sha512-WFWiwyWcS+g/6h7rTPw/9U08wwRL0eDe+pAT3n7u3LYxuQDA+xr4Ephnll/wzT4fUZ4mn8Tc8X0izYFyTYaMcQ==}
     engines: {node: '>=17'}
-
-  '@coral-xyz/borsh@0.29.0':
-    resolution: {integrity: sha512-s7VFVa3a0oqpkuRloWVPdCK7hMbAMY270geZOGfCnaqexrP5dTIpbEHL33req6IYPPJ0hYa71cdvJ1h6V55/oQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      '@solana/web3.js': ^1.98.4
 
   '@coral-xyz/borsh@0.31.1':
     resolution: {integrity: sha512-9N8AU9F0ubriKfNE3g1WF0/4dtlGXoBN/hd1PvbNBamBNwRgHxH4P+o3Zt7rSEloW1HUs6LfZEchlx9fW7POYw==}
@@ -1529,10 +1513,6 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
-  crypto-hash@1.3.0:
-    resolution: {integrity: sha512-lyAZ0EMyjDkVvz8WOeVnuCPvKVBXcMv1l5SVqO1yC7PzTwrD/pPje/BIRbWhMoPe436U+Y2nD7f5bFx0kt+Sbg==}
-    engines: {node: '>=8'}
-
   cssesc@3.0.0:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
     engines: {node: '>=4'}
@@ -1573,9 +1553,6 @@ packages:
   diff-sequences@27.5.1:
     resolution: {integrity: sha512-k1gCAXAsNgLwEL+Y8Wvl+M6oEFj5bgazfZULpS5CneoPPXRaCCW7dm+q21Ky2VEE5X+VeRDBVg1Pcvvsr4TtNQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
-
-  dot-case@3.0.4:
-    resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
 
   dotenv@17.2.3:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
@@ -2132,9 +2109,6 @@ packages:
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
 
-  lower-case@2.0.2:
-    resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
-
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
 
@@ -2318,9 +2292,6 @@ packages:
   natural-orderby@5.0.0:
     resolution: {integrity: sha512-kKHJhxwpR/Okycz4HhQKKlhWe4ASEfPgkSWNmKFHd7+ezuQlxkA5cM3+XkBPvm1gmHen3w53qsYAv+8GwRrBlg==}
     engines: {node: '>=18'}
-
-  no-case@3.0.4:
-    resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
   node-fetch-native@1.6.6:
     resolution: {integrity: sha512-8Mc2HhqPdlIfedsuZoc3yioPuzp6b+L5jRCRY1QzuWZh2EGJVQrGppC6V6cF0bLdbW0+O2YpqCA25aF/1lvipQ==}
@@ -2595,9 +2566,6 @@ packages:
   slice-ansi@7.1.0:
     resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
     engines: {node: '>=18'}
-
-  snake-case@3.0.4:
-    resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -3077,28 +3045,6 @@ snapshots:
 
   '@coral-xyz/anchor-errors@0.31.1': {}
 
-  '@coral-xyz/anchor@0.29.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@coral-xyz/borsh': 0.29.0(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))
-      '@noble/hashes': 1.8.0
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      bn.js: 5.2.3
-      bs58: 4.0.1
-      buffer-layout: 1.2.2
-      camelcase: 6.3.0
-      cross-fetch: 3.2.0
-      crypto-hash: 1.3.0
-      eventemitter3: 4.0.7
-      pako: 2.1.0
-      snake-case: 3.0.4
-      superstruct: 0.15.5
-      toml: 3.0.0
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-
   '@coral-xyz/anchor@0.32.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor-errors': 0.31.1
@@ -3119,12 +3065,6 @@ snapshots:
       - encoding
       - typescript
       - utf-8-validate
-
-  '@coral-xyz/borsh@0.29.0(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      bn.js: 5.2.3
-      buffer-layout: 1.2.2
 
   '@coral-xyz/borsh@0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))':
     dependencies:
@@ -4257,8 +4197,6 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  crypto-hash@1.3.0: {}
-
   cssesc@3.0.0: {}
 
   debug@4.4.3:
@@ -4284,11 +4222,6 @@ snapshots:
       dequal: 2.0.3
 
   diff-sequences@27.5.1: {}
-
-  dot-case@3.0.4:
-    dependencies:
-      no-case: 3.0.4
-      tslib: 2.8.1
 
   dotenv@17.2.3: {}
 
@@ -4928,10 +4861,6 @@ snapshots:
 
   longest-streak@3.1.0: {}
 
-  lower-case@2.0.2:
-    dependencies:
-      tslib: 2.8.1
-
   lunr@2.3.9: {}
 
   magic-string@0.30.21:
@@ -5298,11 +5227,6 @@ snapshots:
 
   natural-orderby@5.0.0: {}
 
-  no-case@3.0.4:
-    dependencies:
-      lower-case: 2.0.2
-      tslib: 2.8.1
-
   node-fetch-native@1.6.6: {}
 
   node-fetch@2.7.0:
@@ -5585,11 +5509,6 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
-
-  snake-case@3.0.4:
-    dependencies:
-      dot-case: 3.0.4
-      tslib: 2.8.1
 
   source-map-js@1.2.1: {}
 

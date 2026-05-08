@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { BundleProgramId } from '../src/constants/programs'
+import {
+  DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
+  DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
+  getDefaultBundleProgramIdByCluster,
+} from '../src/constants/programs'
 import { getBundleProgramId, vaults } from '../src/constants/vaults'
 import {
   SupportedChain,
@@ -46,19 +50,24 @@ describe('types and Constants Validation', () => {
     })
   })
 
-  describe('bundleProgramId', () => {
-    it('should have V1 and V2 program IDs', () => {
-      expect(BundleProgramId.V1).toBeDefined()
-      expect(BundleProgramId.V2).toBeDefined()
+  describe('bundleProgramId defaults', () => {
+    it('should have mainnet and devnet default program IDs', () => {
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET).toBeDefined()
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET).toBeDefined()
     })
 
     it('should have valid Solana addresses', () => {
-      expect(BundleProgramId.V1.length).toBeGreaterThanOrEqual(32)
-      expect(BundleProgramId.V2.length).toBeGreaterThanOrEqual(32)
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET.length).toBeGreaterThanOrEqual(32)
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET.length).toBeGreaterThanOrEqual(32)
     })
 
-    it('v1 and V2 should be different', () => {
-      expect(BundleProgramId.V1).not.toBe(BundleProgramId.V2)
+    it('mainnet and devnet defaults should be different', () => {
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET).not.toBe(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
+    })
+
+    it('should resolve default by cluster', () => {
+      expect(getDefaultBundleProgramIdByCluster('mainnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET)
+      expect(getDefaultBundleProgramIdByCluster('devnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
     })
   })
 
@@ -118,13 +127,14 @@ describe('types and Constants Validation', () => {
   })
 
   describe('getBundleProgramId function', () => {
-    it('should return V2 for vaultId 69 and 72', () => {
-      expect(getBundleProgramId(vaults[69])).toBe(BundleProgramId.V2)
+    it('should return registry bundleProgramId when present', () => {
+      expect(getBundleProgramId(vaults[69], 'mainnet')).toBe(vaults[69].bundleProgramId)
     })
 
-    it('should return V1 for other bundle vaults', () => {
-      expect(getBundleProgramId(vaults[48])).toBe(BundleProgramId.V1)
-      expect(getBundleProgramId(vaults[60])).toBe(BundleProgramId.V1)
+    it('should return cluster fallback when bundleProgramId is missing', () => {
+      const missingProgramIdVault = { ...vaults[48], bundleProgramId: undefined }
+      expect(getBundleProgramId(missingProgramIdVault, 'mainnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET)
+      expect(getBundleProgramId(missingProgramIdVault, 'devnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
     })
   })
 })

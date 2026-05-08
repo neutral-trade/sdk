@@ -2,7 +2,6 @@
 
 import type { Wallet } from '@coral-xyz/anchor'
 import { AnchorProvider } from '@coral-xyz/anchor'
-import { AnchorProvider as AnchorProvider32 } from '@coral-xyz/anchor-32'
 import { Connection, Keypair } from '@solana/web3.js'
 import { ZERO_ADDRESS } from './addr'
 
@@ -25,18 +24,10 @@ export function createConnection(rpcUrl: string): Connection {
   return new Connection(rpcUrl, 'confirmed')
 }
 
-export function createAnchorProviderV29(connection: Connection, wallet?: Wallet): AnchorProvider {
+export function createAnchorProvider(connection: Connection, wallet?: Wallet): AnchorProvider {
   return new AnchorProvider(
     connection,
     wallet ?? createDummyWallet(),
     AnchorProvider.defaultOptions(),
-  )
-}
-
-export function createAnchorProviderV32(connection: Connection, wallet?: Wallet): AnchorProvider32 {
-  return new AnchorProvider32(
-    connection,
-    wallet ?? createDummyWallet(),
-    AnchorProvider32.defaultOptions(),
   )
 }

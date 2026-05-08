@@ -40,7 +40,7 @@ export interface VaultRegistryEntry {
   pfee?: number
   /** Optional Drift program ID (only for Drift vaults with non-default program) */
   driftProgramId?: string
-  /** Optional Bundle program ID (only for Bundle vaults with non-default V2 program) */
+  /** Optional Bundle program ID. If omitted, SDK uses cluster default bundle program ID. */
   bundleProgramId?: string
   /** Points: eTVL multiplier (default 1) */
   pointsMultiplier?: number

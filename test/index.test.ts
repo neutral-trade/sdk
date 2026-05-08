@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
   // Constants
-  BundleProgramId,
+  DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
+  DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
   // Utilities
   deriveOraclePDA,
   deriveUserPDA,
+  getDefaultBundleProgramIdByCluster,
   getVaultByAddress,
   getVaultById,
   getVaultDepositorAddressSync,
@@ -47,10 +49,10 @@ describe('sDK Exports', () => {
       expect(typeof isValidVaultAddress).toBe('function')
     })
 
-    it('should export BundleProgramId', () => {
-      expect(BundleProgramId).toBeDefined()
-      expect(BundleProgramId.V1).toBeDefined()
-      expect(BundleProgramId.V2).toBeDefined()
+    it('should export default bundle program IDs', () => {
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET).toBeDefined()
+      expect(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET).toBeDefined()
+      expect(getDefaultBundleProgramIdByCluster).toBeDefined()
     })
   })
 

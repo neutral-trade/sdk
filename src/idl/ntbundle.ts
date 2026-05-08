@@ -4,8 +4,8 @@
  * Note that this is only a type helper and is not the actual IDL. The original
  * IDL can be found at `target/idl/ntbundle.json`.
  */
-export interface NtbundleV2 {
-  address: 'BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9'
+export interface Ntbundle {
+  address: 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU'
   metadata: {
     name: 'ntbundle'
     version: '0.1.0'
@@ -942,6 +942,18 @@ export interface NtbundleV2 {
         },
         {
           name: 'oracleUpdateTimeLimit'
+          type: 'i64'
+        },
+        {
+          name: 'withdrawalRedemptionRequestCutoffTs'
+          type: 'i64'
+        },
+        {
+          name: 'withdrawalRedemptionUnlockCurrentCycleTs'
+          type: 'i64'
+        },
+        {
+          name: 'withdrawalRedemptionUnlockNextCycleTs'
           type: 'i64'
         },
         {
@@ -3774,6 +3786,44 @@ export interface NtbundleV2 {
       ]
     },
     {
+      name: 'setWithdrawalRedemptionSchedule'
+      discriminator: [
+        134,
+        108,
+        237,
+        103,
+        185,
+        13,
+        177,
+        105,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'bundleAccount'
+          writable: true
+        },
+      ]
+      args: [
+        {
+          name: 'withdrawalRedemptionRequestCutoffTs'
+          type: 'i64'
+        },
+        {
+          name: 'withdrawalRedemptionUnlockCurrentCycleTs'
+          type: 'i64'
+        },
+        {
+          name: 'withdrawalRedemptionUnlockNextCycleTs'
+          type: 'i64'
+        },
+      ]
+    },
+    {
       name: 'startDistribution'
       discriminator: [
         118,
@@ -4632,6 +4682,19 @@ export interface NtbundleV2 {
       ]
     },
     {
+      name: 'withdrawalRedemptionScheduleSet'
+      discriminator: [
+        245,
+        195,
+        40,
+        76,
+        237,
+        247,
+        150,
+        107,
+      ]
+    },
+    {
       name: 'withdrawalRequested'
       discriminator: [
         75,
@@ -5009,6 +5072,11 @@ export interface NtbundleV2 {
       name: 'invalidOracleUpdateTimeLimit'
       msg: 'Invalid oracle update time limit'
     },
+    {
+      code: 6070
+      name: 'invalidWithdrawalRedemptionSchedule'
+      msg: 'Invalid withdrawal redemption schedule'
+    },
   ]
   types: [
     {
@@ -5035,6 +5103,26 @@ export interface NtbundleV2 {
           {
             name: 'bundleAccountKey'
             type: 'pubkey'
+          },
+          {
+            name: 'netAmount'
+            type: 'u64'
+          },
+          {
+            name: 'sharePrice'
+            type: 'u128'
+          },
+          {
+            name: 'userSharesBefore'
+            type: 'u128'
+          },
+          {
+            name: 'userSharesAfter'
+            type: 'u128'
+          },
+          {
+            name: 'totalShares'
+            type: 'u128'
           },
         ]
       }
@@ -5132,10 +5220,6 @@ export interface NtbundleV2 {
             type: 'u64'
           },
           {
-            name: 'minDepositAmount'
-            type: 'u64'
-          },
-          {
             name: 'withdrawalDelay'
             type: 'u64'
           },
@@ -5166,14 +5250,6 @@ export interface NtbundleV2 {
           {
             name: 'oracleBuffer'
             type: 'u64'
-          },
-          {
-            name: 'oracleUpdateTimeLimit'
-            type: 'i64'
-          },
-          {
-            name: 'oracleMaxAge'
-            type: 'i64'
           },
           {
             name: 'totalShares'
@@ -5212,11 +5288,35 @@ export interface NtbundleV2 {
             type: 'u128'
           },
           {
+            name: 'minDepositAmount'
+            type: 'u64'
+          },
+          {
+            name: 'oracleUpdateTimeLimit'
+            type: 'i64'
+          },
+          {
+            name: 'oracleMaxAge'
+            type: 'i64'
+          },
+          {
+            name: 'withdrawalRedemptionRequestCutoffTs'
+            type: 'i64'
+          },
+          {
+            name: 'withdrawalRedemptionUnlockCurrentCycleTs'
+            type: 'i64'
+          },
+          {
+            name: 'withdrawalRedemptionUnlockNextCycleTs'
+            type: 'i64'
+          },
+          {
             name: 'padding'
             type: {
               array: [
                 'u8',
-                239,
+                207,
               ]
             }
           },
@@ -5490,6 +5590,22 @@ export interface NtbundleV2 {
           {
             name: 'toppingUp'
             type: 'bool'
+          },
+          {
+            name: 'grossAmount'
+            type: 'u64'
+          },
+          {
+            name: 'feeAmount'
+            type: 'u64'
+          },
+          {
+            name: 'netAmount'
+            type: 'u64'
+          },
+          {
+            name: 'assetMint'
+            type: 'pubkey'
           },
         ]
       }
@@ -5836,6 +5952,30 @@ export interface NtbundleV2 {
             name: 'bundleAccountKey'
             type: 'pubkey'
           },
+          {
+            name: 'grossAmount'
+            type: 'u64'
+          },
+          {
+            name: 'sharePrice'
+            type: 'u128'
+          },
+          {
+            name: 'userSharesBefore'
+            type: 'u128'
+          },
+          {
+            name: 'userSharesAfter'
+            type: 'u128'
+          },
+          {
+            name: 'totalSharesBefore'
+            type: 'u128'
+          },
+          {
+            name: 'totalSharesAfter'
+            type: 'u128'
+          },
         ]
       }
     },
@@ -6078,6 +6218,26 @@ export interface NtbundleV2 {
       }
     },
     {
+      name: 'withdrawalRedemptionScheduleSet'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'withdrawalRedemptionRequestCutoffTs'
+            type: 'i64'
+          },
+          {
+            name: 'withdrawalRedemptionUnlockCurrentCycleTs'
+            type: 'i64'
+          },
+          {
+            name: 'withdrawalRedemptionUnlockNextCycleTs'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
       name: 'withdrawalRequested'
       type: {
         kind: 'struct'
@@ -6105,6 +6265,14 @@ export interface NtbundleV2 {
           {
             name: 'bundleAccountKey'
             type: 'pubkey'
+          },
+          {
+            name: 'cooldownEndTimestamp'
+            type: 'i64'
+          },
+          {
+            name: 'estimatedNetAmount'
+            type: 'u64'
           },
         ]
       }

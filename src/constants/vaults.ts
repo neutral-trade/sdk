@@ -1,31 +1,24 @@
 import type { VaultRegistry, VaultRegistryEntry } from '../types'
-import { PublicKey } from '@solana/web3.js'
+import type { BundleCluster } from './programs'
 import vaultsJson from '../registry/vaults.json'
 import { VaultRegistryArraySchema, VaultType } from '../types'
-import { BundleProgramId } from './programs'
-
-// =============================================================================
-// PROGRAM ID HELPERS
-// =============================================================================
-export const VAULT_PROGRAM_ID = new PublicKey(
-  'vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR',
-)
+import { getDefaultBundleProgramIdByCluster } from './programs'
 
 /**
  * Get Bundle Program ID for a vault config
- * Uses registry value if present, otherwise defaults to V1
+ * Uses registry value if present, otherwise falls back to cluster default.
  */
-export function getBundleProgramId(vault: VaultRegistryEntry): BundleProgramId | undefined {
+export function getBundleProgramId(
+  vault: VaultRegistryEntry,
+  cluster: BundleCluster = 'mainnet',
+): string | undefined {
   if (vault.type !== VaultType.Bundle) {
     return undefined
   }
   if (vault.bundleProgramId) {
-    // Return as-is if it's already a valid BundleProgramId
-    if (Object.values(BundleProgramId).includes(vault.bundleProgramId as BundleProgramId)) {
-      return vault.bundleProgramId as BundleProgramId
-    }
+    return vault.bundleProgramId
   }
-  return BundleProgramId.V1
+  return getDefaultBundleProgramIdByCluster(cluster)
 }
 
 /**
@@ -39,7 +32,7 @@ export function getDriftProgramId(vault: VaultRegistryEntry): string | undefined
   if (vault.driftProgramId) {
     return vault.driftProgramId
   }
-  return VAULT_PROGRAM_ID.toBase58()
+  return 'vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR'
 }
 
 // =============================================================================
@@ -55,7 +48,7 @@ export function toVaultConfig(entry: VaultRegistryEntry): VaultRegistryEntry {
   return {
     ...entry,
     driftProgramId: getDriftProgramId(entry),
-    bundleProgramId: getBundleProgramId(entry),
+    bundleProgramId: entry.bundleProgramId,
   }
 }
 

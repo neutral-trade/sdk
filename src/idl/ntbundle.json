@@ -1,5 +1,5 @@
 {
-  "address": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9",
+  "address": "BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU",
   "metadata": {
     "name": "ntbundle",
     "version": "0.1.0",
@@ -936,6 +936,18 @@
         },
         {
           "name": "oracle_update_time_limit",
+          "type": "i64"
+        },
+        {
+          "name": "withdrawal_redemption_request_cutoff_ts",
+          "type": "i64"
+        },
+        {
+          "name": "withdrawal_redemption_unlock_current_cycle_ts",
+          "type": "i64"
+        },
+        {
+          "name": "withdrawal_redemption_unlock_next_cycle_ts",
           "type": "i64"
         },
         {
@@ -3768,6 +3780,44 @@
       ]
     },
     {
+      "name": "set_withdrawal_redemption_schedule",
+      "discriminator": [
+        134,
+        108,
+        237,
+        103,
+        185,
+        13,
+        177,
+        105
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "withdrawal_redemption_request_cutoff_ts",
+          "type": "i64"
+        },
+        {
+          "name": "withdrawal_redemption_unlock_current_cycle_ts",
+          "type": "i64"
+        },
+        {
+          "name": "withdrawal_redemption_unlock_next_cycle_ts",
+          "type": "i64"
+        }
+      ]
+    },
+    {
       "name": "start_distribution",
       "discriminator": [
         118,
@@ -4626,6 +4676,19 @@
       ]
     },
     {
+      "name": "WithdrawalRedemptionScheduleSet",
+      "discriminator": [
+        245,
+        195,
+        40,
+        76,
+        237,
+        247,
+        150,
+        107
+      ]
+    },
+    {
       "name": "WithdrawalRequested",
       "discriminator": [
         75,
@@ -5002,6 +5065,11 @@
       "code": 6069,
       "name": "InvalidOracleUpdateTimeLimit",
       "msg": "Invalid oracle update time limit"
+    },
+    {
+      "code": 6070,
+      "name": "InvalidWithdrawalRedemptionSchedule",
+      "msg": "Invalid withdrawal redemption schedule"
     }
   ],
   "types": [
@@ -5029,6 +5097,26 @@
           {
             "name": "bundle_account_key",
             "type": "pubkey"
+          },
+          {
+            "name": "net_amount",
+            "type": "u64"
+          },
+          {
+            "name": "share_price",
+            "type": "u128"
+          },
+          {
+            "name": "user_shares_before",
+            "type": "u128"
+          },
+          {
+            "name": "user_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "total_shares",
+            "type": "u128"
           }
         ]
       }
@@ -5126,10 +5214,6 @@
             "type": "u64"
           },
           {
-            "name": "min_deposit_amount",
-            "type": "u64"
-          },
-          {
             "name": "withdrawal_delay",
             "type": "u64"
           },
@@ -5160,14 +5244,6 @@
           {
             "name": "oracle_buffer",
             "type": "u64"
-          },
-          {
-            "name": "oracle_update_time_limit",
-            "type": "i64"
-          },
-          {
-            "name": "oracle_max_age",
-            "type": "i64"
           },
           {
             "name": "total_shares",
@@ -5206,11 +5282,35 @@
             "type": "u128"
           },
           {
+            "name": "min_deposit_amount",
+            "type": "u64"
+          },
+          {
+            "name": "oracle_update_time_limit",
+            "type": "i64"
+          },
+          {
+            "name": "oracle_max_age",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawal_redemption_request_cutoff_ts",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawal_redemption_unlock_current_cycle_ts",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawal_redemption_unlock_next_cycle_ts",
+            "type": "i64"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                239
+                207
               ]
             }
           }
@@ -5484,6 +5584,22 @@
           {
             "name": "topping_up",
             "type": "bool"
+          },
+          {
+            "name": "gross_amount",
+            "type": "u64"
+          },
+          {
+            "name": "fee_amount",
+            "type": "u64"
+          },
+          {
+            "name": "net_amount",
+            "type": "u64"
+          },
+          {
+            "name": "asset_mint",
+            "type": "pubkey"
           }
         ]
       }
@@ -5829,6 +5945,30 @@
           {
             "name": "bundle_account_key",
             "type": "pubkey"
+          },
+          {
+            "name": "gross_amount",
+            "type": "u64"
+          },
+          {
+            "name": "share_price",
+            "type": "u128"
+          },
+          {
+            "name": "user_shares_before",
+            "type": "u128"
+          },
+          {
+            "name": "user_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "total_shares_before",
+            "type": "u128"
+          },
+          {
+            "name": "total_shares_after",
+            "type": "u128"
           }
         ]
       }
@@ -6072,6 +6212,26 @@
       }
     },
     {
+      "name": "WithdrawalRedemptionScheduleSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "withdrawal_redemption_request_cutoff_ts",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawal_redemption_unlock_current_cycle_ts",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawal_redemption_unlock_next_cycle_ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "WithdrawalRequested",
       "type": {
         "kind": "struct",
@@ -6099,6 +6259,14 @@
           {
             "name": "bundle_account_key",
             "type": "pubkey"
+          },
+          {
+            "name": "cooldown_end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "estimated_net_amount",
+            "type": "u64"
           }
         ]
       }

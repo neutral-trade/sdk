@@ -1,15 +1,14 @@
 // Bundle deposit / request-withdraw instruction builders (no wallet signing).
 
 import type { Program } from '@coral-xyz/anchor'
-import type { Program as Program32 } from '@coral-xyz/anchor-32'
 import type { TransactionInstruction } from '@solana/web3.js'
-import type { NtbundleV1 } from '../idl/bundle-v1'
-import type { NtbundleV2 } from '../idl/bundle-v2'
+import type { BundleCluster } from '../constants/programs'
+import type { Ntbundle } from '../idl/ntbundle'
+import type { BundleAccount, OracleData, UserBundleAccount } from '../types/bundle-types'
 import type { VaultRegistryEntry } from '../types/vault-types'
-import { BN } from '@coral-xyz/anchor'
 import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js'
-import { BundleProgramId } from '../constants/programs'
+import BN from 'bn.js'
 import { getBundleProgramId } from '../constants/vaults'
 import { VaultType } from '../types/vault-types'
 import { calculateOnChainPps } from './bundle'
@@ -21,8 +20,8 @@ import {
 } from './pda'
 
 export interface BuildBundleDepositInstructionsParams {
-  bundleProgramV1: Program<NtbundleV1>
-  bundleProgramV2: Program32<NtbundleV2>
+  bundleProgram: Program<Ntbundle>
+  bundleCluster?: BundleCluster
   vault: VaultRegistryEntry
   user: PublicKey
   /** UI token amount (multiplied by 10**on-chain decimals inside). */
@@ -31,8 +30,8 @@ export interface BuildBundleDepositInstructionsParams {
 }
 
 export interface BuildBundleRequestWithdrawInstructionParams {
-  bundleProgramV1: Program<NtbundleV1>
-  bundleProgramV2: Program32<NtbundleV2>
+  bundleProgram: Program<Ntbundle>
+  bundleCluster?: BundleCluster
   vault: VaultRegistryEntry
   user: PublicKey
   amount: number
@@ -68,8 +67,8 @@ function assertBundleVault(vault: VaultRegistryEntry): void {
   }
 }
 
-function bundleProgramIdForVault(vault: VaultRegistryEntry): BundleProgramId {
-  const id = getBundleProgramId(vault)
+function bundleProgramIdForVault(vault: VaultRegistryEntry, bundleCluster: BundleCluster = 'mainnet'): string {
+  const id = getBundleProgramId(vault, bundleCluster)
   if (!id) {
     throw new Error(`Vault ${vault.vaultId} has no Bundle program id`)
   }
@@ -80,8 +79,8 @@ function bundleProgramIdForVault(vault: VaultRegistryEntry): BundleProgramId {
  * Optional `initializeBundleDepositor` + `requestDeposit`. Fetches bundle account internally.
  */
 export async function buildBundleDepositInstructions({
-  bundleProgramV1,
-  bundleProgramV2,
+  bundleProgram,
+  bundleCluster = 'mainnet',
   vault,
   user,
   amount,
@@ -89,16 +88,18 @@ export async function buildBundleDepositInstructions({
 }: BuildBundleDepositInstructionsParams): Promise<TransactionInstruction[]> {
   assertBundleVault(vault)
   const bundlePDA = new PublicKey(vault.vaultAddress)
-  const programId = bundleProgramIdForVault(vault)
-  const isV2 = programId === BundleProgramId.V2
+  const programId = bundleProgramIdForVault(vault, bundleCluster)
+  if (programId !== bundleProgram.programId.toBase58()) {
+    throw new Error(
+      `Vault ${vault.vaultId} program id mismatch: vault=${programId}, client=${bundleProgram.programId.toBase58()}`,
+    )
+  }
 
-  const bundleInfo = isV2
-    ? await bundleProgramV2.account.bundle.fetch(bundlePDA)
-    : await bundleProgramV1.account.bundle.fetch(bundlePDA)
+  const bundleInfo = await bundleProgram.account.bundle.fetch(bundlePDA)
 
   const depositAmountBN = new BN(Math.floor(amount * 10 ** bundleInfo.assetDecimals))
 
-  const programPk = isV2 ? bundleProgramV2.programId : bundleProgramV1.programId
+  const programPk = bundleProgram.programId
   const oraclePDA = deriveOraclePDA(bundlePDA, programPk)
   const userPDA = deriveUserPDA(user, bundlePDA, programPk)
   const tempDataPDA = deriveTempDataPDA(bundlePDA, programPk)
@@ -118,66 +119,36 @@ export async function buildBundleDepositInstructions({
   const instructions: TransactionInstruction[] = []
 
   if (needsInit) {
-    const initIx = isV2
-      ? await bundleProgramV2.methods
-          .initializeBundleDepositor()
-          // Anchor 0.32 PartialAccounts omit const-address program ids; cast keeps runtime accounts identical to V1.
-          .accounts({
-            payer: user,
-            authority: user,
-            systemProgram: SystemProgram.programId,
-            bundleAccount: bundlePDA,
-            userBundleAccount: userPDA,
-          } as never)
-          .instruction()
-      : await bundleProgramV1.methods
-          .initializeBundleDepositor()
-          .accounts({
-            payer: user,
-            authority: user,
-            systemProgram: SystemProgram.programId,
-            bundleAccount: bundlePDA,
-            userBundleAccount: userPDA,
-          })
-          .instruction()
+    const initIx = await bundleProgram.methods
+      .initializeBundleDepositor()
+      .accounts({
+        payer: user,
+        authority: user,
+        systemProgram: SystemProgram.programId,
+        bundleAccount: bundlePDA,
+        userBundleAccount: userPDA,
+      } as never)
+      .instruction()
     instructions.push(initIx)
   }
 
-  const depositIx = isV2
-    ? await bundleProgramV2.methods
-        .requestDeposit(depositAmountBN)
-        .accounts({
-          user,
-          userTokenAccount: userTokenAcct,
-          pendingDepositTokenAccount: pendingTokenAcct,
-          treasuryAccount: bundleInfo.treasuryAccount,
-          userBundleAccount: userPDA,
-          assetAddress: bundleInfo.assetAddress,
-          oracleData: oraclePDA,
-          bundleTempData: tempDataPDA,
-          bundleAccount: bundlePDA,
-          pendingBundleAssetAuthority: pendingAuthPDA,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        } as never)
-        .instruction()
-    : await bundleProgramV1.methods
-        .requestDeposit(depositAmountBN)
-        .accounts({
-          user,
-          userTokenAccount: userTokenAcct,
-          pendingDepositTokenAccount: pendingTokenAcct,
-          treasuryAccount: bundleInfo.treasuryAccount,
-          userBundleAccount: userPDA,
-          assetAddress: bundleInfo.assetAddress,
-          oracleData: oraclePDA,
-          bundleTempData: tempDataPDA,
-          bundleAccount: bundlePDA,
-          pendingBundleAssetAuthority: pendingAuthPDA,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        })
-        .instruction()
+  const depositIx = await bundleProgram.methods
+    .requestDeposit(depositAmountBN)
+    .accounts({
+      user,
+      userTokenAccount: userTokenAcct,
+      pendingDepositTokenAccount: pendingTokenAcct,
+      treasuryAccount: bundleInfo.treasuryAccount,
+      userBundleAccount: userPDA,
+      assetAddress: bundleInfo.assetAddress,
+      oracleData: oraclePDA,
+      bundleTempData: tempDataPDA,
+      bundleAccount: bundlePDA,
+      pendingBundleAssetAuthority: pendingAuthPDA,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+    } as never)
+    .instruction()
   instructions.push(depositIx)
   return instructions
 }
@@ -186,33 +157,31 @@ export async function buildBundleDepositInstructions({
  * `requestWithdrawal` only. Fetches bundle, oracle, and user bundle internally.
  */
 export async function buildBundleRequestWithdrawInstruction({
-  bundleProgramV1,
-  bundleProgramV2,
+  bundleProgram,
+  bundleCluster = 'mainnet',
   vault,
   user,
   amount,
 }: BuildBundleRequestWithdrawInstructionParams): Promise<TransactionInstruction> {
   assertBundleVault(vault)
   const bundlePDA = new PublicKey(vault.vaultAddress)
-  const programId = bundleProgramIdForVault(vault)
-  const isV2 = programId === BundleProgramId.V2
-  const programPk = isV2 ? bundleProgramV2.programId : bundleProgramV1.programId
+  const programId = bundleProgramIdForVault(vault, bundleCluster)
+  if (programId !== bundleProgram.programId.toBase58()) {
+    throw new Error(
+      `Vault ${vault.vaultId} program id mismatch: vault=${programId}, client=${bundleProgram.programId.toBase58()}`,
+    )
+  }
+  const programPk = bundleProgram.programId
 
   const oraclePDA = deriveOraclePDA(bundlePDA, programPk)
   const userPDA = deriveUserPDA(user, bundlePDA, programPk)
   const tempDataPDA = deriveTempDataPDA(bundlePDA, programPk)
 
   const [bundleAccount, oracleData, userBundle] = await Promise.all([
-    isV2
-      ? bundleProgramV2.account.bundle.fetch(bundlePDA)
-      : bundleProgramV1.account.bundle.fetch(bundlePDA),
-    isV2
-      ? bundleProgramV2.account.oracleData.fetch(oraclePDA)
-      : bundleProgramV1.account.oracleData.fetch(oraclePDA),
-    isV2
-      ? bundleProgramV2.account.userBundleAccount.fetch(userPDA)
-      : bundleProgramV1.account.userBundleAccount.fetch(userPDA),
-  ])
+    bundleProgram.account.bundle.fetch(bundlePDA),
+    bundleProgram.account.oracleData.fetch(oraclePDA),
+    bundleProgram.account.userBundleAccount.fetch(userPDA),
+  ]) as [BundleAccount, OracleData, UserBundleAccount]
 
   const pps = calculateOnChainPps({
     oracleAverageExternalEquity: BigInt(oracleData.averageExternalEquity.toString()),
@@ -232,31 +201,17 @@ export async function buildBundleRequestWithdrawInstruction({
     userShares: new BN(userBundle.shares.toString()),
   })
 
-  return isV2
-    ? await bundleProgramV2.methods
-        .requestWithdrawal(sharesAmount)
-        .accounts({
-          user,
-          userBundleAccount: userPDA,
-          bundleAccount: bundlePDA,
-          oracleData: oraclePDA,
-          bundleTempData: tempDataPDA,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-          rent: SYSVAR_RENT_PUBKEY,
-        } as never)
-        .instruction()
-    : await bundleProgramV1.methods
-        .requestWithdrawal(sharesAmount)
-        .accounts({
-          user,
-          userBundleAccount: userPDA,
-          bundleAccount: bundlePDA,
-          oracleData: oraclePDA,
-          bundleTempData: tempDataPDA,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-          rent: SYSVAR_RENT_PUBKEY,
-        })
-        .instruction()
+  return await bundleProgram.methods
+    .requestWithdrawal(sharesAmount)
+    .accounts({
+      user,
+      userBundleAccount: userPDA,
+      bundleAccount: bundlePDA,
+      oracleData: oraclePDA,
+      bundleTempData: tempDataPDA,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+      rent: SYSVAR_RENT_PUBKEY,
+    } as never)
+    .instruction()
 }

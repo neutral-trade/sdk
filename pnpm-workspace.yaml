@@ -19,8 +19,7 @@ overrides:
   nanoid: '>=3.3.8'
 
 catalog:
-  '@coral-xyz/anchor': 0.29.0
-  '@coral-xyz/anchor-32': npm:@coral-xyz/anchor@0.32.0
+  '@coral-xyz/anchor': 0.32.0
   '@solana/spl-token': ^0.4.14
   '@solana/web3.js': ^1.98.4
   '@types/bn.js': ^5.2.0

@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "catalog:",
-    "@coral-xyz/anchor-32": "catalog:",
     "@solana/spl-token": "catalog:",
     "@solana/web3.js": "catalog:",
     "@types/bn.js": "catalog:",
@@ -52,7 +51,6 @@
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
     "@coral-xyz/anchor": "catalog:",
-    "@coral-xyz/anchor-32": "catalog:",
     "@solana/web3.js": "catalog:",
     "@types/node": "catalog:types",
     "baseline-browser-mapping": "catalog:",

@@ -1,15 +1,17 @@
 // NeutralTrade - Main SDK class (Bundle vault balances only; Drift is not included in this package.)
 
 import type { Program } from '@coral-xyz/anchor'
-import type { Program as Program32 } from '@coral-xyz/anchor-32'
 import type { Connection, TransactionInstruction } from '@solana/web3.js'
-import type { NtbundleV1 } from './idl/bundle-v1'
-import type { NtbundleV2 } from './idl/bundle-v2'
-import type { SupportedToken, UserBalanceResult, VaultRegistry } from './types'
+import type { BundleCluster } from './constants/programs'
+import type { Ntbundle } from './idl/ntbundle'
+import type { SupportedToken, UserBalanceResult, VaultRegistry, VaultRegistryEntry } from './types'
 import { PublicKey } from '@solana/web3.js'
-import { createAnchorProviderV29, createAnchorProviderV32, createConnection } from './constants/client'
-import { createBundleProgramV1, createBundleProgramV2 } from './constants/programs'
-import { vaults as builtInVaults, toVaultRegistry } from './constants/vaults'
+import { createAnchorProvider, createConnection } from './constants/client'
+import {
+
+  createBundleProgramById,
+} from './constants/programs'
+import { vaults as builtInVaults, getBundleProgramId, toVaultRegistry } from './constants/vaults'
 import { VaultRegistryArraySchema, VaultType } from './types'
 import { getBundleBalances } from './utils/bundle'
 import {
@@ -20,7 +22,13 @@ import { initializePrices } from './utils/price'
 
 export interface NeutralTradeConfig {
   rpcUrl: string
-  /** Optional registry URL to fetch vault configurations from. If provided, fetched vaults will override built-in vaults. */
+  /** Bundle program cluster selector. Defaults to 'mainnet'. */
+  bundleCluster?: BundleCluster
+  /** If true, include built-in vault registry entries only when no custom registry source is provided. Defaults to true. */
+  includeBuiltInVaults?: boolean
+  /** Optional local registry entries. Applied after built-in configs and before registryUrl (if provided). */
+  registry?: VaultRegistryEntry[]
+  /** Optional registry URL to fetch vault configurations from. If provided, fetched vaults override merged built-in/local entries. */
   registryUrl?: string
   /** Optional fallback prices map. Prices are fetched from Pyth Network first; fallback is used only if Pyth returns incomplete data */
   fallbackPrices?: Partial<Record<SupportedToken, number>>
@@ -28,57 +36,70 @@ export interface NeutralTradeConfig {
 
 export interface NeutralTradeCoreContext {
   connection: Connection
-  bundleProgramV1: Program<NtbundleV1>
-  bundleProgramV2: Program32<NtbundleV2>
+  bundlePrograms: Record<string, Program<Ntbundle>>
   vaults: VaultRegistry
   priceMap: Map<SupportedToken, number>
 }
 
 export class NeutralTrade {
   public readonly connection: Connection
-  public readonly bundleProgramV1: Program<NtbundleV1>
-  public readonly bundleProgramV2: Program32<NtbundleV2>
-  /** Vault configurations (built-in merged with remote if registryUrl was provided) */
+  public readonly bundlePrograms: Record<string, Program<Ntbundle>>
+  public readonly bundleCluster: BundleCluster
+  /** Vault configurations after merge order: built-in < local registry < registryUrl */
   public readonly vaults: VaultRegistry
   /** Price map for deposit tokens */
   public readonly priceMap: Map<SupportedToken, number>
 
   protected constructor(
     connection: Connection,
-    bundleProgramV1: Program<NtbundleV1>,
-    bundleProgramV2: Program32<NtbundleV2>,
+    bundlePrograms: Record<string, Program<Ntbundle>>,
+    bundleCluster: BundleCluster,
     vaults: VaultRegistry,
     priceMap: Map<SupportedToken, number>,
   ) {
     this.connection = connection
-    this.bundleProgramV1 = bundleProgramV1
-    this.bundleProgramV2 = bundleProgramV2
+    this.bundlePrograms = bundlePrograms
+    this.bundleCluster = bundleCluster
     this.vaults = vaults
     this.priceMap = priceMap
   }
 
   /**
    * Create a new NeutralTrade instance
-   * @throws Error if registryUrl is provided but fetch fails or validation fails
+   * Merge order: built-in (when allowed) < local registry < registryUrl
+   * @throws Error if registry or registryUrl validation fails (or fetch fails for registryUrl)
    */
   protected static async initCore(config: NeutralTradeConfig): Promise<NeutralTradeCoreContext> {
     const connection = createConnection(config.rpcUrl)
 
-    // Create Anchor providers
-    const providerV29 = createAnchorProviderV29(connection)
-    const providerV32 = createAnchorProviderV32(connection)
+    const provider = createAnchorProvider(connection)
 
-    // Create Bundle programs
-    const bundleProgramV1 = createBundleProgramV1(providerV29)
-    const bundleProgramV2 = createBundleProgramV2(providerV32)
+    const cluster = config.bundleCluster ?? 'mainnet'
 
-    // Fetch and merge vaults from registry if URL is provided
-    let vaults: VaultRegistry = { ...builtInVaults }
+    const shouldUseBuiltInVaults = config.includeBuiltInVaults !== false
+    let vaults: VaultRegistry = shouldUseBuiltInVaults ? { ...builtInVaults } : {}
+
+    if (config.registry) {
+      const localVaults = NeutralTrade.parseVaultRegistryEntries(config.registry, 'registry')
+      vaults = { ...vaults, ...localVaults }
+    }
 
     if (config.registryUrl) {
       const remoteVaults = await NeutralTrade.fetchVaultsFromRegistry(config.registryUrl)
-      // Remote vaults override built-in vaults
-      vaults = { ...builtInVaults, ...remoteVaults }
+      vaults = { ...vaults, ...remoteVaults }
+    }
+
+    const programIds = new Set<string>()
+    for (const vault of Object.values(vaults)) {
+      const programId = getBundleProgramId(vault, cluster)
+      if (programId) {
+        programIds.add(programId)
+      }
+    }
+
+    const bundlePrograms: Record<string, Program<Ntbundle>> = {}
+    for (const programId of programIds) {
+      bundlePrograms[programId] = createBundleProgramById(provider, programId)
     }
 
     // Initialize prices
@@ -86,8 +107,7 @@ export class NeutralTrade {
 
     return {
       connection,
-      bundleProgramV1,
-      bundleProgramV2,
+      bundlePrograms,
       vaults,
       priceMap,
     }
@@ -97,11 +117,36 @@ export class NeutralTrade {
     const core = await this.initCore(config)
     return new NeutralTrade(
       core.connection,
-      core.bundleProgramV1,
-      core.bundleProgramV2,
+      core.bundlePrograms,
+      config.bundleCluster ?? 'mainnet',
       core.vaults,
       core.priceMap,
     )
+  }
+
+  private getBundleProgramForVault(vault: VaultRegistryEntry): Program<Ntbundle> {
+    const programId = getBundleProgramId(vault, this.bundleCluster)
+    if (!programId) {
+      throw new Error(`Vault ${vault.vaultId} has no Bundle program id`)
+    }
+    const bundleProgram = this.bundlePrograms[programId]
+    if (!bundleProgram) {
+      throw new Error(
+        `Bundle program client not initialized for vault ${vault.vaultId}: ${programId}. Please add it to bundlePrograms config or registry.`,
+      )
+    }
+    return bundleProgram
+  }
+
+  private static parseVaultRegistryEntries(
+    entries: unknown,
+    sourceLabel: string,
+  ): VaultRegistry {
+    const parseResult = VaultRegistryArraySchema.safeParse(entries)
+    if (!parseResult.success) {
+      throw new Error(`Invalid ${sourceLabel} data: ${parseResult.error.message}`)
+    }
+    return toVaultRegistry(parseResult.data)
   }
 
   /**
@@ -120,15 +165,7 @@ export class NeutralTrade {
 
     const data = await response.json()
 
-    // Validate with zod schema (expects array format)
-    const parseResult = VaultRegistryArraySchema.safeParse(data)
-
-    if (!parseResult.success) {
-      throw new Error(`Invalid vault registry data: ${parseResult.error.message}`)
-    }
-
-    // Transform array to VaultRegistry with program IDs
-    return toVaultRegistry(parseResult.data)
+    return NeutralTrade.parseVaultRegistryEntries(data, 'vault registry')
   }
 
   /**
@@ -155,8 +192,8 @@ export class NeutralTrade {
       vaultIds: bundleVaultIds,
       userAddress,
       vaults: this.vaults,
-      bundleProgramV1: this.bundleProgramV1,
-      bundleProgramV2: this.bundleProgramV2,
+      bundlePrograms: this.bundlePrograms,
+      bundleCluster: this.bundleCluster,
       priceMap: this.priceMap,
     })
   }
@@ -179,9 +216,10 @@ export class NeutralTrade {
     if (!vault) {
       throw new Error(`Vault config not found for vaultId ${vaultId}`)
     }
+    const bundleProgram = this.getBundleProgramForVault(vault)
     return buildBundleDepositInstructions({
-      bundleProgramV1: this.bundleProgramV1,
-      bundleProgramV2: this.bundleProgramV2,
+      bundleProgram,
+      bundleCluster: this.bundleCluster,
       vault,
       user: new PublicKey(userAddress),
       amount,
@@ -205,9 +243,10 @@ export class NeutralTrade {
     if (!vault) {
       throw new Error(`Vault config not found for vaultId ${vaultId}`)
     }
+    const bundleProgram = this.getBundleProgramForVault(vault)
     return buildBundleRequestWithdrawInstruction({
-      bundleProgramV1: this.bundleProgramV1,
-      bundleProgramV2: this.bundleProgramV2,
+      bundleProgram,
+      bundleCluster: this.bundleCluster,
       vault,
       user: new PublicKey(userAddress),
       amount,

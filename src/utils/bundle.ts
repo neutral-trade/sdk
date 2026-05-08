@@ -1,17 +1,16 @@
 // Bundle vault balance calculation (using on-chain PPS)
 
 import type { Program } from '@coral-xyz/anchor'
-import type { Program as Program32 } from '@coral-xyz/anchor-32'
-import type { NtbundleV1 } from '../idl/bundle-v1'
+import type { BundleCluster } from '../constants/programs'
+import type { Ntbundle } from '../idl/ntbundle'
 
 // Get Bundle vault balances using fetchMultiple (with on-chain PPS)
 
-import type { NtbundleV2 } from '../idl/bundle-v2'
 import type { SupportedToken, VaultBalanceData, VaultRegistry, VaultRegistryEntry } from '../types'
 import type { BundleAccount, OracleData, UserBundleAccount } from '../types/bundle-types'
 
 import { PublicKey } from '@solana/web3.js'
-import { BundleProgramId } from '../constants/programs'
+import { getBundleProgramId } from '../constants/vaults'
 import { tokens } from '../types'
 import { deriveOraclePDA, deriveUserPDA } from './pda'
 
@@ -210,107 +209,65 @@ export async function getBundleBalances({
   vaultIds,
   userAddress,
   vaults,
-  bundleProgramV1,
-  bundleProgramV2,
+  bundlePrograms,
+  bundleCluster = 'mainnet',
   priceMap,
 }: {
   vaultIds: number[]
   userAddress: string
   vaults: VaultRegistry
-  bundleProgramV1: Program<NtbundleV1>
-  bundleProgramV2: Program32<NtbundleV2>
+  bundlePrograms: Record<string, Program<Ntbundle>>
+  bundleCluster?: BundleCluster
   priceMap: Map<SupportedToken, number>
 }): Promise<Record<number, VaultBalanceData | null>> {
   const result: Record<number, VaultBalanceData | null> = {}
   const userPublicKey = new PublicKey(userAddress)
 
-  // Group vaults by program version
-  const v1Vaults: { vaultId: number, config: VaultRegistryEntry }[] = []
-  const v2Vaults: { vaultId: number, config: VaultRegistryEntry }[] = []
+  // Group vaults by target bundle program id.
+  const matchingVaultsByProgram: Record<string, { vaultId: number, config: VaultRegistryEntry }[]> = {}
 
   for (const vaultId of vaultIds) {
     const config = vaults[vaultId]
     if (!config)
       continue
 
-    if (config.bundleProgramId === BundleProgramId.V2) {
-      v2Vaults.push({ vaultId, config })
+    const expectedProgramId = getBundleProgramId(config, bundleCluster)
+    if (!expectedProgramId) {
+      continue
     }
-    else {
-      v1Vaults.push({ vaultId, config })
+    const bundleProgram = bundlePrograms[expectedProgramId]
+    if (!bundleProgram) {
+      result[vaultId] = null
+      continue
     }
+    if (!matchingVaultsByProgram[expectedProgramId]) {
+      matchingVaultsByProgram[expectedProgramId] = []
+    }
+    matchingVaultsByProgram[expectedProgramId].push({ vaultId, config })
   }
 
-  // Process V1 vaults
-  if (v1Vaults.length > 0) {
-    const v1BundlePDAs = v1Vaults.map(({ config }) => new PublicKey(config.vaultAddress))
-    const v1OraclePDAs = v1BundlePDAs.map(bundlePDA =>
-      deriveOraclePDA(bundlePDA, bundleProgramV1.programId),
-    )
-    const v1UserPDAs = v1BundlePDAs.map(bundlePDA =>
-      deriveUserPDA(userPublicKey, bundlePDA, bundleProgramV1.programId),
-    )
+  for (const [programId, matchingVaults] of Object.entries(matchingVaultsByProgram)) {
+    const bundleProgram = bundlePrograms[programId]
+    if (!bundleProgram) {
+      continue
+    }
+
+    const bundlePDAs = matchingVaults.map(({ config }) => new PublicKey(config.vaultAddress))
+    const oraclePDAs = bundlePDAs.map(bundlePDA => deriveOraclePDA(bundlePDA, bundleProgram.programId))
+    const userPDAs = bundlePDAs.map(bundlePDA => deriveUserPDA(userPublicKey, bundlePDA, bundleProgram.programId))
 
     // Fetch all accounts using fetchMultiple (3 calls instead of 3*N calls)
-    const [v1Bundles, v1Oracles, v1Users] = await Promise.all([
-      bundleProgramV1.account.bundle.fetchMultiple(v1BundlePDAs),
-      bundleProgramV1.account.oracleData.fetchMultiple(v1OraclePDAs),
-      bundleProgramV1.account.userBundleAccount.fetchMultiple(v1UserPDAs),
+    const [bundles, oracles, users] = await Promise.all([
+      bundleProgram.account.bundle.fetchMultiple(bundlePDAs),
+      bundleProgram.account.oracleData.fetchMultiple(oraclePDAs),
+      bundleProgram.account.userBundleAccount.fetchMultiple(userPDAs),
     ])
 
-    for (let i = 0; i < v1Vaults.length; i++) {
-      const { vaultId, config } = v1Vaults[i]
-      const bundle = v1Bundles[i]
-      const oracle = v1Oracles[i]
-      const userBundle = v1Users[i]
-
-      if (!bundle || !oracle || !userBundle) {
-        result[vaultId] = null
-        continue
-      }
-
-      const assetKey = config.depositToken as keyof typeof tokens
-      const assetDecimals = tokens[assetKey]?.onChain?.Solana?.decimals || 6
-
-      // Get price from priceMap
-      const spotPrice = priceMap.get(config.depositToken)
-      if (spotPrice === undefined) {
-        throw new Error(`Price not found for token ${config.depositToken}. This should not happen as prices are initialized during creation.`)
-      }
-
-      result[vaultId] = calculateBundleUserBalance({
-        oracleData: oracle,
-        bundleData: bundle,
-        userBundle,
-        assetDecimals,
-        spotPrice,
-        asset: config.depositToken,
-      })
-    }
-  }
-
-  // Process V2 vaults
-  if (v2Vaults.length > 0) {
-    const v2BundlePDAs = v2Vaults.map(({ config }) => new PublicKey(config.vaultAddress))
-    const v2OraclePDAs = v2BundlePDAs.map(bundlePDA =>
-      deriveOraclePDA(bundlePDA, bundleProgramV2.programId),
-    )
-    const v2UserPDAs = v2BundlePDAs.map(bundlePDA =>
-      deriveUserPDA(userPublicKey, bundlePDA, bundleProgramV2.programId),
-    )
-
-    // Fetch all accounts using fetchMultiple
-    const [v2Bundles, v2Oracles, v2Users] = await Promise.all([
-      bundleProgramV2.account.bundle.fetchMultiple(v2BundlePDAs),
-      bundleProgramV2.account.oracleData.fetchMultiple(v2OraclePDAs),
-      bundleProgramV2.account.userBundleAccount.fetchMultiple(v2UserPDAs),
-    ])
-
-    for (let i = 0; i < v2Vaults.length; i++) {
-      const { vaultId, config } = v2Vaults[i]
-      const bundle = v2Bundles[i]
-      const oracle = v2Oracles[i]
-      const userBundle = v2Users[i]
+    for (let i = 0; i < matchingVaults.length; i++) {
+      const { vaultId, config } = matchingVaults[i]
+      const bundle = bundles[i]
+      const oracle = oracles[i]
+      const userBundle = users[i]
 
       if (!bundle || !oracle || !userBundle) {
         result[vaultId] = null
