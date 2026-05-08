@@ -48,6 +48,17 @@ export function deriveTempDataPDA(bundlePDA: PublicKey, programId: PublicKey): P
 }
 
 /**
+ * Derive pending bundle asset authority PDA (pending deposit token ATA owner)
+ */
+export function derivePendingAuthPDA(bundlePDA: PublicKey, programId: PublicKey): PublicKey {
+  const [pda] = PublicKey.findProgramAddressSync(
+    [SEED_PENDING_AUTH, bundlePDA.toBuffer()],
+    programId,
+  )
+  return pda
+}
+
+/**
  * Get Vault Depositor PDA for Drift vault
  * Custom code to handle jlpdnv1 special case
  */

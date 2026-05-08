@@ -2,15 +2,20 @@
 
 import type { Program } from '@coral-xyz/anchor'
 import type { Program as Program32 } from '@coral-xyz/anchor-32'
-import type { Connection } from '@solana/web3.js'
+import type { Connection, TransactionInstruction } from '@solana/web3.js'
 import type { NtbundleV1 } from './idl/bundle-v1'
 import type { NtbundleV2 } from './idl/bundle-v2'
 import type { SupportedToken, UserBalanceResult, VaultRegistry } from './types'
+import { PublicKey } from '@solana/web3.js'
 import { createAnchorProviderV29, createAnchorProviderV32, createConnection } from './constants/client'
 import { createBundleProgramV1, createBundleProgramV2 } from './constants/programs'
 import { vaults as builtInVaults, toVaultRegistry } from './constants/vaults'
 import { VaultRegistryArraySchema, VaultType } from './types'
 import { getBundleBalances } from './utils/bundle'
+import {
+  buildBundleDepositInstructions,
+  buildBundleRequestWithdrawInstruction,
+} from './utils/bundle-instructions'
 import { initializePrices } from './utils/price'
 
 export interface NeutralTradeConfig {
@@ -153,6 +158,59 @@ export class NeutralTrade {
       bundleProgramV1: this.bundleProgramV1,
       bundleProgramV2: this.bundleProgramV2,
       priceMap: this.priceMap,
+    })
+  }
+
+  /**
+   * Build deposit instructions (optional init + requestDeposit). Fetches vault state on-chain.
+   */
+  async buildDepositInstructions({
+    vaultId,
+    userAddress,
+    amount,
+    needsInit = false,
+  }: {
+    vaultId: number
+    userAddress: string
+    amount: number
+    needsInit?: boolean
+  }): Promise<TransactionInstruction[]> {
+    const vault = this.vaults[vaultId]
+    if (!vault) {
+      throw new Error(`Vault config not found for vaultId ${vaultId}`)
+    }
+    return buildBundleDepositInstructions({
+      bundleProgramV1: this.bundleProgramV1,
+      bundleProgramV2: this.bundleProgramV2,
+      vault,
+      user: new PublicKey(userAddress),
+      amount,
+      needsInit,
+    })
+  }
+
+  /**
+   * Build request-withdraw instruction. Fetches vault, oracle, and depositor accounts on-chain.
+   */
+  async buildRequestWithdrawInstruction({
+    vaultId,
+    userAddress,
+    amount,
+  }: {
+    vaultId: number
+    userAddress: string
+    amount: number
+  }): Promise<TransactionInstruction> {
+    const vault = this.vaults[vaultId]
+    if (!vault) {
+      throw new Error(`Vault config not found for vaultId ${vaultId}`)
+    }
+    return buildBundleRequestWithdrawInstruction({
+      bundleProgramV1: this.bundleProgramV1,
+      bundleProgramV2: this.bundleProgramV2,
+      vault,
+      user: new PublicKey(userAddress),
+      amount,
     })
   }
 }

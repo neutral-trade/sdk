@@ -50,9 +50,20 @@ export {
 } from './types'
 
 export { estimatePendingBundleFeeToken } from './utils/bundle'
+export {
+  buildBundleDepositInstructions,
+  buildBundleRequestWithdrawInstruction,
+  computeRequestWithdrawalSharesAmount,
+} from './utils/bundle-instructions'
+export type {
+  BuildBundleDepositInstructionsParams,
+  BuildBundleRequestWithdrawInstructionParams,
+} from './utils/bundle-instructions'
 // Utils (for advanced users)
 export {
   deriveOraclePDA,
+  derivePendingAuthPDA,
+  deriveTempDataPDA,
   deriveUserPDA,
   getVaultDepositorAddressSync,
 } from './utils/pda'

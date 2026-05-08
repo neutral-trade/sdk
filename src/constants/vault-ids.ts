@@ -7,10 +7,12 @@
  * These are auto-generated from the vault registry
  */
 export enum VaultId {
-  /** AdverseGuard Alpha */
-  adverseguard_alpha_75 = 75,
+  /** Hyperithm-CTA-USDC-Bundle */
+  hyperithm_cta_usdc_bundle_77 = 77,
   /** Master Bundle */
   master_bundle_76 = 76,
+  /** AdverseGuard Alpha */
+  adverseguard_alpha_75 = 75,
   /** Multi-Asset Volatility Arbitrage */
   multi_asset_volatility_arbitrage_74 = 74,
   /** Great Debasement */
