@@ -3,11 +3,13 @@ export {
 } from './constants/client'
 // Constants
 export {
+  BUNDLE_PROGRAM_ID_V2_MAINNET,
+  createBundleProgramById,
   DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
   getDefaultBundleProgramIdByCluster,
 } from './constants/programs'
-export type { BundleCluster } from './constants/programs'
+export type { BundleCluster, BundleProgram, BundleProvider } from './constants/programs'
 // Auto-generated vault IDs (for backward compatibility)
 export { VaultId } from './constants/vault-ids'
 export {
@@ -50,6 +52,12 @@ export {
 // Utils (for advanced users)
 export {
   deriveOraclePDA,
+  derivePendingAuthPDA,
+  deriveTempDataPDA,
   deriveUserPDA,
   getVaultDepositorAddressSync,
+  SEED_ORACLE,
+  SEED_PENDING_AUTH,
+  SEED_TEMP,
+  SEED_USER,
 } from './utils/pda'

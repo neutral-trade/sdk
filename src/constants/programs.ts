@@ -19,6 +19,13 @@ function toCustomProgramPublicKey(programId: string): PublicKey {
 }
 
 export const DEFAULT_BUNDLE_PROGRAM_ID_MAINNET = 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU'
+
+/**
+ * Secondary mainnet ntbundle program id (used when a vault sets `bundleProgramId` to this value).
+ * Kept in sync with `sdk/src/registry/vaults.json` (e.g. vaultId 69 JLP Delta Neutral).
+ */
+export const BUNDLE_PROGRAM_ID_V2_MAINNET = 'BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9'
+
 // Source: bundle-sc/Anchor.toml [programs.devnet]
 export const DEFAULT_BUNDLE_PROGRAM_ID_DEVNET = '7trSyt7d1ZRnvfGh9JaQZwZMWtfAXMvMwN3UxgMzVFbv'
 
