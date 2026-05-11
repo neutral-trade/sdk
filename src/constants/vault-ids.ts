@@ -3,8 +3,8 @@
 // Run 'pnpm generate' to regenerate
 
 /**
- * Vault ID constants for backward compatibility
- * These are auto-generated from the vault registry
+ * Vault ID constants (VaultId)
+ * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
   /** Hyperithm-CTA-USDC-Bundle */

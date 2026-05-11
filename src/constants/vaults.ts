@@ -1,6 +1,7 @@
 import type { VaultRegistry, VaultRegistryEntry } from '../types'
 import type { BundleCluster } from './programs'
-import vaultsJson from '../registry/vaults.json'
+import vaultsDevnetJson from '../registry/vaults.devnet.json'
+import vaultsMainnetJson from '../registry/vaults.json'
 import { VaultRegistryArraySchema, VaultType } from '../types'
 import { getDefaultBundleProgramIdByCluster } from './programs'
 
@@ -66,24 +67,36 @@ export function toVaultRegistry(entries: VaultRegistryEntry[]): VaultRegistry {
 // =============================================================================
 
 // Validate and transform JSON array to Record<number, VaultConfig>
-const parsedVaults = VaultRegistryArraySchema.parse(vaultsJson)
+const parsedVaultsMainnet = VaultRegistryArraySchema.parse(vaultsMainnetJson)
+const parsedVaultsDevnet = VaultRegistryArraySchema.parse(vaultsDevnetJson)
 
-export const vaults: VaultRegistry = toVaultRegistry(parsedVaults)
+const vaultsMainnetRegistry: VaultRegistry = toVaultRegistry(parsedVaultsMainnet)
+const vaultsDevnetRegistry: VaultRegistry = toVaultRegistry(parsedVaultsDevnet)
+
+/** Mainnet registry (default; backward compatible). */
+export const vaults: VaultRegistry = vaultsMainnetRegistry
+
+/** Devnet-only vault registry (fixtures / local testing). */
+export const vaultsDevnet: VaultRegistry = vaultsDevnetRegistry
+
+export function getVaultRegistry(cluster: BundleCluster): VaultRegistry {
+  return cluster === 'devnet' ? vaultsDevnetRegistry : vaultsMainnetRegistry
+}
 
 // =============================================================================
 // UTILITY FUNCTIONS
 // =============================================================================
 
-export function isValidVaultAddress(address: string): boolean {
-  return Object.values(vaults)
+export function isValidVaultAddress(address: string, cluster: BundleCluster = 'mainnet'): boolean {
+  return Object.values(getVaultRegistry(cluster))
     .map(vault => vault.vaultAddress)
     .includes(address)
 }
 
-export function getVaultByAddress(address: string): VaultRegistryEntry | undefined {
-  return Object.values(vaults).find(v => v.vaultAddress === address)
+export function getVaultByAddress(address: string, cluster: BundleCluster = 'mainnet'): VaultRegistryEntry | undefined {
+  return Object.values(getVaultRegistry(cluster)).find(v => v.vaultAddress === address)
 }
 
-export function getVaultById(vaultId: number): VaultRegistryEntry | undefined {
-  return vaults[vaultId]
+export function getVaultById(vaultId: number, cluster: BundleCluster = 'mainnet'): VaultRegistryEntry | undefined {
+  return getVaultRegistry(cluster)[vaultId]
 }

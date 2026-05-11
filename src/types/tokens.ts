@@ -1,5 +1,7 @@
 // Token definitions for Solana and other supported chains
 
+import type { BundleCluster } from '../constants/programs'
+
 export enum SupportedChain {
   Solana = 'Solana',
   Hyperliquid = 'Hyperliquid',
@@ -92,4 +94,36 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
     },
   },
+}
+
+/** Devnet SPL mint overrides (`depositToken` still uses `SupportedToken`). */
+const SOLANA_MINT_OVERRIDES_DEVNET: Partial<Record<SupportedToken, string>> = {
+  [SupportedToken.USDC]: '6a8hWCCa2QDQTqzLUapZwZtgHTox8BsgataN6JVLwdo7',
+}
+
+/**
+ * Solana mint address for a supported token, keyed by bundle cluster.
+ * Devnet USDC uses the team mock mint; other tokens use mainnet table until devnet overrides exist.
+ */
+export function getSolanaTokenMint(token: SupportedToken, cluster: BundleCluster = 'mainnet'): string {
+  const row = tokens[token].onChain[SupportedChain.Solana]
+  if (!row) {
+    throw new Error(`No Solana mint configured for ${token}`)
+  }
+  if (cluster === 'devnet') {
+    const override = SOLANA_MINT_OVERRIDES_DEVNET[token]
+    if (override) {
+      return override
+    }
+  }
+  return row.address
+}
+
+/** SPL decimals for `token` (same on mainnet vs devnet for current overrides). */
+export function getSolanaTokenDecimals(token: SupportedToken): number {
+  const row = tokens[token].onChain[SupportedChain.Solana]
+  if (!row) {
+    throw new Error(`No Solana decimals configured for ${token}`)
+  }
+  return row.decimals
 }

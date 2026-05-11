@@ -1,0 +1,13 @@
+[
+  {
+    "vaultId": 100000001,
+    "name": "Dev1",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "EUs1XqK5Fr7DXxS5NTy2yYd3jehfYFJ4WYefesDf6iy3",
+    "depositToken": "USDC",
+    "bundleProgramId": "7trSyt7d1ZRnvfGh9JaQZwZMWtfAXMvMwN3UxgMzVFbv",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  }
+]

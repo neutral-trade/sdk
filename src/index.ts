@@ -10,14 +10,17 @@ export {
   getDefaultBundleProgramIdByCluster,
 } from './constants/programs'
 export type { BundleCluster, BundleProgram, BundleProvider } from './constants/programs'
-// Auto-generated vault IDs (for backward compatibility)
 export { VaultId } from './constants/vault-ids'
+// Auto-generated vault IDs (for backward compatibility)
+export { DevnetVaultId } from './constants/vault-ids.devnet'
 export {
   getBundleProgramId,
   getVaultByAddress,
   getVaultById,
+  getVaultRegistry,
   isValidVaultAddress,
   vaults,
+  vaultsDevnet,
 } from './constants/vaults'
 
 // Main class
@@ -37,6 +40,8 @@ export type {
   VaultRegistry as VaultConfigRecord,
 } from './types'
 export {
+  getSolanaTokenDecimals,
+  getSolanaTokenMint,
   SupportedChain,
   SupportedToken,
   tokens,

@@ -4,8 +4,10 @@ import {
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
   getDefaultBundleProgramIdByCluster,
 } from '../src/constants/programs'
-import { getBundleProgramId, vaults } from '../src/constants/vaults'
+import { DevnetVaultId } from '../src/constants/vault-ids.devnet'
+import { getBundleProgramId, getVaultById, getVaultRegistry, vaults, vaultsDevnet } from '../src/constants/vaults'
 import {
+  getSolanaTokenMint,
   SupportedChain,
   SupportedToken,
   tokens,
@@ -135,6 +137,25 @@ describe('types and Constants Validation', () => {
       const missingProgramIdVault = { ...vaults[48], bundleProgramId: undefined }
       expect(getBundleProgramId(missingProgramIdVault, 'mainnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET)
       expect(getBundleProgramId(missingProgramIdVault, 'devnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
+    })
+  })
+
+  describe('devnet registry', () => {
+    it('exposes fixture vault and DevnetVaultId', () => {
+      expect(vaultsDevnet[100000001]).toBeDefined()
+      expect(vaultsDevnet[100000001].name).toBe('Dev1')
+      expect(DevnetVaultId.dev1_100000001).toBe(100000001)
+      expect(getVaultRegistry('devnet')).toBe(vaultsDevnet)
+      expect(getVaultById(100000001, 'devnet')?.vaultAddress).toBe('EUs1XqK5Fr7DXxS5NTy2yYd3jehfYFJ4WYefesDf6iy3')
+    })
+
+    it('devnet USDC mint uses team mock SPL', () => {
+      expect(getSolanaTokenMint(SupportedToken.USDC, 'devnet')).toBe(
+        '6a8hWCCa2QDQTqzLUapZwZtgHTox8BsgataN6JVLwdo7',
+      )
+      expect(getSolanaTokenMint(SupportedToken.USDC, 'mainnet')).toBe(
+        tokens[SupportedToken.USDC].onChain[SupportedChain.Solana]!.address,
+      )
     })
   })
 })
