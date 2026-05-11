@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Velox-Cross-USDC-Bundle */
+  velox_cross_usdc_bundle_78 = 78,
   /** Hyperithm-CTA-USDC-Bundle */
   hyperithm_cta_usdc_bundle_77 = 77,
   /** Master Bundle */
