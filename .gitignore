@@ -15,3 +15,4 @@ temp
 # Local-only diagnose env / scratch (scripts under diagnose/ are tracked)
 diagnose/.env
 diagnose/scratch/
+diagnose/
