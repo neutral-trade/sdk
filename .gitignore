@@ -11,3 +11,7 @@ lib-cov
 logs
 node_modules
 temp
+.env
+# Local-only diagnose env / scratch (scripts under diagnose/ are tracked)
+diagnose/.env
+diagnose/scratch/

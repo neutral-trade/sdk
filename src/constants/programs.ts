@@ -2,7 +2,8 @@ import type { AnchorProvider } from '@coral-xyz/anchor'
 import type { Ntbundle } from '../idl/ntbundle'
 import { Program } from '@coral-xyz/anchor'
 import { PublicKey } from '@solana/web3.js'
-import ntbundleIdl from '../idl/ntbundle.json'
+import ntbundleIdlMain from '../idl/ntbundle.json'
+import ntbundleIdlJupiter from '../idl/ntbundle.jupiter.json'
 
 export type BundleProgram = Program<Ntbundle>
 export type BundleProvider = AnchorProvider
@@ -39,6 +40,18 @@ export function getDefaultBundleProgramIdByCluster(cluster: BundleCluster = 'mai
 }
 
 /**
+ * Pick Anchor IDL bytes for this bundle program deployment.
+ * Main vs Jupiter have different on-chain account layouts; same IDL + only `address` override breaks decode (e.g. vaultId 69).
+ *
+ * Jupiter IDL source: `bundle-backend/bundles-revamped/shared/targetV2Jupiter/idl/ntbundle.json`
+ */
+function ntbundleIdlJsonForProgramId(programIdBase58: string): typeof ntbundleIdlMain {
+  if (programIdBase58 === BUNDLE_PROGRAM_ID_V2_MAINNET)
+    return ntbundleIdlJupiter
+  return ntbundleIdlMain
+}
+
+/**
  * Create Bundle Program client for a specific program id.
  */
 export function createBundleProgramById(
@@ -46,8 +59,9 @@ export function createBundleProgramById(
   programId: string,
 ): Program<Ntbundle> {
   const resolved = toCustomProgramPublicKey(programId).toBase58()
+  const base = ntbundleIdlJsonForProgramId(resolved)
   const idlWithAddress = {
-    ...ntbundleIdl,
+    ...base,
     address: resolved,
   } as Ntbundle
   return new Program<Ntbundle>(
