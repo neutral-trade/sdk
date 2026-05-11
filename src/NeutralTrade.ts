@@ -11,7 +11,7 @@ import {
 
   createBundleProgramById,
 } from './constants/programs'
-import { vaults as builtInVaults, getBundleProgramId, toVaultRegistry } from './constants/vaults'
+import { getBundleProgramId, getVaultRegistry, toVaultRegistry } from './constants/vaults'
 import { VaultRegistryArraySchema, VaultType } from './types'
 import { getBundleBalances } from './utils/bundle'
 import {
@@ -24,7 +24,7 @@ export interface NeutralTradeConfig {
   rpcUrl: string
   /** Bundle program cluster selector. Defaults to 'mainnet'. */
   bundleCluster?: BundleCluster
-  /** If true, include built-in vault registry entries only when no custom registry source is provided. Defaults to true. */
+  /** If true, include built-in vault registry for `bundleCluster` (mainnet vs devnet fixtures). Defaults to true. */
   includeBuiltInVaults?: boolean
   /** Optional local registry entries. Applied after built-in configs and before registryUrl (if provided). */
   registry?: VaultRegistryEntry[]
@@ -45,7 +45,7 @@ export class NeutralTrade {
   public readonly connection: Connection
   public readonly bundlePrograms: Record<string, Program<Ntbundle>>
   public readonly bundleCluster: BundleCluster
-  /** Vault configurations after merge order: built-in < local registry < registryUrl */
+  /** Vault configurations after merge order: built-in (cluster-specific) < local registry < registryUrl */
   public readonly vaults: VaultRegistry
   /** Price map for deposit tokens */
   public readonly priceMap: Map<SupportedToken, number>
@@ -66,7 +66,7 @@ export class NeutralTrade {
 
   /**
    * Create a new NeutralTrade instance
-   * Merge order: built-in (when allowed) < local registry < registryUrl
+   * Merge order: built-in catalog for `bundleCluster` (when allowed) < local registry < registryUrl
    * @throws Error if registry or registryUrl validation fails (or fetch fails for registryUrl)
    */
   protected static async initCore(config: NeutralTradeConfig): Promise<NeutralTradeCoreContext> {
@@ -77,7 +77,7 @@ export class NeutralTrade {
     const cluster = config.bundleCluster ?? 'mainnet'
 
     const shouldUseBuiltInVaults = config.includeBuiltInVaults !== false
-    let vaults: VaultRegistry = shouldUseBuiltInVaults ? { ...builtInVaults } : {}
+    let vaults: VaultRegistry = shouldUseBuiltInVaults ? { ...getVaultRegistry(cluster) } : {}
 
     if (config.registry) {
       const localVaults = NeutralTrade.parseVaultRegistryEntries(config.registry, 'registry')

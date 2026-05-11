@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 78,
+    "name": "Velox-Cross-USDC-Bundle",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "De47QBuMP7xukYBek5r4ScZF4HEk1kHW34ymKASz3DLt",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 77,
     "name": "Hyperithm-CTA-USDC-Bundle",
     "type": "Bundle",
