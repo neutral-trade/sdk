@@ -7,10 +7,7 @@ import type { Ntbundle } from './idl/ntbundle'
 import type { SupportedToken, UserBalanceResult, VaultRegistry, VaultRegistryEntry } from './types'
 import { PublicKey } from '@solana/web3.js'
 import { createAnchorProvider, createConnection } from './constants/client'
-import {
-
-  createBundleProgramById,
-} from './constants/programs'
+import { createBundleProgramById } from './constants/programs'
 import { getBundleProgramId, getVaultRegistry, toVaultRegistry } from './constants/vaults'
 import { VaultRegistryArraySchema, VaultType } from './types'
 import { getBundleBalances } from './utils/bundle'
@@ -80,12 +77,16 @@ export class NeutralTrade {
     let vaults: VaultRegistry = shouldUseBuiltInVaults ? { ...getVaultRegistry(cluster) } : {}
 
     if (config.registry) {
-      const localVaults = NeutralTrade.parseVaultRegistryEntries(config.registry, 'registry')
+      const localVaults = NeutralTrade.parseVaultRegistryEntries(
+        config.registry,
+        'registry',
+        cluster,
+      )
       vaults = { ...vaults, ...localVaults }
     }
 
     if (config.registryUrl) {
-      const remoteVaults = await NeutralTrade.fetchVaultsFromRegistry(config.registryUrl)
+      const remoteVaults = await NeutralTrade.fetchVaultsFromRegistry(config.registryUrl, cluster)
       vaults = { ...vaults, ...remoteVaults }
     }
 
@@ -141,12 +142,13 @@ export class NeutralTrade {
   private static parseVaultRegistryEntries(
     entries: unknown,
     sourceLabel: string,
+    cluster: BundleCluster,
   ): VaultRegistry {
     const parseResult = VaultRegistryArraySchema.safeParse(entries)
     if (!parseResult.success) {
       throw new Error(`Invalid ${sourceLabel} data: ${parseResult.error.message}`)
     }
-    return toVaultRegistry(parseResult.data)
+    return toVaultRegistry(parseResult.data, cluster)
   }
 
   /**
@@ -156,16 +158,19 @@ export class NeutralTrade {
    */
   private static async fetchVaultsFromRegistry(
     registryUrl: string,
+    cluster: BundleCluster,
   ): Promise<VaultRegistry> {
     const response = await fetch(registryUrl)
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch vaults from registry: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `Failed to fetch vaults from registry: ${response.status} ${response.statusText}`,
+      )
     }
 
     const data = await response.json()
 
-    return NeutralTrade.parseVaultRegistryEntries(data, 'vault registry')
+    return NeutralTrade.parseVaultRegistryEntries(data, 'vault registry', cluster)
   }
 
   /**
