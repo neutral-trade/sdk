@@ -121,6 +121,22 @@ describe('types and Constants Validation', () => {
       expect(bundleVaults.length).toBeGreaterThan(0)
     })
 
+    it('should set bundleProgramId on every Bundle vault (toVaultConfig default)', () => {
+      for (const v of Object.values(vaults)) {
+        if (v.type !== VaultType.Bundle)
+          continue
+        expect(v.bundleProgramId).toBeDefined()
+        expect(typeof v.bundleProgramId).toBe('string')
+        expect(v.bundleProgramId!.length).toBeGreaterThanOrEqual(32)
+      }
+      for (const v of Object.values(vaultsDevnet)) {
+        if (v.type !== VaultType.Bundle)
+          continue
+        expect(v.bundleProgramId).toBeDefined()
+        expect(typeof v.bundleProgramId).toBe('string')
+      }
+    })
+
     it('vaultIds should be unique', () => {
       const vaultIds = Object.values(vaults).map(v => v.vaultId)
       const uniqueIds = new Set(vaultIds)

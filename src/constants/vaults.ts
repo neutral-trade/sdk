@@ -43,22 +43,29 @@ export function getDriftProgramId(vault: VaultRegistryEntry): string | undefined
 /**
  * Transform a registry entry to VaultConfig with program IDs
  * - Drift vaults get driftProgramId
- * - Bundle vaults get bundleProgramId
+ * - Bundle vaults get bundleProgramId (registry value or cluster default via {@link getBundleProgramId})
  */
-export function toVaultConfig(entry: VaultRegistryEntry): VaultRegistryEntry {
+export function toVaultConfig(
+  entry: VaultRegistryEntry,
+  cluster: BundleCluster = 'mainnet',
+): VaultRegistryEntry {
   return {
     ...entry,
     driftProgramId: getDriftProgramId(entry),
-    bundleProgramId: entry.bundleProgramId,
+    bundleProgramId: getBundleProgramId(entry, cluster),
   }
 }
 
 /**
  * Transform an array of registry entries to VaultRegistry
+ * @param cluster - Used to resolve default bundle program id when `bundleProgramId` is omitted in JSON
  */
-export function toVaultRegistry(entries: VaultRegistryEntry[]): VaultRegistry {
+export function toVaultRegistry(
+  entries: VaultRegistryEntry[],
+  cluster: BundleCluster = 'mainnet',
+): VaultRegistry {
   return Object.fromEntries(
-    entries.map(entry => [entry.vaultId, toVaultConfig(entry)]),
+    entries.map(entry => [entry.vaultId, toVaultConfig(entry, cluster)]),
   )
 }
 
@@ -70,8 +77,8 @@ export function toVaultRegistry(entries: VaultRegistryEntry[]): VaultRegistry {
 const parsedVaultsMainnet = VaultRegistryArraySchema.parse(vaultsMainnetJson)
 const parsedVaultsDevnet = VaultRegistryArraySchema.parse(vaultsDevnetJson)
 
-const vaultsMainnetRegistry: VaultRegistry = toVaultRegistry(parsedVaultsMainnet)
-const vaultsDevnetRegistry: VaultRegistry = toVaultRegistry(parsedVaultsDevnet)
+const vaultsMainnetRegistry: VaultRegistry = toVaultRegistry(parsedVaultsMainnet, 'mainnet')
+const vaultsDevnetRegistry: VaultRegistry = toVaultRegistry(parsedVaultsDevnet, 'devnet')
 
 /** Mainnet registry (default; backward compatible). */
 export const vaults: VaultRegistry = vaultsMainnetRegistry
