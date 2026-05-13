@@ -26,7 +26,6 @@ export interface BuildBundleDepositInstructionsParams {
   user: PublicKey
   /** UI token amount (multiplied by 10**on-chain decimals inside). */
   amount: number
-  needsInit?: boolean
 }
 
 export interface BuildBundleRequestWithdrawInstructionParams {
@@ -76,7 +75,7 @@ function bundleProgramIdForVault(vault: VaultRegistryEntry, bundleCluster: Bundl
 }
 
 /**
- * Optional `initializeBundleDepositor` + `requestDeposit`. Fetches bundle account internally.
+ * `initializeBundleDepositor` (when missing) + `requestDeposit`. Fetches bundle + user bundle internally.
  */
 export async function buildBundleDepositInstructions({
   bundleProgram,
@@ -84,7 +83,6 @@ export async function buildBundleDepositInstructions({
   vault,
   user,
   amount,
-  needsInit = false,
 }: BuildBundleDepositInstructionsParams): Promise<TransactionInstruction[]> {
   assertBundleVault(vault)
   const bundlePDA = new PublicKey(vault.vaultAddress)
@@ -95,13 +93,27 @@ export async function buildBundleDepositInstructions({
     )
   }
 
-  const bundleInfo = await bundleProgram.account.bundle.fetch(bundlePDA)
+  const programPk = bundleProgram.programId
+  const userPDA = deriveUserPDA(user, bundlePDA, programPk)
+
+  const connection = bundleProgram.provider.connection
+  const [bundleAcc, userBundleAcc] = await connection.getMultipleAccountsInfo([bundlePDA, userPDA])
+  if (!bundleAcc?.data?.length) {
+    throw new Error(`Bundle account not found for vault ${vault.vaultId}`)
+  }
+  const bundleInfo = bundleProgram.coder.accounts.decode('bundle', bundleAcc.data) as BundleAccount
+  const existingUserBundle
+    = userBundleAcc?.data?.length
+      ? (bundleProgram.coder.accounts.decode(
+          'userBundleAccount',
+          userBundleAcc.data,
+        ) as UserBundleAccount)
+      : null
+  const needsInit = existingUserBundle === null
 
   const depositAmountBN = new BN(Math.floor(amount * 10 ** bundleInfo.assetDecimals))
 
-  const programPk = bundleProgram.programId
   const oraclePDA = deriveOraclePDA(bundlePDA, programPk)
-  const userPDA = deriveUserPDA(user, bundlePDA, programPk)
   const tempDataPDA = deriveTempDataPDA(bundlePDA, programPk)
   const pendingAuthPDA = derivePendingAuthPDA(bundlePDA, programPk)
 

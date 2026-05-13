@@ -199,18 +199,17 @@ export class NeutralTrade {
   }
 
   /**
-   * Build deposit instructions (optional init + requestDeposit). Fetches vault state on-chain.
+   * Build deposit instructions (`initializeBundleDepositor` when needed, then `requestDeposit`).
+   * Fetches bundle and user bundle accounts on-chain.
    */
   async buildDepositInstructions({
     vaultId,
     userAddress,
     amount,
-    needsInit = false,
   }: {
     vaultId: number
     userAddress: string
     amount: number
-    needsInit?: boolean
   }): Promise<TransactionInstruction[]> {
     const vault = this.vaults[vaultId]
     if (!vault) {
@@ -223,7 +222,6 @@ export class NeutralTrade {
       vault,
       user: new PublicKey(userAddress),
       amount,
-      needsInit,
     })
   }
 

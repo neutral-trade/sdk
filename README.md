@@ -147,7 +147,16 @@ This is simpler and doesn't require an additional network request at initializat
 
 ## Examples
 
-Check out the [examples](./examples) directory for more usage examples.
+See the [examples](./examples) directory. From the `sdk/` package root (clone this repo):
+
+```bash
+# Local validator default RPC: http://127.0.0.1:8899 — override with SOLANA_RPC_URL
+export SOLANA_KEYPAIR_PATH="$HOME/.config/solana/id.json"
+pnpm example:devnet:deposit
+pnpm example:devnet:withdraw
+```
+
+Uses the built-in devnet registry (`src/registry/vaults.devnet.json`, e.g. vault `100000001`). Your RPC must serve that vault on-chain; override vault id with `DEVNET_BUNDLE_VAULT_ID` if you use `NeutralTrade.create({ registry: [...] })` patterns in a forked script.
 
 ## License
 
