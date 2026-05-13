@@ -17,7 +17,13 @@
  *   pnpm example:devnet:deposit
  */
 import process from 'node:process'
-import { DevnetVaultId, NeutralTrade } from '../src/index'
+import {
+  DevnetVaultId,
+  getSolanaTokenDecimals,
+  humanFloatToAmountRawString,
+  NeutralTrade,
+  SupportedToken,
+} from '../src/index'
 import { loadSignerKeypair } from './lib/load-keypair'
 import { sendV0Transaction } from './lib/send-versioned-tx'
 import 'dotenv/config'
@@ -42,10 +48,15 @@ async function main(): Promise<void> {
     bundleCluster: 'devnet',
   })
 
+  const amountRaw = humanFloatToAmountRawString(
+    amountUi,
+    getSolanaTokenDecimals(SupportedToken.USDC),
+  )
+
   const instructions = await nt.buildDepositInstructions({
     vaultId,
     userAddress: payer.publicKey.toBase58(),
-    amount: amountUi,
+    amountRaw,
   })
 
   console.log('Instructions:', instructions.length)

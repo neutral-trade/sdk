@@ -49,9 +49,15 @@ export {
   VaultType,
 } from './types'
 
+export { humanFloatToAmountRawString, parseAmountRawToBigInt } from './utils/amount-raw'
 export {
   buildBundleDepositInstructions,
   buildBundleRequestWithdrawInstruction,
+  computeRequestWithdrawalSharesFromAmountRaw,
+} from './utils/bundle-instructions'
+export type {
+  BuildBundleDepositInstructionsParams,
+  BuildBundleRequestWithdrawInstructionParams,
 } from './utils/bundle-instructions'
 
 // Utils (for advanced users)

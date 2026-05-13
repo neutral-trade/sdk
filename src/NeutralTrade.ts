@@ -210,11 +210,12 @@ export class NeutralTrade {
   async buildDepositInstructions({
     vaultId,
     userAddress,
-    amount,
+    amountRaw,
   }: {
     vaultId: number
     userAddress: string
-    amount: number
+    /** Smallest token units (decimal string), same scale as SPL `amount`. */
+    amountRaw: string
   }): Promise<TransactionInstruction[]> {
     const vault = this.vaults[vaultId]
     if (!vault) {
@@ -226,7 +227,7 @@ export class NeutralTrade {
       bundleCluster: this.bundleCluster,
       vault,
       user: new PublicKey(userAddress),
-      amount,
+      amountRaw,
     })
   }
 
@@ -236,11 +237,12 @@ export class NeutralTrade {
   async buildRequestWithdrawInstruction({
     vaultId,
     userAddress,
-    amount,
+    amountRaw,
   }: {
     vaultId: number
     userAddress: string
-    amount: number
+    /** Smallest token units (decimal string) to request withdrawing. */
+    amountRaw: string
   }): Promise<TransactionInstruction> {
     const vault = this.vaults[vaultId]
     if (!vault) {
@@ -252,7 +254,7 @@ export class NeutralTrade {
       bundleCluster: this.bundleCluster,
       vault,
       user: new PublicKey(userAddress),
-      amount,
+      amountRaw,
     })
   }
 }

@@ -11,7 +11,7 @@ import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js'
 import BN from 'bn.js'
 import { getBundleProgramId } from '../constants/vaults'
 import { VaultType } from '../types/vault-types'
-import { calculateOnChainPps } from './bundle'
+import { parseAmountRawToBigInt } from './amount-raw'
 import {
   deriveOraclePDA,
   derivePendingAuthPDA,
@@ -24,8 +24,8 @@ export interface BuildBundleDepositInstructionsParams {
   bundleCluster?: BundleCluster
   vault: VaultRegistryEntry
   user: PublicKey
-  /** UI token amount (multiplied by 10**on-chain decimals inside). */
-  amount: number
+  /** Smallest token units (decimal string), same scale as SPL token `amount`. */
+  amountRaw: string
 }
 
 export interface BuildBundleRequestWithdrawInstructionParams {
@@ -33,31 +33,36 @@ export interface BuildBundleRequestWithdrawInstructionParams {
   bundleCluster?: BundleCluster
   vault: VaultRegistryEntry
   user: PublicKey
-  amount: number
+  /** Smallest token units (decimal string) to request withdrawing. */
+  amountRaw: string
 }
 
-/** Same share math as legacy app `useBundleRequestWithdrawMutation`. */
-export function computeRequestWithdrawalSharesAmount({
-  amount,
-  userVaultBalance,
-  pps,
-  assetDecimals,
+/**
+ * Shares to burn for `requestWithdrawal`, from integer token raw and on-chain totals.
+ * Full position: pass `amountRaw >= userTokenRaw` where `userTokenRaw = (userShares * totalEquity) / totalShares`.
+ */
+export function computeRequestWithdrawalSharesFromAmountRaw({
+  amountRaw,
   userShares,
+  totalEquity,
+  totalShares,
 }: {
-  amount: number
-  userVaultBalance: number
-  pps: number
-  assetDecimals: number
+  amountRaw: bigint
   userShares: BN
+  totalEquity: bigint
+  totalShares: bigint
 }): BN {
-  let sharesAmount: BN
-  if (Number(amount) >= Number(userVaultBalance)) {
-    sharesAmount = userShares
-  }
-  else {
-    sharesAmount = new BN(Math.floor((amount * 10 ** assetDecimals) / pps))
-  }
-  return sharesAmount.lte(userShares) ? sharesAmount : userShares
+  const us = BigInt(userShares.toString())
+  if (totalShares === 0n || us === 0n)
+    return new BN(0)
+  const userTokenRaw = (us * totalEquity) / totalShares
+  if (amountRaw >= userTokenRaw)
+    return userShares
+  if (totalEquity === 0n)
+    return new BN(0)
+  const computedShares = (amountRaw * totalShares) / totalEquity
+  const sharesBn = new BN(computedShares.toString())
+  return sharesBn.gt(userShares) ? userShares : sharesBn
 }
 
 function assertBundleVault(vault: VaultRegistryEntry): void {
@@ -82,7 +87,7 @@ export async function buildBundleDepositInstructions({
   bundleCluster = 'mainnet',
   vault,
   user,
-  amount,
+  amountRaw,
 }: BuildBundleDepositInstructionsParams): Promise<TransactionInstruction[]> {
   assertBundleVault(vault)
   const bundlePDA = new PublicKey(vault.vaultAddress)
@@ -111,7 +116,7 @@ export async function buildBundleDepositInstructions({
       : null
   const needsInit = existingUserBundle === null
 
-  const depositAmountBN = new BN(Math.floor(amount * 10 ** bundleInfo.assetDecimals))
+  const depositAmountBn = new BN(parseAmountRawToBigInt(amountRaw).toString())
 
   const oraclePDA = deriveOraclePDA(bundlePDA, programPk)
   const tempDataPDA = deriveTempDataPDA(bundlePDA, programPk)
@@ -145,7 +150,7 @@ export async function buildBundleDepositInstructions({
   }
 
   const depositIx = await bundleProgram.methods
-    .requestDeposit(depositAmountBN)
+    .requestDeposit(depositAmountBn)
     .accounts({
       user,
       userTokenAccount: userTokenAcct,
@@ -173,7 +178,7 @@ export async function buildBundleRequestWithdrawInstruction({
   bundleCluster = 'mainnet',
   vault,
   user,
-  amount,
+  amountRaw,
 }: BuildBundleRequestWithdrawInstructionParams): Promise<TransactionInstruction> {
   assertBundleVault(vault)
   const bundlePDA = new PublicKey(vault.vaultAddress)
@@ -195,22 +200,17 @@ export async function buildBundleRequestWithdrawInstruction({
     bundleProgram.account.userBundleAccount.fetch(userPDA),
   ]) as [BundleAccount, OracleData, UserBundleAccount]
 
-  const pps = calculateOnChainPps({
-    oracleAverageExternalEquity: BigInt(oracleData.averageExternalEquity.toString()),
-    bundleUnderlyingBalance: BigInt(bundleAccount.bundleUnderlyingBalance.toString()),
-    totalShares: BigInt(bundleAccount.totalShares.toString()),
-  })
+  const totalEquity
+    = BigInt(oracleData.averageExternalEquity.toString())
+      + BigInt(bundleAccount.bundleUnderlyingBalance.toString())
+  const totalShares = BigInt(bundleAccount.totalShares.toString())
+  const amountRawBn = parseAmountRawToBigInt(amountRaw)
 
-  const divisor = 10 ** bundleAccount.assetDecimals
-  const userSharesNum = Number(userBundle.shares.toString())
-  const userVaultBalance = Math.round(userSharesNum * pps) / divisor
-
-  const sharesAmount = computeRequestWithdrawalSharesAmount({
-    amount,
-    userVaultBalance,
-    pps,
-    assetDecimals: bundleAccount.assetDecimals,
+  const sharesAmount = computeRequestWithdrawalSharesFromAmountRaw({
+    amountRaw: amountRawBn,
     userShares: new BN(userBundle.shares.toString()),
+    totalEquity,
+    totalShares,
   })
 
   return await bundleProgram.methods
