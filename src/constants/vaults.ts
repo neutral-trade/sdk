@@ -58,7 +58,8 @@ export function toVaultConfig(
 
 /**
  * Transform an array of registry entries to VaultRegistry
- * @param cluster - Used to resolve default bundle program id when `bundleProgramId` is omitted in JSON
+ * @param entries Registry entries to transform
+ * @param cluster Used to resolve default bundle program id when `bundleProgramId` is omitted in JSON
  */
 export function toVaultRegistry(
   entries: VaultRegistryEntry[],
