@@ -1,6 +1,4 @@
-export {
-  createDummyWallet,
-} from './constants/client'
+export { createDummyWallet } from './constants/client'
 // Constants
 export {
   BUNDLE_PROGRAM_ID_V2_MAINNET,
@@ -36,8 +34,8 @@ export type {
   UserBundleAccount,
   UserBundleTempData,
   VaultBalanceData,
-  VaultRegistryEntry as VaultConfig,
-  VaultRegistry as VaultConfigRecord,
+  VaultRegistry,
+  VaultRegistryEntry,
 } from './types'
 export {
   getSolanaTokenDecimals,
