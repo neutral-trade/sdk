@@ -37,7 +37,6 @@ export interface VaultRegistryEntry {
   category: VaultCategory
   vaultAddress: string
   depositToken: SupportedToken
-  pfee?: number
   /** Optional Drift program ID (only for Drift vaults with non-default program) */
   driftProgramId?: string
   /** Optional Bundle program ID. If omitted, SDK uses cluster default bundle program ID. */
@@ -57,7 +56,6 @@ export const VaultRegistryEntrySchema = z.object({
   category: z.nativeEnum(VaultCategory),
   vaultAddress: z.string().min(32).max(44),
   depositToken: z.nativeEnum(SupportedToken),
-  pfee: z.number().min(0).max(1).optional(),
   driftProgramId: z.string().min(32).max(44).optional(),
   bundleProgramId: z.string().min(32).max(44).optional(),
   pointsMultiplier: z.number().min(0).optional(),

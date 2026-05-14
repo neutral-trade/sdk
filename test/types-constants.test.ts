@@ -96,12 +96,6 @@ describe('types and Constants Validation', () => {
         expect([VaultType.Drift, VaultType.Bundle, VaultType.Hyperliquid, VaultType.Kamino]).toContain(config.type)
         expect(config.vaultAddress).toBeTruthy()
         expect(config.depositToken).toBeDefined()
-
-        // pfee is optional but should be within valid range if present
-        if (config.pfee !== undefined) {
-          expect(config.pfee).toBeGreaterThanOrEqual(0)
-          expect(config.pfee).toBeLessThanOrEqual(1)
-        }
       }
     })
 
