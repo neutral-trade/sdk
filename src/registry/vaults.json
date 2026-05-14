@@ -23,7 +23,7 @@
     "vaultId": 76,
     "name": "Master Bundle",
     "type": "Bundle",
-    "category": "Fund Of Fund",
+    "category": "Master Vault",
     "vaultAddress": "J7qhMAKnB6G5dvoAN9281ufabajKbyGQxxd2bq6R7fPJ",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
