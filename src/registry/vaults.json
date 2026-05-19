@@ -100,7 +100,7 @@
     "depositToken": "USDC",
     "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9",
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 68,
