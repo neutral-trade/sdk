@@ -4,9 +4,9 @@
     "name": "Dev1",
     "type": "Bundle",
     "category": "Market Neutral",
-    "vaultAddress": "EUs1XqK5Fr7DXxS5NTy2yYd3jehfYFJ4WYefesDf6iy3",
+    "vaultAddress": "6cb6EGJyTi1pv2s6W1Cs3iHi1QZDowuHMBRYe6QfPQiV",
     "depositToken": "USDC",
-    "bundleProgramId": "7trSyt7d1ZRnvfGh9JaQZwZMWtfAXMvMwN3UxgMzVFbv",
+    "bundleProgramId": "6krRwf1PvscuZ4zkema8yhgpRpWqRZkYeo69eYip7LeG",
     "pointsMultiplier": 1,
     "pointsEnabled": false
   }

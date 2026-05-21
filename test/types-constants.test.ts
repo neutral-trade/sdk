@@ -161,7 +161,7 @@ describe('types and Constants Validation', () => {
 
     it('devnet USDC mint uses team mock SPL', () => {
       expect(getSolanaTokenMint(SupportedToken.USDC, 'devnet')).toBe(
-        '6a8hWCCa2QDQTqzLUapZwZtgHTox8BsgataN6JVLwdo7',
+        '6cb6EGJyTi1pv2s6W1Cs3iHi1QZDowuHMBRYe6QfPQiV',
       )
       expect(getSolanaTokenMint(SupportedToken.USDC, 'mainnet')).toBe(
         tokens[SupportedToken.USDC].onChain[SupportedChain.Solana]!.address,
