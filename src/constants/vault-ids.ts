@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Thirdeye-Flagship-USDC-Bundle */
+  thirdeye_flagship_usdc_bundle_79 = 79,
   /** Velox-Cross-USDC-Bundle */
   velox_cross_usdc_bundle_78 = 78,
   /** Hyperithm-CTA-USDC-Bundle */

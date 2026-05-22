@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 79,
+    "name": "Thirdeye-Flagship-USDC-Bundle",
+    "type": "Bundle",
+    "category": "Directional",
+    "vaultAddress": "EjRMd8PwrdoeijMqvXovQdx99EejjM8MpW2KF869asW7",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 78,
     "name": "Velox-Cross-USDC-Bundle",
     "type": "Bundle",

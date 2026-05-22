@@ -28,7 +28,7 @@ export const DEFAULT_BUNDLE_PROGRAM_ID_MAINNET = 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGo
 export const BUNDLE_PROGRAM_ID_V2_MAINNET = 'BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9'
 
 // Source: bundle-sc/Anchor.toml [programs.devnet]
-export const DEFAULT_BUNDLE_PROGRAM_ID_DEVNET = '6krRwf1PvscuZ4zkema8yhgpRpWqRZkYeo69eYip7LeG'
+export const DEFAULT_BUNDLE_PROGRAM_ID_DEVNET = 'CcR9whVnaW3STx6LLYotwy5JJXmnC8KDjtRotA3NCL8v'
 
 export const DEFAULT_BUNDLE_PROGRAM_IDS_BY_CLUSTER: Record<BundleCluster, string> = {
   mainnet: DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
