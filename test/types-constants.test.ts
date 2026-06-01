@@ -156,12 +156,12 @@ describe('types and Constants Validation', () => {
       expect(vaultsDevnet[100000001].name).toBe('Dev1')
       expect(DevnetVaultId.dev1_100000001).toBe(100000001)
       expect(getVaultRegistry('devnet')).toBe(vaultsDevnet)
-      expect(getVaultById(100000001, 'devnet')?.vaultAddress).toBe('EUs1XqK5Fr7DXxS5NTy2yYd3jehfYFJ4WYefesDf6iy3')
+      expect(getVaultById(100000001, 'devnet')?.vaultAddress).toBe('HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB')
     })
 
     it('devnet USDC mint uses team mock SPL', () => {
       expect(getSolanaTokenMint(SupportedToken.USDC, 'devnet')).toBe(
-        '6cb6EGJyTi1pv2s6W1Cs3iHi1QZDowuHMBRYe6QfPQiV',
+        '6a8hWCCa2QDQTqzLUapZwZtgHTox8BsgataN6JVLwdo7',
       )
       expect(getSolanaTokenMint(SupportedToken.USDC, 'mainnet')).toBe(
         tokens[SupportedToken.USDC].onChain[SupportedChain.Solana]!.address,
