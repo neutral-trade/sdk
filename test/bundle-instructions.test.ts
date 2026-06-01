@@ -1,6 +1,6 @@
 import { BN } from '@coral-xyz/anchor'
 import { describe, expect, it } from 'vitest'
-import { computeRequestWithdrawalSharesFromAmountRaw } from '../src/utils/bundle-instructions'
+import { computeRequestWithdrawalSharesFromAmountRaw } from '../src/utils/request-withdraw-shares'
 
 describe('computeRequestWithdrawalSharesFromAmountRaw', () => {
   const totalShares = 1000n

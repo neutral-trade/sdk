@@ -35,21 +35,39 @@ Runtime dependencies are declared normally (Anchor, Solana web3, etc.); consumer
 ```typescript
 import { NeutralTrade, VaultId } from '@neutral-trade/sdk'
 
-// Initialize the SDK
+// Initialize the SDK (uses built-in vault registry for your cluster)
 const sdk = await NeutralTrade.create({
-  rpcUrl: 'YOUR_RPC_URL_HERE'
+  rpcUrl: 'YOUR_RPC_URL_HERE',
 })
 
 // Get user balance for Bundle vaults only
 const balances = await sdk.getUserBalanceByVaultIds({
   vaultIds: [VaultId.hyperliquid_funding_arb_48, VaultId.alp_delta_neutral_49],
-  userAddress: 'YOUR_WALLET_ADDRESS'
+  userAddress: 'YOUR_WALLET_ADDRESS',
 })
 
 console.log(balances)
 ```
 
 ## Vault registry
+
+Vault configurations are **bundled with the SDK** at build time (`src/registry/vaults.json` for mainnet, `vaults.devnet.json` for devnet). The SDK does **not** fetch or accept external registry overrides.
+
+### Getting the latest vault list
+
+**Upgrade the SDK package** whenever Neutral Trade ships new vaults:
+
+```bash
+pnpm add @neutral-trade/sdk@latest
+# or pin a specific version, e.g. @neutral-trade/sdk@0.4.0
+```
+
+Each release includes an updated built-in registry. There is no runtime registry URL.
+
+### Integrators who cannot upgrade frequently
+
+- Use the **[Neutral Trade API](https://www.neutral.trade/api/v1)** to build unsigned deposit/withdraw instructions server-side, or
+- **Contact us on [Telegram](https://t.me/neutraltrade)** for API access and integration support.
 
 Built-in configs include multiple vault **types** in metadata (`VaultType` may still include `Drift` for historical entries). **Balance queries** in this package apply only to **`VaultType.Bundle`** rows.
 
@@ -63,87 +81,18 @@ VaultId.alp_delta_neutral_49 // ALP Delta Neutral
 
 See the [documentation](https://sdk.neutral.trade) for the complete list of vault IDs.
 
-## Configuration Registry
+### Cluster selection
 
-The SDK includes built-in vault configurations, but you can also fetch the latest configurations from a remote registry. This is useful if you don't upgrade the SDK package frequently.
-
-Merge order is:
-
-- built-in configs
-- `registry` (local array you provide)
-- `registryUrl` (remote, highest priority)
-
-Use `bundleCluster` to select fixed default Bundle program ID by cluster (`mainnet` or `devnet`).
-If a vault entry includes `bundleProgramId`, that vault-specific program ID is used instead.
-
-### Registry URLs
-
-- **GitHub Raw**: `https://raw.githubusercontent.com/neutral-trade/sdk/main/src/registry/vaults.json`
-- **jsDelivr CDN**: `https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json`
-
-### Usage
-
-**Use a local registry array (good for custom/new vaults):**
+Use `bundleCluster` to select the built-in registry and default Bundle program ID (`mainnet` or `devnet`):
 
 ```typescript
 const sdk = await NeutralTrade.create({
   rpcUrl: 'YOUR_RPC_URL_HERE',
-  registry: [
-    {
-      vaultId: 9999,
-      name: 'My Custom Vault',
-      type: 'Bundle',
-      category: 'Market Neutral',
-      vaultAddress: 'YOUR_VAULT_ADDRESS',
-      depositToken: 'USDC'
-    }
-  ]
+  bundleCluster: 'devnet',
 })
 ```
 
-**Use the registry URL if you don't upgrade the SDK frequently:**
-
-```typescript
-const sdk = await NeutralTrade.create({
-  rpcUrl: 'YOUR_RPC_URL_HERE',
-  registryUrl: 'https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json'
-})
-```
-
-This ensures you always have the latest vault configurations without needing to update the SDK package.
-
-**Use both local + registry URL (URL overrides local when same vaultId exists):**
-
-```typescript
-const sdk = await NeutralTrade.create({
-  rpcUrl: 'YOUR_RPC_URL_HERE',
-  registry: [
-    // Local overrides built-in
-  ],
-  registryUrl: 'https://cdn.jsdelivr.net/gh/neutral-trade/sdk@main/src/registry/vaults.json'
-  // Remote overrides local
-})
-```
-
-**Use built-in configs if you upgrade the SDK regularly:**
-
-```typescript
-const sdk = await NeutralTrade.create({
-  rpcUrl: 'YOUR_RPC_URL_HERE'
-  // No registryUrl - uses built-in configurations
-})
-```
-
-**Select devnet default Bundle program ID:**
-
-```typescript
-const sdk = await NeutralTrade.create({
-  rpcUrl: 'YOUR_RPC_URL_HERE',
-  bundleCluster: 'devnet'
-})
-```
-
-This is simpler and doesn't require an additional network request at initialization.
+If a vault entry includes `bundleProgramId`, that vault-specific program ID is used instead of the cluster default. Only official Neutral Trade program IDs are accepted for fund-moving instructions.
 
 ## Examples
 
@@ -156,7 +105,7 @@ pnpm example:devnet:deposit
 pnpm example:devnet:withdraw
 ```
 
-Uses the built-in devnet registry (`src/registry/vaults.devnet.json`, e.g. vault `100000001`). Your RPC must serve that vault on-chain; override vault id with `DEVNET_BUNDLE_VAULT_ID` if you use `NeutralTrade.create({ registry: [...] })` patterns in a forked script.
+Uses the built-in devnet registry (`src/registry/vaults.devnet.json`, e.g. vault `100000001`). Your RPC must serve that vault on-chain; override vault id with `DEVNET_BUNDLE_VAULT_ID`.
 
 ## License
 

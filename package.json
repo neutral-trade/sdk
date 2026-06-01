@@ -1,7 +1,7 @@
 {
   "name": "@neutral-trade/sdk",
   "type": "module",
-  "version": "0.3.11",
+  "version": "0.4.0",
   "packageManager": "pnpm@10.25.0",
   "description": "SDK for Neutral Trade vaults",
   "license": "MIT",
@@ -15,6 +15,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
+    "./internal": "./dist/internal.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",

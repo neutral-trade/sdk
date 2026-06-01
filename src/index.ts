@@ -1,11 +1,15 @@
 export { createDummyWallet } from './constants/client'
 // Constants
 export {
+  ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER,
+  assertAllowlistedBundleProgramId,
   BUNDLE_PROGRAM_ID_V2_MAINNET,
+  createAllowlistedBundleProgram,
   createBundleProgramById,
   DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
   getDefaultBundleProgramIdByCluster,
+  isAllowlistedBundleProgramId,
 } from './constants/programs'
 export type { BundleCluster, BundleProgram, BundleProvider } from './constants/programs'
 export { VaultId } from './constants/vault-ids'
@@ -21,10 +25,11 @@ export {
   vaultsDevnet,
 } from './constants/vaults'
 
+export type { NeutralTradeCoreContext } from './neutral-trade-core'
+
 // Main class
 export { NeutralTrade } from './NeutralTrade'
-
-export type { NeutralTradeConfig, NeutralTradeCoreContext } from './NeutralTrade'
+export type { NeutralTradeConfig } from './NeutralTrade'
 // Types
 export type {
   BundleAccount,

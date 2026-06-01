@@ -39,6 +39,30 @@ export function getDefaultBundleProgramIdByCluster(cluster: BundleCluster = 'mai
   return DEFAULT_BUNDLE_PROGRAM_IDS_BY_CLUSTER[cluster]
 }
 
+export const ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER: Record<BundleCluster, readonly string[]> = {
+  mainnet: [DEFAULT_BUNDLE_PROGRAM_ID_MAINNET, BUNDLE_PROGRAM_ID_V2_MAINNET],
+  devnet: [DEFAULT_BUNDLE_PROGRAM_ID_DEVNET],
+}
+
+export function isAllowlistedBundleProgramId(programId: string, cluster: BundleCluster): boolean {
+  return ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER[cluster].includes(programId)
+}
+
+export function assertAllowlistedBundleProgramId(programId: string, cluster: BundleCluster): void {
+  if (!isAllowlistedBundleProgramId(programId, cluster)) {
+    throw new Error(`Unsupported bundle program id for ${cluster}: ${programId}`)
+  }
+}
+
+export function createAllowlistedBundleProgram(
+  provider: AnchorProvider,
+  programId: string,
+  cluster: BundleCluster,
+): BundleProgram {
+  assertAllowlistedBundleProgramId(programId, cluster)
+  return createBundleProgramById(provider, programId)
+}
+
 /**
  * Pick Anchor IDL bytes for this bundle program deployment.
  * Main vs Jupiter have different on-chain account layouts; same IDL + only `address` override breaks decode (e.g. vaultId 69).
