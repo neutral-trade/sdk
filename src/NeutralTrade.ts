@@ -15,6 +15,11 @@ import { getBundleBalances } from './utils/bundle'
 
 export interface NeutralTradeConfig {
   rpcUrl: string
+  /**
+   * Optional WebSocket RPC for account subscriptions.
+   * HTTP JSON-RPC always uses `rpcUrl`; when set, avoids deriving WS from the HTTP proxy URL.
+   */
+  wsRpcUrl?: string
   /** Bundle program cluster selector. Defaults to 'mainnet'. */
   bundleCluster?: BundleCluster
   /** Optional fallback prices map. Prices are fetched from Pyth Network first; fallback is used only if Pyth returns incomplete data */

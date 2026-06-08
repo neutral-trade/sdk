@@ -20,8 +20,11 @@ export function createDummyWallet(): Wallet {
 /* ------------------------------------------------------------------ *
  *  Factory functions to create providers from rpcUrl                 *
  * ------------------------------------------------------------------ */
-export function createConnection(rpcUrl: string): Connection {
-  return new Connection(rpcUrl, 'confirmed')
+export function createConnection(rpcUrl: string, wsRpcUrl?: string): Connection {
+  return new Connection(rpcUrl, {
+    commitment: 'confirmed',
+    ...(wsRpcUrl ? { wsEndpoint: wsRpcUrl } : {}),
+  })
 }
 
 export function createAnchorProvider(connection: Connection, wallet?: Wallet): AnchorProvider {

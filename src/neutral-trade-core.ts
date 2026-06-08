@@ -38,7 +38,7 @@ export interface NeutralTradeCoreContext {
 }
 
 export async function initNeutralTradeCore(config: NeutralTradeConfig): Promise<NeutralTradeCoreContext> {
-  const connection = createConnection(config.rpcUrl)
+  const connection = createConnection(config.rpcUrl, config.wsRpcUrl)
   const provider = createAnchorProvider(connection)
   const cluster = config.bundleCluster ?? 'mainnet'
   const vaults = { ...getVaultRegistry(cluster) }
