@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 80,
+    "name": "Options-MM-Z",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "3vZKAcd74bzwNYZmsJndYExkGj6ABQwrUoiMtdNfzLZe",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 79,
     "name": "Thirdeye-Flagship-USDC-Bundle",
     "type": "Bundle",
