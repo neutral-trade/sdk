@@ -15,16 +15,7 @@ export interface Ntbundle {
   instructions: [
     {
       name: 'addStrategy'
-      discriminator: [
-        64,
-        123,
-        127,
-        227,
-        192,
-        234,
-        198,
-        20,
-      ]
+      discriminator: [64, 123, 127, 227, 192, 234, 198, 20]
       accounts: [
         {
           name: 'manager'
@@ -38,16 +29,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  83,
-                  84,
-                  82,
-                  65,
-                  84,
-                  69,
-                  71,
-                  89,
-                ]
+                value: [83, 84, 82, 65, 84, 69, 71, 89]
               },
               {
                 kind: 'account'
@@ -82,16 +64,7 @@ export interface Ntbundle {
     },
     {
       name: 'applyFeesToUser'
-      discriminator: [
-        26,
-        41,
-        103,
-        167,
-        61,
-        147,
-        141,
-        30,
-      ]
+      discriminator: [26, 41, 103, 167, 61, 147, 141, 30]
       accounts: [
         {
           name: 'keeper'
@@ -109,19 +82,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -145,14 +106,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -205,16 +159,7 @@ export interface Ntbundle {
     },
     {
       name: 'changeBundleMasterAdmin'
-      discriminator: [
-        255,
-        41,
-        246,
-        82,
-        7,
-        81,
-        174,
-        112,
-      ]
+      discriminator: [255, 41, 246, 82, 7, 81, 174, 112]
       accounts: [
         {
           name: 'admin'
@@ -228,21 +173,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  77,
-                  65,
-                  83,
-                  84,
-                  69,
-                  82,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 77, 65, 83, 84, 69, 82]
               },
             ]
           }
@@ -257,16 +188,7 @@ export interface Ntbundle {
     },
     {
       name: 'changeManager'
-      discriminator: [
-        97,
-        44,
-        74,
-        213,
-        119,
-        243,
-        203,
-        8,
-      ]
+      discriminator: [97, 44, 74, 213, 119, 243, 203, 8]
       accounts: [
         {
           name: 'manager'
@@ -286,17 +208,51 @@ export interface Ntbundle {
       ]
     },
     {
-      name: 'closeUserBundleAccount'
-      discriminator: [
-        201,
-        195,
-        126,
-        228,
-        9,
-        173,
-        79,
-        215,
+      name: 'clearUserFeeOverride'
+      discriminator: [97, 227, 92, 191, 205, 0, 154, 77]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAccount'
+        },
       ]
+      args: [
+        {
+          name: 'clearMask'
+          type: 'u8'
+        },
+      ]
+    },
+    {
+      name: 'closeUserBundleAccount'
+      discriminator: [201, 195, 126, 228, 9, 173, 79, 215]
       accounts: [
         {
           name: 'authority'
@@ -310,19 +266,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -343,16 +287,7 @@ export interface Ntbundle {
     },
     {
       name: 'distributeToReceivers'
-      discriminator: [
-        123,
-        169,
-        151,
-        143,
-        0,
-        82,
-        209,
-        145,
-      ]
+      discriminator: [123, 169, 151, 143, 0, 82, 209, 145]
       accounts: [
         {
           name: 'keeper'
@@ -467,14 +402,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -537,24 +465,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -570,16 +481,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  83,
-                  84,
-                  82,
-                  65,
-                  84,
-                  69,
-                  71,
-                  89,
-                ]
+                value: [83, 84, 82, 65, 84, 69, 71, 89]
               },
               {
                 kind: 'account'
@@ -597,16 +499,7 @@ export interface Ntbundle {
     },
     {
       name: 'enableStrategy'
-      discriminator: [
-        245,
-        37,
-        61,
-        122,
-        99,
-        92,
-        182,
-        30,
-      ]
+      discriminator: [245, 37, 61, 122, 99, 92, 182, 30]
       accounts: [
         {
           name: 'manager'
@@ -620,16 +513,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  83,
-                  84,
-                  82,
-                  65,
-                  84,
-                  69,
-                  71,
-                  89,
-                ]
+                value: [83, 84, 82, 65, 84, 69, 71, 89]
               },
               {
                 kind: 'account'
@@ -659,16 +543,7 @@ export interface Ntbundle {
     },
     {
       name: 'endDistribution'
-      discriminator: [
-        201,
-        74,
-        167,
-        103,
-        102,
-        125,
-        0,
-        236,
-      ]
+      discriminator: [201, 74, 167, 103, 102, 125, 0, 236]
       accounts: [
         {
           name: 'keeper'
@@ -686,24 +561,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -719,14 +577,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -740,16 +591,7 @@ export interface Ntbundle {
     },
     {
       name: 'initializeBundle'
-      discriminator: [
-        93,
-        76,
-        148,
-        51,
-        99,
-        41,
-        179,
-        234,
-      ]
+      discriminator: [93, 76, 148, 51, 99, 41, 179, 234]
       accounts: [
         {
           name: 'creator'
@@ -762,22 +604,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  67,
-                  82,
-                  69,
-                  65,
-                  84,
-                  79,
-                  82,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 67, 82, 69, 65, 84, 79, 82]
               },
               {
                 kind: 'account'
@@ -805,14 +632,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'arg'
@@ -828,24 +648,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -861,14 +664,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -882,10 +678,7 @@ export interface Ntbundle {
         {
           name: 'name'
           type: {
-            array: [
-              'u8',
-              32,
-            ]
+            array: ['u8', 32]
           }
         },
         {
@@ -964,16 +757,7 @@ export interface Ntbundle {
     },
     {
       name: 'initializeBundleDepositor'
-      discriminator: [
-        126,
-        6,
-        242,
-        36,
-        22,
-        209,
-        35,
-        2,
-      ]
+      discriminator: [126, 6, 242, 36, 22, 209, 35, 2]
       accounts: [
         {
           name: 'payer'
@@ -1003,19 +787,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -1033,16 +805,7 @@ export interface Ntbundle {
     },
     {
       name: 'initializeBundleMasterAccount'
-      discriminator: [
-        125,
-        166,
-        190,
-        35,
-        73,
-        169,
-        140,
-        206,
-      ]
+      discriminator: [125, 166, 190, 35, 73, 169, 140, 206]
       accounts: [
         {
           name: 'admin'
@@ -1056,21 +819,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  77,
-                  65,
-                  83,
-                  84,
-                  69,
-                  82,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 77, 65, 83, 84, 69, 82]
               },
             ]
           }
@@ -1084,16 +833,7 @@ export interface Ntbundle {
     },
     {
       name: 'initializePermissionedBundleDepositor'
-      discriminator: [
-        157,
-        162,
-        213,
-        42,
-        205,
-        201,
-        37,
-        255,
-      ]
+      discriminator: [157, 162, 213, 42, 205, 201, 37, 255]
       accounts: [
         {
           name: 'payer'
@@ -1122,19 +862,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -1152,16 +880,7 @@ export interface Ntbundle {
     },
     {
       name: 'managerWithdraw'
-      discriminator: [
-        201,
-        248,
-        190,
-        143,
-        86,
-        43,
-        183,
-        254,
-      ]
+      discriminator: [201, 248, 190, 143, 86, 43, 183, 254]
       accounts: [
         {
           name: 'manager'
@@ -1277,14 +996,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -1341,16 +1053,7 @@ export interface Ntbundle {
     },
     {
       name: 'netPendingTransactions'
-      discriminator: [
-        44,
-        219,
-        50,
-        19,
-        246,
-        252,
-        37,
-        163,
-      ]
+      discriminator: [44, 219, 50, 19, 246, 252, 37, 163]
       accounts: [
         {
           name: 'keeper'
@@ -1599,14 +1302,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -1622,24 +1318,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -1696,16 +1375,7 @@ export interface Ntbundle {
     },
     {
       name: 'pauseDepositsWithdrawals'
-      discriminator: [
-        106,
-        171,
-        198,
-        31,
-        183,
-        219,
-        159,
-        80,
-      ]
+      discriminator: [106, 171, 198, 31, 183, 219, 159, 80]
       accounts: [
         {
           name: 'keeper'
@@ -1723,24 +1393,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -1756,14 +1409,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -1782,16 +1428,7 @@ export interface Ntbundle {
     },
     {
       name: 'performRefill'
-      discriminator: [
-        241,
-        64,
-        6,
-        52,
-        58,
-        169,
-        15,
-        12,
-      ]
+      discriminator: [241, 64, 6, 52, 58, 169, 15, 12]
       accounts: [
         {
           name: 'receiverAddress'
@@ -1906,16 +1543,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  83,
-                  84,
-                  82,
-                  65,
-                  84,
-                  69,
-                  71,
-                  89,
-                ]
+                value: [83, 84, 82, 65, 84, 69, 71, 89]
               },
               {
                 kind: 'account'
@@ -1935,14 +1563,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -2004,16 +1625,7 @@ export interface Ntbundle {
     },
     {
       name: 'processDeposit'
-      discriminator: [
-        136,
-        162,
-        64,
-        35,
-        84,
-        200,
-        254,
-        136,
-      ]
+      discriminator: [136, 162, 64, 35, 84, 200, 254, 136]
       accounts: [
         {
           name: 'keeper'
@@ -2027,19 +1639,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -2054,9 +1654,7 @@ export interface Ntbundle {
         },
         {
           name: 'pendingDepositTokenAccount'
-          docs: [
-            'the account holding the user\'s deposited asset before allocation.',
-          ]
+          docs: ['the account holding the user\'s deposited asset before allocation.']
           writable: true
           pda: {
             seeds: [
@@ -2147,9 +1745,7 @@ export interface Ntbundle {
         },
         {
           name: 'userBundleAccountOwner'
-          docs: [
-            'the owner of the pending request (for event purposes).',
-          ]
+          docs: ['the owner of the pending request (for event purposes).']
         },
         {
           name: 'assetAddress'
@@ -2256,24 +1852,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -2289,14 +1868,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -2404,16 +1976,7 @@ export interface Ntbundle {
     },
     {
       name: 'processWithdrawal'
-      discriminator: [
-        51,
-        97,
-        236,
-        17,
-        37,
-        33,
-        196,
-        64,
-      ]
+      discriminator: [51, 97, 236, 17, 37, 33, 196, 64]
       accounts: [
         {
           name: 'keeper'
@@ -2575,19 +2138,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -2654,24 +2205,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -2687,14 +2221,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -2716,16 +2243,7 @@ export interface Ntbundle {
     },
     {
       name: 'refundDeposit'
-      discriminator: [
-        19,
-        19,
-        78,
-        50,
-        187,
-        10,
-        162,
-        229,
-      ]
+      discriminator: [19, 19, 78, 50, 187, 10, 162, 229]
       accounts: [
         {
           name: 'keeper'
@@ -2739,19 +2257,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -2766,9 +2272,7 @@ export interface Ntbundle {
         },
         {
           name: 'userBundleAccountOwner'
-          docs: [
-            'the owner of the pending request (for event purposes).',
-          ]
+          docs: ['the owner of the pending request (for event purposes).']
         },
         {
           name: 'userTokenAccount'
@@ -2918,24 +2422,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -2957,16 +2444,7 @@ export interface Ntbundle {
     },
     {
       name: 'removeStrategy'
-      discriminator: [
-        185,
-        238,
-        33,
-        91,
-        134,
-        210,
-        97,
-        26,
-      ]
+      discriminator: [185, 238, 33, 91, 134, 210, 97, 26]
       accounts: [
         {
           name: 'manager'
@@ -2980,16 +2458,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  83,
-                  84,
-                  82,
-                  65,
-                  84,
-                  69,
-                  71,
-                  89,
-                ]
+                value: [83, 84, 82, 65, 84, 69, 71, 89]
               },
               {
                 kind: 'account'
@@ -3019,16 +2488,7 @@ export interface Ntbundle {
     },
     {
       name: 'requestDeposit'
-      discriminator: [
-        243,
-        202,
-        197,
-        215,
-        135,
-        97,
-        213,
-        109,
-      ]
+      discriminator: [243, 202, 197, 215, 135, 97, 213, 109]
       accounts: [
         {
           name: 'user'
@@ -3037,9 +2497,7 @@ export interface Ntbundle {
         },
         {
           name: 'userTokenAccount'
-          docs: [
-            'user token account (source of funds)',
-          ]
+          docs: ['user token account (source of funds)']
           writable: true
         },
         {
@@ -3143,19 +2601,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -3179,14 +2625,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -3202,24 +2641,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -3297,16 +2719,7 @@ export interface Ntbundle {
     },
     {
       name: 'requestWithdrawal'
-      discriminator: [
-        251,
-        85,
-        121,
-        205,
-        56,
-        201,
-        12,
-        177,
-      ]
+      discriminator: [251, 85, 121, 205, 56, 201, 12, 177]
       accounts: [
         {
           name: 'user'
@@ -3320,19 +2733,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  85,
-                  83,
-                  69,
-                  82,
-                  95,
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                ]
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
               },
               {
                 kind: 'account'
@@ -3356,14 +2757,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -3379,24 +2773,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -3427,16 +2804,7 @@ export interface Ntbundle {
     },
     {
       name: 'setBundleCreator'
-      discriminator: [
-        190,
-        144,
-        93,
-        89,
-        14,
-        138,
-        195,
-        166,
-      ]
+      discriminator: [190, 144, 93, 89, 14, 138, 195, 166]
       accounts: [
         {
           name: 'admin'
@@ -3449,30 +2817,14 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  77,
-                  65,
-                  83,
-                  84,
-                  69,
-                  82,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 77, 65, 83, 84, 69, 82]
               },
             ]
           }
         },
         {
           name: 'creator'
-          docs: [
-            'CHECK safe as only the pubkey is read',
-          ]
+          docs: ['CHECK safe as only the pubkey is read']
         },
         {
           name: 'bundleCreatorAccount'
@@ -3481,22 +2833,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  67,
-                  82,
-                  69,
-                  65,
-                  84,
-                  79,
-                  82,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 67, 82, 69, 65, 84, 79, 82]
               },
               {
                 kind: 'account'
@@ -3519,16 +2856,7 @@ export interface Ntbundle {
     },
     {
       name: 'setDelays'
-      discriminator: [
-        18,
-        56,
-        143,
-        125,
-        147,
-        15,
-        199,
-        108,
-      ]
+      discriminator: [18, 56, 143, 125, 147, 15, 199, 108]
       accounts: [
         {
           name: 'manager'
@@ -3561,16 +2889,7 @@ export interface Ntbundle {
     },
     {
       name: 'setFees'
-      discriminator: [
-        137,
-        178,
-        49,
-        58,
-        0,
-        245,
-        242,
-        190,
-      ]
+      discriminator: [137, 178, 49, 58, 0, 245, 242, 190]
       accounts: [
         {
           name: 'manager'
@@ -3607,16 +2926,7 @@ export interface Ntbundle {
     },
     {
       name: 'setKeeper'
-      discriminator: [
-        102,
-        94,
-        23,
-        78,
-        157,
-        222,
-        243,
-        214,
-      ]
+      discriminator: [102, 94, 23, 78, 157, 222, 243, 214]
       accounts: [
         {
           name: 'manager'
@@ -3637,16 +2947,7 @@ export interface Ntbundle {
     },
     {
       name: 'setMaxDepositAmount'
-      discriminator: [
-        29,
-        66,
-        217,
-        12,
-        80,
-        248,
-        214,
-        9,
-      ]
+      discriminator: [29, 66, 217, 12, 80, 248, 214, 9]
       accounts: [
         {
           name: 'manager'
@@ -3667,16 +2968,7 @@ export interface Ntbundle {
     },
     {
       name: 'setMinDepositAmount'
-      discriminator: [
-        224,
-        153,
-        215,
-        211,
-        233,
-        14,
-        124,
-        128,
-      ]
+      discriminator: [224, 153, 215, 211, 233, 14, 124, 128]
       accounts: [
         {
           name: 'manager'
@@ -3697,16 +2989,7 @@ export interface Ntbundle {
     },
     {
       name: 'setOracleBuffer'
-      discriminator: [
-        7,
-        196,
-        14,
-        82,
-        110,
-        244,
-        46,
-        33,
-      ]
+      discriminator: [7, 196, 14, 82, 110, 244, 46, 33]
       accounts: [
         {
           name: 'manager'
@@ -3727,16 +3010,7 @@ export interface Ntbundle {
     },
     {
       name: 'setOracleMaxAge'
-      discriminator: [
-        75,
-        127,
-        254,
-        84,
-        122,
-        23,
-        122,
-        82,
-      ]
+      discriminator: [75, 127, 254, 84, 122, 23, 122, 82]
       accounts: [
         {
           name: 'manager'
@@ -3757,16 +3031,7 @@ export interface Ntbundle {
     },
     {
       name: 'setOracleUpdateTimeLimit'
-      discriminator: [
-        114,
-        2,
-        35,
-        146,
-        19,
-        99,
-        67,
-        202,
-      ]
+      discriminator: [114, 2, 35, 146, 19, 99, 67, 202]
       accounts: [
         {
           name: 'manager'
@@ -3786,17 +3051,67 @@ export interface Ntbundle {
       ]
     },
     {
-      name: 'setWithdrawalRedemptionSchedule'
-      discriminator: [
-        134,
-        108,
-        237,
-        103,
-        185,
-        13,
-        177,
-        105,
+      name: 'setUserFeeOverride'
+      discriminator: [207, 40, 210, 198, 66, 33, 153, 209]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [85, 83, 69, 82, 95, 66, 85, 78, 68, 76, 69]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAccount'
+        },
       ]
+      args: [
+        {
+          name: 'overrideMask'
+          type: 'u8'
+        },
+        {
+          name: 'customDepositFeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'customWithdrawalFeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'customPerformanceFeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'customManagementFeeBps'
+          type: 'u32'
+        },
+      ]
+    },
+    {
+      name: 'setWithdrawalRedemptionSchedule'
+      discriminator: [134, 108, 237, 103, 185, 13, 177, 105]
       accounts: [
         {
           name: 'manager'
@@ -3825,16 +3140,7 @@ export interface Ntbundle {
     },
     {
       name: 'startDistribution'
-      discriminator: [
-        118,
-        230,
-        215,
-        75,
-        83,
-        2,
-        163,
-        35,
-      ]
+      discriminator: [118, 230, 215, 75, 83, 2, 163, 35]
       accounts: [
         {
           name: 'keeper'
@@ -3852,24 +3158,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -3885,14 +3174,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -3906,16 +3188,7 @@ export interface Ntbundle {
     },
     {
       name: 'updateAllocations'
-      discriminator: [
-        229,
-        242,
-        146,
-        124,
-        44,
-        15,
-        130,
-        95,
-      ]
+      discriminator: [229, 242, 146, 124, 44, 15, 130, 95]
       accounts: [
         {
           name: 'manager'
@@ -3937,16 +3210,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  83,
-                  84,
-                  82,
-                  65,
-                  84,
-                  69,
-                  71,
-                  89,
-                ]
+                value: [83, 84, 82, 65, 84, 69, 71, 89]
               },
               {
                 kind: 'account'
@@ -3969,16 +3233,7 @@ export interface Ntbundle {
     },
     {
       name: 'updateOracle'
-      discriminator: [
-        112,
-        41,
-        209,
-        18,
-        248,
-        226,
-        252,
-        188,
-      ]
+      discriminator: [112, 41, 209, 18, 248, 226, 252, 188]
       accounts: [
         {
           name: 'keeper'
@@ -3996,24 +3251,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  66,
-                  85,
-                  78,
-                  68,
-                  76,
-                  69,
-                  95,
-                  84,
-                  69,
-                  77,
-                  80,
-                  95,
-                  68,
-                  65,
-                  84,
-                  65,
-                ]
+                value: [66, 85, 78, 68, 76, 69, 95, 84, 69, 77, 80, 95, 68, 65, 84, 65]
               },
               {
                 kind: 'account'
@@ -4029,14 +3267,7 @@ export interface Ntbundle {
             seeds: [
               {
                 kind: 'const'
-                value: [
-                  79,
-                  82,
-                  65,
-                  67,
-                  76,
-                  69,
-                ]
+                value: [79, 82, 65, 67, 76, 69]
               },
               {
                 kind: 'account'
@@ -4057,668 +3288,217 @@ export interface Ntbundle {
   accounts: [
     {
       name: 'bundle'
-      discriminator: [
-        15,
-        82,
-        167,
-        230,
-        37,
-        214,
-        82,
-        80,
-      ]
+      discriminator: [15, 82, 167, 230, 37, 214, 82, 80]
     },
     {
       name: 'bundleCreatorAccount'
-      discriminator: [
-        210,
-        168,
-        93,
-        196,
-        184,
-        35,
-        210,
-        101,
-      ]
+      discriminator: [210, 168, 93, 196, 184, 35, 210, 101]
     },
     {
       name: 'bundleMasterAccount'
-      discriminator: [
-        252,
-        50,
-        148,
-        252,
-        178,
-        231,
-        4,
-        149,
-      ]
+      discriminator: [252, 50, 148, 252, 178, 231, 4, 149]
     },
     {
       name: 'bundleTempData'
-      discriminator: [
-        3,
-        137,
-        171,
-        33,
-        191,
-        15,
-        54,
-        4,
-      ]
+      discriminator: [3, 137, 171, 33, 191, 15, 54, 4]
     },
     {
       name: 'oracleData'
-      discriminator: [
-        26,
-        131,
-        25,
-        110,
-        6,
-        141,
-        10,
-        37,
-      ]
+      discriminator: [26, 131, 25, 110, 6, 141, 10, 37]
     },
     {
       name: 'strategy'
-      discriminator: [
-        174,
-        110,
-        39,
-        119,
-        82,
-        106,
-        169,
-        102,
-      ]
+      discriminator: [174, 110, 39, 119, 82, 106, 169, 102]
     },
     {
       name: 'userBundleAccount'
-      discriminator: [
-        32,
-        181,
-        106,
-        26,
-        67,
-        130,
-        185,
-        241,
-      ]
+      discriminator: [32, 181, 106, 26, 67, 130, 185, 241]
     },
   ]
   events: [
     {
       name: 'allocated'
-      discriminator: [
-        146,
-        11,
-        194,
-        76,
-        4,
-        220,
-        226,
-        43,
-      ]
+      discriminator: [146, 11, 194, 76, 4, 220, 226, 43]
     },
     {
       name: 'allocationsUpdated'
-      discriminator: [
-        97,
-        171,
-        21,
-        101,
-        243,
-        48,
-        182,
-        32,
-      ]
+      discriminator: [97, 171, 21, 101, 243, 48, 182, 32]
     },
     {
       name: 'assignedProfitShare'
-      discriminator: [
-        13,
-        208,
-        181,
-        192,
-        192,
-        238,
-        120,
-        197,
-      ]
+      discriminator: [13, 208, 181, 192, 192, 238, 120, 197]
     },
     {
       name: 'authorizedReceiverAdded'
-      discriminator: [
-        185,
-        19,
-        240,
-        219,
-        194,
-        25,
-        19,
-        234,
-      ]
+      discriminator: [185, 19, 240, 219, 194, 25, 19, 234]
     },
     {
       name: 'authorizedReceiverRemoved'
-      discriminator: [
-        69,
-        73,
-        150,
-        51,
-        198,
-        98,
-        43,
-        0,
-      ]
+      discriminator: [69, 73, 150, 51, 198, 98, 43, 0]
     },
     {
       name: 'bundleCreatorAccountChanged'
-      discriminator: [
-        82,
-        51,
-        169,
-        242,
-        101,
-        205,
-        39,
-        52,
-      ]
+      discriminator: [82, 51, 169, 242, 101, 205, 39, 52]
     },
     {
       name: 'bundleDepositorInitialized'
-      discriminator: [
-        136,
-        231,
-        96,
-        201,
-        187,
-        244,
-        121,
-        42,
-      ]
+      discriminator: [136, 231, 96, 201, 187, 244, 121, 42]
     },
     {
       name: 'bundleMasterAccountInitialized'
-      discriminator: [
-        238,
-        211,
-        137,
-        135,
-        255,
-        239,
-        90,
-        91,
-      ]
+      discriminator: [238, 211, 137, 135, 255, 239, 90, 91]
     },
     {
       name: 'bundleMasterAdminChanged'
-      discriminator: [
-        220,
-        192,
-        90,
-        93,
-        19,
-        132,
-        73,
-        208,
-      ]
+      discriminator: [220, 192, 90, 93, 19, 132, 73, 208]
     },
     {
       name: 'changedCoreParams'
-      discriminator: [
-        156,
-        119,
-        46,
-        221,
-        22,
-        121,
-        186,
-        53,
-      ]
+      discriminator: [156, 119, 46, 221, 22, 121, 186, 53]
     },
     {
       name: 'chargedFeesToUser'
-      discriminator: [
-        201,
-        63,
-        172,
-        93,
-        230,
-        105,
-        127,
-        255,
-      ]
+      discriminator: [201, 63, 172, 93, 230, 105, 127, 255]
     },
     {
       name: 'delaysSet'
-      discriminator: [
-        241,
-        35,
-        245,
-        242,
-        188,
-        53,
-        99,
-        208,
-      ]
+      discriminator: [241, 35, 245, 242, 188, 53, 99, 208]
     },
     {
       name: 'depositRequested'
-      discriminator: [
-        35,
-        33,
-        229,
-        138,
-        116,
-        238,
-        192,
-        22,
-      ]
+      discriminator: [35, 33, 229, 138, 116, 238, 192, 22]
     },
     {
       name: 'depositedToDriftVault'
-      discriminator: [
-        200,
-        86,
-        135,
-        159,
-        147,
-        246,
-        123,
-        85,
-      ]
+      discriminator: [200, 86, 135, 159, 147, 246, 123, 85]
     },
     {
       name: 'distributedToReceivers'
-      discriminator: [
-        204,
-        43,
-        29,
-        187,
-        40,
-        60,
-        126,
-        14,
-      ]
+      discriminator: [204, 43, 29, 187, 40, 60, 126, 14]
     },
     {
       name: 'distributionEnded'
-      discriminator: [
-        21,
-        180,
-        83,
-        66,
-        101,
-        235,
-        108,
-        208,
-      ]
+      discriminator: [21, 180, 83, 66, 101, 235, 108, 208]
     },
     {
       name: 'distributionStarted'
-      discriminator: [
-        148,
-        231,
-        87,
-        211,
-        194,
-        167,
-        104,
-        6,
-      ]
+      discriminator: [148, 231, 87, 211, 194, 167, 104, 6]
     },
     {
       name: 'dustSharesBurned'
-      discriminator: [
-        166,
-        218,
-        110,
-        236,
-        33,
-        135,
-        162,
-        139,
-      ]
+      discriminator: [166, 218, 110, 236, 33, 135, 162, 139]
     },
     {
       name: 'initializedNewVaultDepositor'
-      discriminator: [
-        16,
-        182,
-        169,
-        250,
-        42,
-        81,
-        202,
-        173,
-      ]
+      discriminator: [16, 182, 169, 250, 42, 81, 202, 173]
     },
     {
       name: 'initializedReceivers'
-      discriminator: [
-        52,
-        175,
-        118,
-        72,
-        108,
-        236,
-        162,
-        134,
-      ]
+      discriminator: [52, 175, 118, 72, 108, 236, 162, 134]
     },
     {
       name: 'initializedVault'
-      discriminator: [
-        123,
-        23,
-        51,
-        180,
-        138,
-        156,
-        172,
-        91,
-      ]
+      discriminator: [123, 23, 51, 180, 138, 156, 172, 91]
     },
     {
       name: 'managerWithdrawal'
-      discriminator: [
-        167,
-        6,
-        24,
-        193,
-        128,
-        74,
-        94,
-        207,
-      ]
+      discriminator: [167, 6, 24, 193, 128, 74, 94, 207]
     },
     {
       name: 'maxDepositAmountSet'
-      discriminator: [
-        204,
-        243,
-        42,
-        160,
-        116,
-        144,
-        207,
-        38,
-      ]
+      discriminator: [204, 243, 42, 160, 116, 144, 207, 38]
     },
     {
       name: 'minDepositAmountSet'
-      discriminator: [
-        143,
-        114,
-        126,
-        18,
-        32,
-        207,
-        22,
-        19,
-      ]
+      discriminator: [143, 114, 126, 18, 32, 207, 22, 19]
     },
     {
       name: 'nettingCompleted'
-      discriminator: [
-        176,
-        162,
-        4,
-        24,
-        91,
-        47,
-        115,
-        81,
-      ]
+      discriminator: [176, 162, 4, 24, 91, 47, 115, 81]
     },
     {
       name: 'newKeeperSet'
-      discriminator: [
-        33,
-        68,
-        171,
-        11,
-        43,
-        129,
-        192,
-        45,
-      ]
+      discriminator: [33, 68, 171, 11, 43, 129, 192, 45]
     },
     {
       name: 'newManagerSet'
-      discriminator: [
-        215,
-        213,
-        93,
-        251,
-        202,
-        98,
-        253,
-        29,
-      ]
+      discriminator: [215, 213, 93, 251, 202, 98, 253, 29]
     },
     {
       name: 'oracleBufferSet'
-      discriminator: [
-        188,
-        151,
-        124,
-        251,
-        253,
-        205,
-        187,
-        32,
-      ]
+      discriminator: [188, 151, 124, 251, 253, 205, 187, 32]
     },
     {
       name: 'oracleMaxAgeSet'
-      discriminator: [
-        51,
-        17,
-        80,
-        99,
-        8,
-        112,
-        166,
-        44,
-      ]
+      discriminator: [51, 17, 80, 99, 8, 112, 166, 44]
     },
     {
       name: 'oracleUpdateTimeLimitSet'
-      discriminator: [
-        196,
-        182,
-        75,
-        225,
-        80,
-        5,
-        111,
-        103,
-      ]
+      discriminator: [196, 182, 75, 225, 80, 5, 111, 103]
     },
     {
       name: 'oracleUpdated'
-      discriminator: [
-        138,
-        9,
-        51,
-        219,
-        228,
-        198,
-        11,
-        147,
-      ]
+      discriminator: [138, 9, 51, 219, 228, 198, 11, 147]
     },
     {
       name: 'pausedDepositsWithdrawals'
-      discriminator: [
-        131,
-        139,
-        248,
-        233,
-        29,
-        255,
-        148,
-        98,
-      ]
+      discriminator: [131, 139, 248, 233, 29, 255, 148, 98]
     },
     {
       name: 'redeemed'
-      discriminator: [
-        14,
-        29,
-        183,
-        71,
-        31,
-        165,
-        107,
-        38,
-      ]
+      discriminator: [14, 29, 183, 71, 31, 165, 107, 38]
     },
     {
       name: 'refilled'
-      discriminator: [
-        103,
-        127,
-        43,
-        0,
-        232,
-        50,
-        198,
-        85,
-      ]
+      discriminator: [103, 127, 43, 0, 232, 50, 198, 85]
     },
     {
       name: 'refundedDeposit'
-      discriminator: [
-        193,
-        61,
-        203,
-        180,
-        250,
-        38,
-        151,
-        31,
-      ]
+      discriminator: [193, 61, 203, 180, 250, 38, 151, 31]
     },
     {
       name: 'requestedWithdrawalToDriftVault'
-      discriminator: [
-        143,
-        146,
-        104,
-        155,
-        23,
-        243,
-        14,
-        231,
-      ]
+      discriminator: [143, 146, 104, 155, 23, 243, 14, 231]
     },
     {
       name: 'strategyAdded'
-      discriminator: [
-        248,
-        59,
-        8,
-        90,
-        242,
-        168,
-        247,
-        204,
-      ]
+      discriminator: [248, 59, 8, 90, 242, 168, 247, 204]
     },
     {
       name: 'strategyEnabled'
-      discriminator: [
-        105,
-        24,
-        77,
-        30,
-        163,
-        227,
-        107,
-        102,
-      ]
+      discriminator: [105, 24, 77, 30, 163, 227, 107, 102]
     },
     {
       name: 'strategyRemoved'
-      discriminator: [
-        118,
-        162,
-        92,
-        185,
-        73,
-        29,
-        245,
-        144,
-      ]
+      discriminator: [118, 162, 92, 185, 73, 29, 245, 144]
     },
     {
       name: 'userBundleAccountClosed'
-      discriminator: [
-        111,
-        102,
-        134,
-        54,
-        238,
-        23,
-        157,
-        183,
-      ]
+      discriminator: [111, 102, 134, 54, 238, 23, 157, 183]
+    },
+    {
+      name: 'userFeeOverrideCleared'
+      discriminator: [109, 200, 134, 162, 195, 197, 177, 189]
+    },
+    {
+      name: 'userFeeOverrideSet'
+      discriminator: [194, 56, 240, 83, 158, 247, 78, 66]
     },
     {
       name: 'vaultNeutralFeeIncrementerSet'
-      discriminator: [
-        7,
-        53,
-        169,
-        104,
-        118,
-        22,
-        134,
-        207,
-      ]
+      discriminator: [7, 53, 169, 104, 118, 22, 134, 207]
     },
     {
       name: 'withdrawalRedemptionScheduleSet'
-      discriminator: [
-        245,
-        195,
-        40,
-        76,
-        237,
-        247,
-        150,
-        107,
-      ]
+      discriminator: [245, 195, 40, 76, 237, 247, 150, 107]
     },
     {
       name: 'withdrawalRequested'
-      discriminator: [
-        75,
-        207,
-        21,
-        12,
-        160,
-        102,
-        150,
-        55,
-      ]
+      discriminator: [75, 207, 21, 12, 160, 102, 150, 55]
     },
     {
       name: 'withdrawnFromDriftVault'
-      discriminator: [
-        249,
-        177,
-        58,
-        24,
-        88,
-        115,
-        105,
-        193,
-      ]
+      discriminator: [249, 177, 58, 24, 88, 115, 105, 193]
     },
   ]
   errors: [
@@ -5077,6 +3857,21 @@ export interface Ntbundle {
       name: 'invalidWithdrawalRedemptionSchedule'
       msg: 'Invalid withdrawal redemption schedule'
     },
+    {
+      code: 6071
+      name: 'invalidUserFeeConfig'
+      msg: 'Invalid user fee configuration'
+    },
+    {
+      code: 6072
+      name: 'emptyUserFeeClearRequest'
+      msg: 'Empty user fee clear request'
+    },
+    {
+      code: 6073
+      name: 'noUserFeeOverrideToClear'
+      msg: 'No user fee override to clear'
+    },
   ]
   types: [
     {
@@ -5187,10 +3982,7 @@ export interface Ntbundle {
           {
             name: 'name'
             type: {
-              array: [
-                'u8',
-                32,
-              ]
+              array: ['u8', 32]
             }
           },
           {
@@ -5314,10 +4106,7 @@ export interface Ntbundle {
           {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                207,
-              ]
+              array: ['u8', 207]
             }
           },
         ]
@@ -5335,10 +4124,7 @@ export interface Ntbundle {
           {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                64,
-              ]
+              array: ['u8', 64]
             }
           },
         ]
@@ -5384,10 +4170,7 @@ export interface Ntbundle {
           {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                96,
-              ]
+              array: ['u8', 96]
             }
           },
         ]
@@ -5473,10 +4256,7 @@ export interface Ntbundle {
           {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                168,
-              ]
+              array: ['u8', 168]
             }
           },
         ]
@@ -5862,10 +4642,7 @@ export interface Ntbundle {
           {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                64,
-              ]
+              array: ['u8', 64]
             }
           },
         ]
@@ -6067,10 +4844,7 @@ export interface Ntbundle {
           {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                96,
-              ]
+              array: ['u8', 96]
             }
           },
         ]
@@ -6174,12 +4948,29 @@ export interface Ntbundle {
             type: 'u64'
           },
           {
+            name: 'customDepositFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customWithdrawalFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customPerformanceFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customManagementFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'feeOverrideFlags'
+            type: 'u8'
+          },
+          {
             name: 'padding'
             type: {
-              array: [
-                'u8',
-                264,
-              ]
+              array: ['u8', 247]
             }
           },
         ]
@@ -6201,6 +4992,94 @@ export interface Ntbundle {
           {
             name: 'userBundleAccountKey'
             type: 'pubkey'
+          },
+        ]
+      }
+    },
+    {
+      name: 'userFeeOverrideCleared'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'manager'
+            type: 'pubkey'
+          },
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'bundleAccountKey'
+            type: 'pubkey'
+          },
+          {
+            name: 'clearMask'
+            type: 'u8'
+          },
+          {
+            name: 'previousFlags'
+            type: 'u8'
+          },
+          {
+            name: 'newFlags'
+            type: 'u8'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'userFeeOverrideSet'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'manager'
+            type: 'pubkey'
+          },
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'bundleAccountKey'
+            type: 'pubkey'
+          },
+          {
+            name: 'overrideMask'
+            type: 'u8'
+          },
+          {
+            name: 'previousFlags'
+            type: 'u8'
+          },
+          {
+            name: 'newFlags'
+            type: 'u8'
+          },
+          {
+            name: 'customDepositFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customWithdrawalFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customPerformanceFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customManagementFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
           },
         ]
       }
