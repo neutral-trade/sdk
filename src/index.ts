@@ -54,6 +54,20 @@ export {
 
 export { humanFloatToAmountRawString, parseAmountRawToBigInt } from './utils/amount-raw'
 export {
+  bpsToFeeDecimal,
+  computeDepositFeePreview,
+  effectiveFeeBpsToDecimals,
+  FEE_OVERRIDE,
+  feeDecimalToBps,
+  hasAnyFeeOverride,
+  hasCustomFeeRate,
+  resolveEffectiveFeeBps,
+  resolveEffectiveFeeBpsFromDefaults,
+  resolveEffectiveVaultFees,
+  vaultFeeDecimalsToBps,
+} from './utils/bundle-fee-override'
+export type { EffectiveFeeBps, EffectiveVaultFeeDecimals } from './utils/bundle-fee-override'
+export {
   buildBundleDepositInstructions,
   buildBundleRequestWithdrawInstruction,
   computeRequestWithdrawalSharesFromAmountRaw,

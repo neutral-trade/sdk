@@ -365,5 +365,41 @@ describe('bundle Balance Calculations', () => {
 
       expect(pending).toBeCloseTo(10, 5)
     })
+
+    it('should use user management fee override for pending fee estimate', () => {
+      const oracleData = createMockOracleData('10000000000')
+      const bundleData = {
+        bundleUnderlyingBalance: new BN('0'),
+        totalShares: new BN('10000000000'),
+        assetPrecision: new BN('1000000'),
+        managementFeeBps: 100,
+        performanceFee: 0,
+      } as unknown as BundleAccount
+
+      const year = 31536000
+      const nowUnix = 2_000_000_000
+      const userBundle = {
+        ...createMockUserBundle(
+          '1000000000',
+          '900000000',
+          '0',
+          '0',
+          '1000000',
+          String(nowUnix - year),
+        ),
+        feeOverrideFlags: 8,
+        customManagementFeeBps: 25,
+      } as unknown as UserBundleAccount
+
+      const pending = estimatePendingBundleFeeToken({
+        oracleData,
+        bundleData,
+        userBundle,
+        assetDecimals: 6,
+        nowUnixSeconds: nowUnix,
+      })
+
+      expect(pending).toBeCloseTo(2.5, 5)
+    })
   })
 })
