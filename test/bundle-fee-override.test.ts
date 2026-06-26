@@ -1,11 +1,15 @@
 import type { BundleAccount, UserBundleAccount } from '../src/types/bundle-types'
 import { describe, expect, it } from 'vitest'
 import {
+  bpsToPercentLabel,
+  buildFeeOverrideMask,
   computeDepositFeePreview,
   effectiveFeeBpsToDecimals,
   FEE_OVERRIDE,
+  formatFeeOverrideFlags,
   hasAnyFeeOverride,
   hasCustomFeeRate,
+  readUserFeeOverrideFields,
   resolveEffectiveFeeBps,
   resolveEffectiveFeeBpsFromDefaults,
   resolveEffectiveVaultFees,
@@ -107,5 +111,29 @@ describe('bundle-fee-override', () => {
       feeAmount: 10,
       netAmount: 990,
     })
+  })
+
+  it('buildFeeOverrideMask and formatFeeOverrideFlags', () => {
+    const mask = buildFeeOverrideMask({ deposit: true, management: true })
+    expect(mask).toBe(FEE_OVERRIDE.DEPOSIT | FEE_OVERRIDE.MANAGEMENT)
+    expect(formatFeeOverrideFlags(mask)).toBe('deposit, management')
+  })
+
+  it('readUserFeeOverrideFields supports snake_case', () => {
+    expect(readUserFeeOverrideFields({
+      fee_override_flags: 1,
+      custom_deposit_fee_bps: 25,
+    })).toEqual({
+      feeOverrideFlags: 1,
+      customDepositFeeBps: 25,
+      customWithdrawalFeeBps: 0,
+      customPerformanceFeeBps: 0,
+      customManagementFeeBps: 0,
+    })
+  })
+
+  it('bpsToPercentLabel', () => {
+    expect(bpsToPercentLabel(100)).toBe('1')
+    expect(bpsToPercentLabel(25)).toBe('0.25')
   })
 })

@@ -6,6 +6,7 @@ export const FEE_OVERRIDE = {
   WITHDRAWAL: 1 << 1,
   PERFORMANCE: 1 << 2,
   MANAGEMENT: 1 << 3,
+  ALL: (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3),
 } as const
 
 export interface EffectiveFeeBps {
@@ -13,6 +14,15 @@ export interface EffectiveFeeBps {
   withdrawalFeeBps: number
   performanceFeeBps: number
   managementFeeBps: number
+}
+
+/** Normalized per-user fee override fields (bps + flag mask). */
+export interface UserFeeOverrideFields {
+  feeOverrideFlags: number
+  customDepositFeeBps: number
+  customWithdrawalFeeBps: number
+  customPerformanceFeeBps: number
+  customManagementFeeBps: number
 }
 
 /** Decimal fees matching frontend `VaultConfig` (`0.01` = 1%). */
@@ -38,6 +48,55 @@ export function bpsToFeeDecimal(bps: number): number {
 
 export function feeDecimalToBps(decimal: number): number {
   return Math.round(decimal * 10_000)
+}
+
+export function bpsToPercentLabel(bps: number): string {
+  return (bps / 100).toFixed(4).replace(/\.?0+$/, '')
+}
+
+export function hasFeeOverrideFlag(flags: number, bit: number): boolean {
+  return (flags & bit) !== 0
+}
+
+export function buildFeeOverrideMask(flags: {
+  deposit?: boolean
+  withdrawal?: boolean
+  performance?: boolean
+  management?: boolean
+}): number {
+  let mask = 0
+  if (flags.deposit)
+    mask |= FEE_OVERRIDE.DEPOSIT
+  if (flags.withdrawal)
+    mask |= FEE_OVERRIDE.WITHDRAWAL
+  if (flags.performance)
+    mask |= FEE_OVERRIDE.PERFORMANCE
+  if (flags.management)
+    mask |= FEE_OVERRIDE.MANAGEMENT
+  return mask
+}
+
+export function formatFeeOverrideFlags(flags: number): string {
+  const parts: string[] = []
+  if (hasFeeOverrideFlag(flags, FEE_OVERRIDE.DEPOSIT))
+    parts.push('deposit')
+  if (hasFeeOverrideFlag(flags, FEE_OVERRIDE.WITHDRAWAL))
+    parts.push('withdrawal')
+  if (hasFeeOverrideFlag(flags, FEE_OVERRIDE.PERFORMANCE))
+    parts.push('performance')
+  if (hasFeeOverrideFlag(flags, FEE_OVERRIDE.MANAGEMENT))
+    parts.push('management')
+  return parts.length > 0 ? parts.join(', ') : 'none'
+}
+
+export function readUserFeeOverrideFields(account: Record<string, unknown>): UserFeeOverrideFields {
+  return {
+    feeOverrideFlags: toNum(account.feeOverrideFlags ?? account.fee_override_flags),
+    customDepositFeeBps: toNum(account.customDepositFeeBps ?? account.custom_deposit_fee_bps),
+    customWithdrawalFeeBps: toNum(account.customWithdrawalFeeBps ?? account.custom_withdrawal_fee_bps),
+    customPerformanceFeeBps: toNum(account.customPerformanceFeeBps ?? account.custom_performance_fee_bps),
+    customManagementFeeBps: toNum(account.customManagementFeeBps ?? account.custom_management_fee_bps),
+  }
 }
 
 function toNum(value: unknown): number {
@@ -84,7 +143,7 @@ export function effectiveFeeBpsToDecimals(fees: EffectiveFeeBps): EffectiveVault
  */
 export function resolveEffectiveFeeBpsFromDefaults(
   defaults: EffectiveFeeBps,
-  user: UserBundleAccount,
+  user: UserFeeOverrideFields,
 ): EffectiveFeeBps {
   const flags = toNum(user.feeOverrideFlags)
   if (flags === 0)
