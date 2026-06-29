@@ -59,6 +59,7 @@ export {
   bpsToPercentLabel,
   buildFeeOverrideMask,
   computeDepositFeePreview,
+  computeWithdrawFeePreview,
   effectiveFeeBpsToDecimals,
   FEE_OVERRIDE,
   feeDecimalToBps,

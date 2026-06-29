@@ -220,3 +220,11 @@ export function computeDepositFeePreview(
   const feeAmount = grossAmount * depositFeeDecimal
   return { feeAmount, netAmount: grossAmount - feeAmount }
 }
+
+/** Same linear preview as deposit: fee = gross × rate, net = gross − fee. */
+export function computeWithdrawFeePreview(
+  grossAmount: number,
+  withdrawalFeeDecimal: number,
+): { feeAmount: number, netAmount: number } {
+  return computeDepositFeePreview(grossAmount, withdrawalFeeDecimal)
+}

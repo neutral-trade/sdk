@@ -4,6 +4,7 @@ import {
   bpsToPercentLabel,
   buildFeeOverrideMask,
   computeDepositFeePreview,
+  computeWithdrawFeePreview,
   effectiveFeeBpsToDecimals,
   FEE_OVERRIDE,
   formatFeeOverrideFlags,
@@ -110,6 +111,13 @@ describe('bundle-fee-override', () => {
     expect(computeDepositFeePreview(1000, 0.01)).toEqual({
       feeAmount: 10,
       netAmount: 990,
+    })
+  })
+
+  it('computeWithdrawFeePreview', () => {
+    expect(computeWithdrawFeePreview(100, 0.01)).toEqual({
+      feeAmount: 1,
+      netAmount: 99,
     })
   })
 
