@@ -2,7 +2,7 @@
  * Program IDL in camelCase format in order to be used in JS/TS.
  *
  * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/ntbundle.json`.
+ * IDL can be found at `src/idl/ntbundle.json` (synced from `bundle-sc/target/idl/ntbundle.json`).
  */
 export interface Ntbundle {
   address: 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU'
@@ -1466,6 +1466,208 @@ export interface Ntbundle {
         },
       ]
       args: []
+    },
+    {
+      name: 'managerWithdrawWithSplit'
+      discriminator: [
+        225,
+        117,
+        84,
+        162,
+        37,
+        169,
+        153,
+        89,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'managerTokenAccount'
+          writable: true
+        },
+        {
+          name: 'partnerTokenAccount'
+          writable: true
+        },
+        {
+          name: 'assetAddress'
+          writable: true
+        },
+        {
+          name: 'bundleAssetAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'account'
+                path: 'bundleAssetAuthority'
+              },
+              {
+                kind: 'const'
+                value: [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'assetAddress'
+              },
+            ]
+            program: {
+              kind: 'const'
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89,
+              ]
+            }
+          }
+        },
+        {
+          name: 'bundleAccount'
+          writable: true
+        },
+        {
+          name: 'oracleData'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAssetAuthority'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+        },
+      ]
+      args: [
+        {
+          name: 'partnerPfeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'partnerMfeeBps'
+          type: 'u32'
+        },
+      ]
     },
     {
       name: 'netPendingTransactions'
@@ -5427,6 +5629,19 @@ export interface Ntbundle {
       ]
     },
     {
+      name: 'managerWithdrawalWithSplit'
+      discriminator: [
+        147,
+        151,
+        147,
+        137,
+        189,
+        58,
+        26,
+        122,
+      ]
+    },
+    {
       name: 'maxDepositAmountSet'
       discriminator: [
         204,
@@ -6180,6 +6395,11 @@ export interface Ntbundle {
       code: 6082
       name: 'switchTargetAccountMismatch'
       msg: 'Switch target account mismatch'
+    },
+    {
+      code: 6083
+      name: 'invalidFeeSplit'
+      msg: 'Invalid fee split'
     },
   ]
   types: [
@@ -7029,6 +7249,38 @@ export interface Ntbundle {
           },
           {
             name: 'redemptionAmount'
+            type: 'u64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'managerWithdrawalWithSplit'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'managerPfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'managerMfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'partnerPfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'partnerMfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'managerRedemptionAmount'
+            type: 'u64'
+          },
+          {
+            name: 'partnerRedemptionAmount'
             type: 'u64'
           },
         ]

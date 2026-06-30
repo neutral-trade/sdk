@@ -1462,6 +1462,208 @@
       "args": []
     },
     {
+      "name": "manager_withdraw_with_split",
+      "discriminator": [
+        225,
+        117,
+        84,
+        162,
+        37,
+        169,
+        153,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "manager_token_account",
+          "writable": true
+        },
+        {
+          "name": "partner_token_account",
+          "writable": true
+        },
+        {
+          "name": "asset_address",
+          "writable": true
+        },
+        {
+          "name": "bundle_asset_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "bundle_asset_authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset_address"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "bundle_account",
+          "writable": true
+        },
+        {
+          "name": "oracle_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_asset_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "partner_pfee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "partner_mfee_bps",
+          "type": "u32"
+        }
+      ]
+    },
+    {
       "name": "net_pending_transactions",
       "discriminator": [
         44,
@@ -5421,6 +5623,19 @@
       ]
     },
     {
+      "name": "ManagerWithdrawalWithSplit",
+      "discriminator": [
+        147,
+        151,
+        147,
+        137,
+        189,
+        58,
+        26,
+        122
+      ]
+    },
+    {
       "name": "MaxDepositAmountSet",
       "discriminator": [
         204,
@@ -6174,6 +6389,11 @@
       "code": 6082,
       "name": "SwitchTargetAccountMismatch",
       "msg": "Switch target account mismatch"
+    },
+    {
+      "code": 6083,
+      "name": "InvalidFeeSplit",
+      "msg": "Invalid fee split"
     }
   ],
   "types": [
@@ -7023,6 +7243,38 @@
           },
           {
             "name": "redemption_amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ManagerWithdrawalWithSplit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager_pfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "manager_mfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "partner_pfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "partner_mfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "manager_redemption_amount",
+            "type": "u64"
+          },
+          {
+            "name": "partner_redemption_amount",
             "type": "u64"
           }
         ]
