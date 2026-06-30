@@ -9,6 +9,7 @@ import { getBundleProgramId, getVaultById } from '../constants/vaults'
 import { VaultType } from '../types/vault-types'
 import {
   buildBundleDepositInstructionsWithVault,
+  buildBundleRequestSwitchInstructionWithVault,
   buildBundleRequestWithdrawInstructionWithVault,
 } from './bundle-instructions-core'
 
@@ -29,6 +30,16 @@ export interface BuildBundleRequestWithdrawInstructionParams {
   vaultId: number
   user: PublicKey
   /** Smallest token units (decimal string) to request withdrawing. */
+  amountRaw: string
+}
+
+export interface BuildBundleRequestSwitchInstructionParams {
+  connection: Connection
+  bundleCluster?: BundleCluster
+  sourceVaultId: number
+  targetVaultId: number
+  user: PublicKey
+  /** Smallest token units (decimal string) to switch out of the source vault. */
   amountRaw: string
 }
 
@@ -90,6 +101,37 @@ export async function buildBundleRequestWithdrawInstruction({
     bundleProgram,
     bundleCluster,
     vault,
+    user,
+    amountRaw,
+  })
+}
+
+/**
+ * `requestBundleSwitch` for built-in registry vaults (source → target, same deposit token).
+ */
+export async function buildBundleRequestSwitchInstruction({
+  connection,
+  bundleCluster = 'mainnet',
+  sourceVaultId,
+  targetVaultId,
+  user,
+  amountRaw,
+}: BuildBundleRequestSwitchInstructionParams): Promise<TransactionInstruction> {
+  const { vault: sourceVault, programId } = resolveTrustedBundleVault(sourceVaultId, bundleCluster)
+  const { vault: targetVault, programId: targetProgramId } = resolveTrustedBundleVault(
+    targetVaultId,
+    bundleCluster,
+  )
+  if (targetProgramId !== programId) {
+    throw new Error('Source and target vault must use the same bundle program')
+  }
+  const provider = createAnchorProvider(connection)
+  const bundleProgram = createAllowlistedBundleProgram(provider, programId, bundleCluster)
+  return buildBundleRequestSwitchInstructionWithVault({
+    bundleProgram,
+    bundleCluster,
+    sourceVault,
+    targetVault,
     user,
     amountRaw,
   })

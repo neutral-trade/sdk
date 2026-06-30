@@ -80,11 +80,13 @@ export type {
 } from './utils/bundle-fee-override'
 export {
   buildBundleDepositInstructions,
+  buildBundleRequestSwitchInstruction,
   buildBundleRequestWithdrawInstruction,
   computeRequestWithdrawalSharesFromAmountRaw,
 } from './utils/bundle-instructions'
 export type {
   BuildBundleDepositInstructionsParams,
+  BuildBundleRequestSwitchInstructionParams,
   BuildBundleRequestWithdrawInstructionParams,
 } from './utils/bundle-instructions'
 

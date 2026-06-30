@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum DevnetVaultId {
-  /** Dev1 */
-  dev1_100000001 = 100000001,
+  /** bundle-1 */
+  bundle_1_100000002 = 100000002,
+  /** bundle-2 */
+  bundle_2_100000003 = 100000003,
 }

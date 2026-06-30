@@ -1,10 +1,20 @@
 [
   {
-    "vaultId": 100000001,
-    "name": "Dev1",
+    "vaultId": 100000002,
+    "name": "bundle-1",
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000003,
+    "name": "bundle-2",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "6nRRXv7GzreuE1PUgHySf9u6wwzXq61eiQbBpik1fbjy",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
     "pointsEnabled": true
