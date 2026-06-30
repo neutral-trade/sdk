@@ -107,7 +107,8 @@ export async function buildBundleRequestWithdrawInstruction({
 }
 
 /**
- * `requestBundleSwitch` for built-in registry vaults (source → target, same deposit token).
+ * `initializeBundleDepositor` on target (when needed) + `requestBundleSwitch`
+ * for built-in registry vaults (source → target, same deposit token).
  */
 export async function buildBundleRequestSwitchInstruction({
   connection,
@@ -116,7 +117,7 @@ export async function buildBundleRequestSwitchInstruction({
   targetVaultId,
   user,
   amountRaw,
-}: BuildBundleRequestSwitchInstructionParams): Promise<TransactionInstruction> {
+}: BuildBundleRequestSwitchInstructionParams): Promise<TransactionInstruction[]> {
   const { vault: sourceVault, programId } = resolveTrustedBundleVault(sourceVaultId, bundleCluster)
   const { vault: targetVault, programId: targetProgramId } = resolveTrustedBundleVault(
     targetVaultId,

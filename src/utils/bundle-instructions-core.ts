@@ -242,7 +242,8 @@ function assertSwitchVaultPair(
 }
 
 /**
- * `requestBundleSwitch` only. Fetches source bundle, oracle, user bundle, and target bundle internally.
+ * `initializeBundleDepositor` on target (when missing) + `requestBundleSwitch`.
+ * Fetches source bundle, oracle, user bundle, and target bundle internally.
  * @internal
  */
 export async function buildBundleRequestSwitchInstructionWithVault({
@@ -252,7 +253,7 @@ export async function buildBundleRequestSwitchInstructionWithVault({
   targetVault,
   user,
   amountRaw,
-}: BuildBundleRequestSwitchInstructionCoreParams): Promise<TransactionInstruction> {
+}: BuildBundleRequestSwitchInstructionCoreParams): Promise<TransactionInstruction[]> {
   assertSwitchVaultPair(sourceVault, targetVault, bundleCluster)
 
   const sourceBundlePDA = new PublicKey(sourceVault.vaultAddress)
@@ -269,6 +270,10 @@ export async function buildBundleRequestSwitchInstructionWithVault({
   const userPDA = deriveUserPDA(user, sourceBundlePDA, programPk)
   const tempDataPDA = deriveTempDataPDA(sourceBundlePDA, programPk)
   const targetUserPDA = deriveUserPDA(user, targetBundlePDA, programPk)
+
+  const connection = bundleProgram.provider.connection
+  const targetUserBundleAcc = await connection.getAccountInfo(targetUserPDA)
+  const needsTargetInit = !targetUserBundleAcc?.data?.length
 
   const [sourceBundleAccount, oracleData, userBundle, targetBundleAccount] = await Promise.all([
     bundleProgram.account.bundle.fetch(sourceBundlePDA),
@@ -294,7 +299,23 @@ export async function buildBundleRequestSwitchInstructionWithVault({
     totalShares,
   })
 
-  return await bundleProgram.methods
+  const instructions: TransactionInstruction[] = []
+
+  if (needsTargetInit) {
+    const initIx = await bundleProgram.methods
+      .initializeBundleDepositor()
+      .accounts({
+        payer: user,
+        authority: user,
+        systemProgram: SystemProgram.programId,
+        bundleAccount: targetBundlePDA,
+        userBundleAccount: targetUserPDA,
+      } as never)
+      .instruction()
+    instructions.push(initIx)
+  }
+
+  const switchIx = await bundleProgram.methods
     .requestBundleSwitch(sharesAmount)
     .accounts({
       withdrawalRequest: {
@@ -311,4 +332,7 @@ export async function buildBundleRequestSwitchInstructionWithVault({
       targetUserBundleAccount: targetUserPDA,
     } as never)
     .instruction()
+  instructions.push(switchIx)
+
+  return instructions
 }

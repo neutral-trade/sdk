@@ -11,4 +11,6 @@ export enum DevnetVaultId {
   bundle_1_100000002 = 100000002,
   /** bundle-2 */
   bundle_2_100000003 = 100000003,
+  /** bundle-4 */
+  bundle_4_100000005 = 100000005,
 }

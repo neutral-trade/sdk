@@ -1,4 +1,6 @@
+import type { Address } from '@coral-xyz/anchor'
 import type { VaultRegistryEntry } from '../src/types/vault-types'
+import { Buffer } from 'node:buffer'
 import { BN } from '@coral-xyz/anchor'
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import { Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js'
@@ -65,6 +67,10 @@ describe('computeRequestWithdrawalSharesFromAmountRaw', () => {
   })
 })
 
+function toPublicKey(address: Address): PublicKey {
+  return typeof address === 'string' ? new PublicKey(address) : address
+}
+
 function makeBundleVault(
   vaultId: number,
   vaultAddress: PublicKey,
@@ -97,8 +103,25 @@ describe('buildBundleRequestSwitchInstructionWithVault', () => {
     bundleProgram: ReturnType<typeof createMockBundleProgram>,
     sourceMint: PublicKey,
     targetMint: PublicKey,
+    options?: { targetUserBundleExists?: boolean },
   ) {
-    vi.spyOn(bundleProgram.account.bundle, 'fetch').mockImplementation(async (pk: PublicKey) => {
+    const programPk = bundleProgram.programId
+    const targetUserPDA = deriveUserPDA(user, targetBundle, programPk)
+    const targetUserBundleExists = options?.targetUserBundleExists ?? true
+
+    vi.spyOn(bundleProgram.provider.connection, 'getAccountInfo').mockImplementation(
+      async (pk: PublicKey) => {
+        if (pk.equals(targetUserPDA)) {
+          return targetUserBundleExists
+            ? ({ data: Buffer.alloc(1), lamports: 1, owner: programPk } as never)
+            : null
+        }
+        return null
+      },
+    )
+
+    vi.spyOn(bundleProgram.account.bundle, 'fetch').mockImplementation(async (address) => {
+      const pk = toPublicKey(address)
       if (pk.equals(sourceBundle)) {
         return {
           assetAddress: sourceMint,
@@ -169,14 +192,14 @@ describe('buildBundleRequestSwitchInstructionWithVault', () => {
 
   it('builds requestBundleSwitch with 10 accounts (matches bundle-sc test layout)', async () => {
     const bundleProgram = createMockBundleProgram()
-    mockSwitchFetches(bundleProgram, usdcMint, usdcMint)
+    mockSwitchFetches(bundleProgram, usdcMint, usdcMint, { targetUserBundleExists: true })
     const programPk = bundleProgram.programId
     const oraclePDA = deriveOraclePDA(sourceBundle, programPk)
     const userPDA = deriveUserPDA(user, sourceBundle, programPk)
     const tempDataPDA = deriveTempDataPDA(sourceBundle, programPk)
     const targetUserPDA = deriveUserPDA(user, targetBundle, programPk)
 
-    const ix = await buildBundleRequestSwitchInstructionWithVault({
+    const instructions = await buildBundleRequestSwitchInstructionWithVault({
       bundleProgram,
       bundleCluster: 'devnet',
       sourceVault: makeBundleVault(1, sourceBundle),
@@ -184,6 +207,9 @@ describe('buildBundleRequestSwitchInstructionWithVault', () => {
       user,
       amountRaw: '1000000',
     })
+
+    expect(instructions).toHaveLength(1)
+    const ix = instructions[0]
 
     expect(ix.keys).toHaveLength(10)
     expect(ix.keys.map(k => k.pubkey.toBase58())).toEqual([
@@ -199,6 +225,33 @@ describe('buildBundleRequestSwitchInstructionWithVault', () => {
       targetUserPDA.toBase58(),
     ])
     expect([...ix.data.subarray(0, 8)]).toEqual([66, 9, 104, 111, 227, 251, 51, 176])
+  })
+
+  it('prepends initializeBundleDepositor when target user bundle is missing', async () => {
+    const bundleProgram = createMockBundleProgram()
+    mockSwitchFetches(bundleProgram, usdcMint, usdcMint, { targetUserBundleExists: false })
+    const programPk = bundleProgram.programId
+    const targetUserPDA = deriveUserPDA(user, targetBundle, programPk)
+
+    const instructions = await buildBundleRequestSwitchInstructionWithVault({
+      bundleProgram,
+      bundleCluster: 'devnet',
+      sourceVault: makeBundleVault(1, sourceBundle),
+      targetVault: makeBundleVault(2, targetBundle),
+      user,
+      amountRaw: '1000000',
+    })
+
+    expect(instructions).toHaveLength(2)
+    expect(instructions[0].keys.map(k => k.pubkey.toBase58())).toEqual([
+      user.toBase58(),
+      user.toBase58(),
+      SystemProgram.programId.toBase58(),
+      targetBundle.toBase58(),
+      targetUserPDA.toBase58(),
+    ])
+    expect([...instructions[0].data.subarray(0, 8)]).toEqual([126, 6, 242, 36, 22, 209, 35, 2])
+    expect([...instructions[1].data.subarray(0, 8)]).toEqual([66, 9, 104, 111, 227, 251, 51, 176])
   })
 
   it('exposes requestBundleSwitch on Anchor program methods after IDL sync', () => {

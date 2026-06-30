@@ -18,5 +18,15 @@
     "depositToken": "USDC",
     "pointsMultiplier": 1,
     "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000005,
+    "name": "bundle-4",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "8TqrZmyiWQ3F3WysiBaBQC1Nzj1LDn5AR7JjXBYzFxxQ",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
   }
 ]
