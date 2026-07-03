@@ -1,10 +1,80 @@
 [
   {
-    "vaultId": 100000001,
-    "name": "Dev1",
+    "vaultId": 100000002,
+    "name": "bundle-1",
     "type": "Bundle",
     "category": "Market Neutral",
     "vaultAddress": "HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000003,
+    "name": "bundle-2",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "6nRRXv7GzreuE1PUgHySf9u6wwzXq61eiQbBpik1fbjy",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000004,
+    "name": "bundle-4",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "8TqrZmyiWQ3F3WysiBaBQC1Nzj1LDn5AR7JjXBYzFxxQ",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000005,
+    "name": "bundle-5",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "J17FgERPmZ9JQNjpaCKb3ZsYseeyrpw3PXFPUrK7zLVa",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000006,
+    "name": "bundle-6",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "3VUBZk5V1KiPBdAj1Zkrnm3w8zriAg8UJ8Z155Ja8xdS",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000007,
+    "name": "bundle-7",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "C2SGzvgoZu754yVNEL8ChAyxePo54CPpuyY3qMkmBSJA",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000008,
+    "name": "bundle-8",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "H3jCQZWkMD3tPjLyzJiVq4unjX45YcN7J45zVPQXaegy",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000009,
+    "name": "bundle-9",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "4kdm7AHWVfXUDE4qErojXDdLGnU7taZN7rcJ11uaLkH1",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
     "pointsEnabled": true

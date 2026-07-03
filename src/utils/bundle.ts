@@ -12,6 +12,7 @@ import type { BundleAccount, OracleData, UserBundleAccount } from '../types/bund
 import { PublicKey } from '@solana/web3.js'
 import { getBundleProgramId } from '../constants/vaults'
 import { tokens } from '../types'
+import { resolveEffectiveFeeBps } from './bundle-fee-override'
 import { deriveOraclePDA, deriveUserPDA } from './pda'
 
 const SECONDS_PER_YEAR = 365n * 24n * 60n * 60n
@@ -23,8 +24,6 @@ function bnToBigInt(v: { toString: () => string } | null | undefined): bigint {
 }
 
 interface BundleFeeFields {
-  managementFeeBps?: number
-  performanceFee?: number
   assetPrecision?: { toString: () => string }
 }
 
@@ -62,8 +61,9 @@ export function estimatePendingBundleFeeToken({
     ? (totalAssets * assetPrec) / totalShares
     : assetPrec
 
-  const managementFeeBps = BigInt(Number(extra.managementFeeBps ?? 0))
-  const performanceFeeBps = BigInt(Number(extra.performanceFee ?? 0))
+  const effectiveFees = resolveEffectiveFeeBps(bundleData, userBundle)
+  const managementFeeBps = BigInt(effectiveFees.managementFeeBps)
+  const performanceFeeBps = BigInt(effectiveFees.performanceFeeBps)
 
   const lastMgmtTs = bnToBigInt(userBundle.lastManagementFeeTimestamp)
   const nowTs = BigInt(nowUnixSeconds)

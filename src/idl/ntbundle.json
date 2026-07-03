@@ -280,6 +280,134 @@
       ]
     },
     {
+      "name": "clear_user_fee_override",
+      "discriminator": [
+        97,
+        227,
+        92,
+        191,
+        205,
+        0,
+        154,
+        77
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_bundle_account_owner"
+        },
+        {
+          "name": "user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_bundle_account_owner"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "clear_mask",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "clear_user_withdrawal_timing_override",
+      "discriminator": [
+        203,
+        96,
+        230,
+        216,
+        217,
+        104,
+        244,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_bundle_account_owner"
+        },
+        {
+          "name": "user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_bundle_account_owner"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "clear_mask",
+          "type": "u8"
+        }
+      ]
+    },
+    {
       "name": "close_user_bundle_account",
       "discriminator": [
         201,
@@ -1332,6 +1460,208 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "manager_withdraw_with_split",
+      "discriminator": [
+        225,
+        117,
+        84,
+        162,
+        37,
+        169,
+        153,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "manager_token_account",
+          "writable": true
+        },
+        {
+          "name": "partner_token_account",
+          "writable": true
+        },
+        {
+          "name": "asset_address",
+          "writable": true
+        },
+        {
+          "name": "bundle_asset_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "bundle_asset_authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset_address"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "bundle_account",
+          "writable": true
+        },
+        {
+          "name": "oracle_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_asset_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "partner_pfee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "partner_mfee_bps",
+          "type": "u32"
+        }
+      ]
     },
     {
       "name": "net_pending_transactions",
@@ -2397,6 +2727,501 @@
       "args": []
     },
     {
+      "name": "process_switch",
+      "discriminator": [
+        186,
+        170,
+        0,
+        66,
+        104,
+        81,
+        57,
+        195
+      ],
+      "accounts": [
+        {
+          "name": "keeper",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_bundle_account_owner"
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "asset_address",
+          "writable": true
+        },
+        {
+          "name": "source_bundle_asset_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "source_bundle_asset_authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset_address"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "source_user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_bundle_account_owner"
+              },
+              {
+                "kind": "account",
+                "path": "source_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_treasury_account",
+          "writable": true
+        },
+        {
+          "name": "source_bundle_asset_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_bundle_account",
+          "writable": true
+        },
+        {
+          "name": "source_bundle_temp_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  69,
+                  77,
+                  80,
+                  95,
+                  68,
+                  65,
+                  84,
+                  65
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_oracle_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "target_bundle_account"
+        },
+        {
+          "name": "target_user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_bundle_account_owner"
+              },
+              {
+                "kind": "account",
+                "path": "target_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "target_bundle_temp_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  69,
+                  77,
+                  80,
+                  95,
+                  68,
+                  65,
+                  84,
+                  65
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "target_pending_deposit_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "target_pending_bundle_asset_authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset_address"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "target_pending_bundle_asset_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  80,
+                  69,
+                  78,
+                  68,
+                  73,
+                  78,
+                  71,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "target_oracle_data",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "target_bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "target_treasury_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "process_withdrawal",
       "discriminator": [
         51,
@@ -3010,6 +3835,176 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "request_bundle_switch",
+      "discriminator": [
+        66,
+        9,
+        104,
+        111,
+        227,
+        251,
+        51,
+        176
+      ],
+      "accounts": [
+        {
+          "name": "withdrawal_request",
+          "accounts": [
+            {
+              "name": "user",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "user_bundle_account",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      85,
+                      83,
+                      69,
+                      82,
+                      95,
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "bundle_account",
+              "writable": true
+            },
+            {
+              "name": "oracle_data",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      79,
+                      82,
+                      65,
+                      67,
+                      76,
+                      69
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "bundle_temp_data",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69,
+                      95,
+                      84,
+                      69,
+                      77,
+                      80,
+                      95,
+                      68,
+                      65,
+                      84,
+                      65
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "token_program",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "system_program",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "rent",
+              "address": "SysvarRent111111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "target_bundle_account"
+        },
+        {
+          "name": "target_user_bundle_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "withdrawal_request.user",
+                "account": "RequestWithdrawal"
+              },
+              {
+                "kind": "account",
+                "path": "target_bundle_account"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "shares_amount",
+          "type": "u128"
+        }
+      ]
     },
     {
       "name": "request_deposit",
@@ -3780,6 +4775,166 @@
       ]
     },
     {
+      "name": "set_user_fee_override",
+      "discriminator": [
+        207,
+        40,
+        210,
+        198,
+        66,
+        33,
+        153,
+        209
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_bundle_account_owner"
+        },
+        {
+          "name": "user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_bundle_account_owner"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "override_mask",
+          "type": "u8"
+        },
+        {
+          "name": "custom_deposit_fee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "custom_withdrawal_fee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "custom_performance_fee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "custom_management_fee_bps",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "set_user_withdrawal_timing_override",
+      "discriminator": [
+        21,
+        31,
+        116,
+        121,
+        140,
+        237,
+        174,
+        244
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_bundle_account_owner"
+        },
+        {
+          "name": "user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_bundle_account_owner"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "override_mask",
+          "type": "u8"
+        },
+        {
+          "name": "custom_withdrawal_delay",
+          "type": "u64"
+        },
+        {
+          "name": "custom_withdrawal_t_min",
+          "type": "i64"
+        },
+        {
+          "name": "custom_withdrawal_t_max",
+          "type": "i64"
+        },
+        {
+          "name": "custom_withdrawal_curve",
+          "type": "f32"
+        }
+      ]
+    },
+    {
       "name": "set_withdrawal_redemption_schedule",
       "discriminator": [
         134,
@@ -4260,6 +5415,45 @@
       ]
     },
     {
+      "name": "BundleSwitchCompleted",
+      "discriminator": [
+        189,
+        237,
+        164,
+        90,
+        103,
+        174,
+        64,
+        73
+      ]
+    },
+    {
+      "name": "BundleSwitchFallbackToWallet",
+      "discriminator": [
+        214,
+        242,
+        67,
+        218,
+        119,
+        180,
+        28,
+        139
+      ]
+    },
+    {
+      "name": "BundleSwitchRequested",
+      "discriminator": [
+        88,
+        172,
+        46,
+        180,
+        196,
+        3,
+        226,
+        44
+      ]
+    },
+    {
       "name": "ChangedCoreParams",
       "discriminator": [
         156,
@@ -4426,6 +5620,19 @@
         74,
         94,
         207
+      ]
+    },
+    {
+      "name": "ManagerWithdrawalWithSplit",
+      "discriminator": [
+        147,
+        151,
+        147,
+        137,
+        189,
+        58,
+        26,
+        122
       ]
     },
     {
@@ -4660,6 +5867,58 @@
         23,
         157,
         183
+      ]
+    },
+    {
+      "name": "UserFeeOverrideCleared",
+      "discriminator": [
+        109,
+        200,
+        134,
+        162,
+        195,
+        197,
+        177,
+        189
+      ]
+    },
+    {
+      "name": "UserFeeOverrideSet",
+      "discriminator": [
+        194,
+        56,
+        240,
+        83,
+        158,
+        247,
+        78,
+        66
+      ]
+    },
+    {
+      "name": "UserWithdrawalTimingOverrideCleared",
+      "discriminator": [
+        78,
+        111,
+        250,
+        12,
+        64,
+        54,
+        226,
+        251
+      ]
+    },
+    {
+      "name": "UserWithdrawalTimingOverrideSet",
+      "discriminator": [
+        119,
+        165,
+        226,
+        212,
+        49,
+        249,
+        115,
+        145
       ]
     },
     {
@@ -5070,6 +6329,71 @@
       "code": 6070,
       "name": "InvalidWithdrawalRedemptionSchedule",
       "msg": "Invalid withdrawal redemption schedule"
+    },
+    {
+      "code": 6071,
+      "name": "InvalidUserFeeConfig",
+      "msg": "Invalid user fee configuration"
+    },
+    {
+      "code": 6072,
+      "name": "EmptyUserFeeClearRequest",
+      "msg": "Empty user fee clear request"
+    },
+    {
+      "code": 6073,
+      "name": "NoUserFeeOverrideToClear",
+      "msg": "No user fee override to clear"
+    },
+    {
+      "code": 6074,
+      "name": "InvalidUserWithdrawalTimingConfig",
+      "msg": "Invalid user withdrawal timing configuration"
+    },
+    {
+      "code": 6075,
+      "name": "EmptyUserWithdrawalTimingClearRequest",
+      "msg": "Empty user withdrawal timing clear request"
+    },
+    {
+      "code": 6076,
+      "name": "NoUserWithdrawalTimingOverrideToClear",
+      "msg": "No user withdrawal timing override to clear"
+    },
+    {
+      "code": 6077,
+      "name": "SwitchTargetSameAsSource",
+      "msg": "Switch target cannot be source bundle"
+    },
+    {
+      "code": 6078,
+      "name": "SwitchAssetMintMismatch",
+      "msg": "Switch asset mint mismatch"
+    },
+    {
+      "code": 6079,
+      "name": "SwitchAlreadyActive",
+      "msg": "Switch already active"
+    },
+    {
+      "code": 6080,
+      "name": "NoPendingSwitch",
+      "msg": "No pending switch"
+    },
+    {
+      "code": 6081,
+      "name": "SwitchTargetAccountsMissing",
+      "msg": "Switch target accounts missing"
+    },
+    {
+      "code": 6082,
+      "name": "SwitchTargetAccountMismatch",
+      "msg": "Switch target account mismatch"
+    },
+    {
+      "code": 6083,
+      "name": "InvalidFeeSplit",
+      "msg": "Invalid fee split"
     }
   ],
   "types": [
@@ -5407,6 +6731,166 @@
           {
             "name": "new_admin",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BundleSwitchCompleted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "source_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "target_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_redeemed",
+            "type": "u128"
+          },
+          {
+            "name": "gross_redemption",
+            "type": "u64"
+          },
+          {
+            "name": "net_to_destination",
+            "type": "u64"
+          },
+          {
+            "name": "net_credited_to_destination",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawal_fee_a",
+            "type": "u64"
+          },
+          {
+            "name": "deposit_fee_b",
+            "type": "u64"
+          },
+          {
+            "name": "share_price",
+            "type": "u128"
+          },
+          {
+            "name": "user_shares_before",
+            "type": "u128"
+          },
+          {
+            "name": "user_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "total_shares_before",
+            "type": "u128"
+          },
+          {
+            "name": "total_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BundleSwitchFallbackToWallet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "source_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "target_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_redeemed",
+            "type": "u128"
+          },
+          {
+            "name": "gross_redemption",
+            "type": "u64"
+          },
+          {
+            "name": "net_to_wallet",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawal_fee_a",
+            "type": "u64"
+          },
+          {
+            "name": "reason",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BundleSwitchRequested",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "source_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "target_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_amount",
+            "type": "u128"
+          },
+          {
+            "name": "estimated_gross_redemption",
+            "type": "u64"
+          },
+          {
+            "name": "estimated_net_to_destination",
+            "type": "u64"
+          },
+          {
+            "name": "estimated_destination_deposit_fee",
+            "type": "u64"
+          },
+          {
+            "name": "estimated_destination_pending_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "cooldown_end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }
@@ -5759,6 +7243,38 @@
           },
           {
             "name": "redemption_amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ManagerWithdrawalWithSplit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager_pfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "manager_mfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "partner_pfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "partner_mfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "manager_redemption_amount",
+            "type": "u64"
+          },
+          {
+            "name": "partner_redemption_amount",
             "type": "u64"
           }
         ]
@@ -6168,11 +7684,63 @@
             "type": "u64"
           },
           {
+            "name": "custom_deposit_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_withdrawal_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_performance_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_management_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "fee_override_flags",
+            "type": "u8"
+          },
+          {
+            "name": "custom_withdrawal_delay",
+            "type": "u64"
+          },
+          {
+            "name": "custom_withdrawal_t_min",
+            "type": "i64"
+          },
+          {
+            "name": "custom_withdrawal_t_max",
+            "type": "i64"
+          },
+          {
+            "name": "custom_withdrawal_curve",
+            "type": "f32"
+          },
+          {
+            "name": "withdrawal_timing_override_flags",
+            "type": "u8"
+          },
+          {
+            "name": "switch_active",
+            "type": "bool"
+          },
+          {
+            "name": "switch_target_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "switch_created_at",
+            "type": "i64"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                264
+                177
               ]
             }
           }
@@ -6195,6 +7763,182 @@
           {
             "name": "user_bundle_account_key",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserFeeOverrideCleared",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "clear_mask",
+            "type": "u8"
+          },
+          {
+            "name": "previous_flags",
+            "type": "u8"
+          },
+          {
+            "name": "new_flags",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserFeeOverrideSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "override_mask",
+            "type": "u8"
+          },
+          {
+            "name": "previous_flags",
+            "type": "u8"
+          },
+          {
+            "name": "new_flags",
+            "type": "u8"
+          },
+          {
+            "name": "custom_deposit_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_withdrawal_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_performance_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_management_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserWithdrawalTimingOverrideCleared",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "clear_mask",
+            "type": "u8"
+          },
+          {
+            "name": "previous_flags",
+            "type": "u8"
+          },
+          {
+            "name": "new_flags",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserWithdrawalTimingOverrideSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "override_mask",
+            "type": "u8"
+          },
+          {
+            "name": "previous_flags",
+            "type": "u8"
+          },
+          {
+            "name": "new_flags",
+            "type": "u8"
+          },
+          {
+            "name": "custom_withdrawal_delay",
+            "type": "u64"
+          },
+          {
+            "name": "custom_withdrawal_t_min",
+            "type": "i64"
+          },
+          {
+            "name": "custom_withdrawal_t_max",
+            "type": "i64"
+          },
+          {
+            "name": "custom_withdrawal_curve",
+            "type": "f32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }

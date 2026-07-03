@@ -53,13 +53,40 @@ export {
 } from './types'
 
 export { humanFloatToAmountRawString, parseAmountRawToBigInt } from './utils/amount-raw'
+export { estimatePendingBundleFeeToken } from './utils/bundle'
+export {
+  bpsToFeeDecimal,
+  bpsToPercentLabel,
+  buildFeeOverrideMask,
+  computeDepositFeePreview,
+  computeWithdrawFeePreview,
+  effectiveFeeBpsToDecimals,
+  FEE_OVERRIDE,
+  feeDecimalToBps,
+  formatFeeOverrideFlags,
+  hasAnyFeeOverride,
+  hasCustomFeeRate,
+  hasFeeOverrideFlag,
+  readUserFeeOverrideFields,
+  resolveEffectiveFeeBps,
+  resolveEffectiveFeeBpsFromDefaults,
+  resolveEffectiveVaultFees,
+  vaultFeeDecimalsToBps,
+} from './utils/bundle-fee-override'
+export type {
+  EffectiveFeeBps,
+  EffectiveVaultFeeDecimals,
+  UserFeeOverrideFields,
+} from './utils/bundle-fee-override'
 export {
   buildBundleDepositInstructions,
+  buildBundleRequestSwitchInstruction,
   buildBundleRequestWithdrawInstruction,
   computeRequestWithdrawalSharesFromAmountRaw,
 } from './utils/bundle-instructions'
 export type {
   BuildBundleDepositInstructionsParams,
+  BuildBundleRequestSwitchInstructionParams,
   BuildBundleRequestWithdrawInstructionParams,
 } from './utils/bundle-instructions'
 

@@ -39,6 +39,16 @@ export interface BuildBundleRequestWithdrawInstructionCoreParams {
   amountRaw: string
 }
 
+export interface BuildBundleRequestSwitchInstructionCoreParams {
+  bundleProgram: Program<Ntbundle>
+  bundleCluster?: BundleCluster
+  sourceVault: VaultRegistryEntry
+  targetVault: VaultRegistryEntry
+  user: PublicKey
+  /** Smallest token units (decimal string) to switch out of the source vault. */
+  amountRaw: string
+}
+
 function assertBundleVault(vault: VaultRegistryEntry): void {
   if (vault.type !== VaultType.Bundle) {
     throw new Error(`Vault ${vault.vaultId} is not a Bundle vault`)
@@ -202,4 +212,127 @@ export async function buildBundleRequestWithdrawInstructionWithVault({
       rent: SYSVAR_RENT_PUBKEY,
     } as never)
     .instruction()
+}
+
+function assertSwitchVaultPair(
+  sourceVault: VaultRegistryEntry,
+  targetVault: VaultRegistryEntry,
+  bundleCluster: BundleCluster,
+): void {
+  assertBundleVault(sourceVault)
+  assertBundleVault(targetVault)
+
+  if (sourceVault.vaultId === targetVault.vaultId) {
+    throw new Error('Source and target vault must differ')
+  }
+  if (sourceVault.vaultAddress === targetVault.vaultAddress) {
+    throw new Error('Source and target bundle must differ')
+  }
+  if (sourceVault.depositToken !== targetVault.depositToken) {
+    throw new Error(
+      `Switch requires the same deposit token: source=${sourceVault.depositToken}, target=${targetVault.depositToken}`,
+    )
+  }
+
+  const sourceProgramId = bundleProgramIdForVault(sourceVault, bundleCluster)
+  const targetProgramId = bundleProgramIdForVault(targetVault, bundleCluster)
+  if (sourceProgramId !== targetProgramId) {
+    throw new Error('Source and target vault must use the same bundle program')
+  }
+}
+
+/**
+ * `initializeBundleDepositor` on target (when missing) + `requestBundleSwitch`.
+ * Fetches source bundle, oracle, user bundle, and target bundle internally.
+ * @internal
+ */
+export async function buildBundleRequestSwitchInstructionWithVault({
+  bundleProgram,
+  bundleCluster = 'mainnet',
+  sourceVault,
+  targetVault,
+  user,
+  amountRaw,
+}: BuildBundleRequestSwitchInstructionCoreParams): Promise<TransactionInstruction[]> {
+  assertSwitchVaultPair(sourceVault, targetVault, bundleCluster)
+
+  const sourceBundlePDA = new PublicKey(sourceVault.vaultAddress)
+  const targetBundlePDA = new PublicKey(targetVault.vaultAddress)
+  const programId = bundleProgramIdForVault(sourceVault, bundleCluster)
+  if (programId !== bundleProgram.programId.toBase58()) {
+    throw new Error(
+      `Vault ${sourceVault.vaultId} program id mismatch: vault=${programId}, client=${bundleProgram.programId.toBase58()}`,
+    )
+  }
+  const programPk = bundleProgram.programId
+
+  const oraclePDA = deriveOraclePDA(sourceBundlePDA, programPk)
+  const userPDA = deriveUserPDA(user, sourceBundlePDA, programPk)
+  const tempDataPDA = deriveTempDataPDA(sourceBundlePDA, programPk)
+  const targetUserPDA = deriveUserPDA(user, targetBundlePDA, programPk)
+
+  const connection = bundleProgram.provider.connection
+  const targetUserBundleAcc = await connection.getAccountInfo(targetUserPDA)
+  const needsTargetInit = !targetUserBundleAcc?.data?.length
+
+  const [sourceBundleAccount, oracleData, userBundle, targetBundleAccount] = await Promise.all([
+    bundleProgram.account.bundle.fetch(sourceBundlePDA),
+    bundleProgram.account.oracleData.fetch(oraclePDA),
+    bundleProgram.account.userBundleAccount.fetch(userPDA),
+    bundleProgram.account.bundle.fetch(targetBundlePDA),
+  ]) as [BundleAccount, OracleData, UserBundleAccount, BundleAccount]
+
+  if (sourceBundleAccount.assetAddress.toBase58() !== targetBundleAccount.assetAddress.toBase58()) {
+    throw new Error('Switch requires the same asset mint on-chain')
+  }
+
+  const totalEquity
+    = BigInt(oracleData.averageExternalEquity.toString())
+      + BigInt(sourceBundleAccount.bundleUnderlyingBalance.toString())
+  const totalShares = BigInt(sourceBundleAccount.totalShares.toString())
+  const amountRawBn = parseAmountRawToBigInt(amountRaw)
+
+  const sharesAmount = computeRequestWithdrawalSharesFromAmountRaw({
+    amountRaw: amountRawBn,
+    userShares: new BN(userBundle.shares.toString()),
+    totalEquity,
+    totalShares,
+  })
+
+  const instructions: TransactionInstruction[] = []
+
+  if (needsTargetInit) {
+    const initIx = await bundleProgram.methods
+      .initializeBundleDepositor()
+      .accounts({
+        payer: user,
+        authority: user,
+        systemProgram: SystemProgram.programId,
+        bundleAccount: targetBundlePDA,
+        userBundleAccount: targetUserPDA,
+      } as never)
+      .instruction()
+    instructions.push(initIx)
+  }
+
+  const switchIx = await bundleProgram.methods
+    .requestBundleSwitch(sharesAmount)
+    .accounts({
+      withdrawalRequest: {
+        user,
+        userBundleAccount: userPDA,
+        bundleAccount: sourceBundlePDA,
+        oracleData: oraclePDA,
+        bundleTempData: tempDataPDA,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+        rent: SYSVAR_RENT_PUBKEY,
+      },
+      targetBundleAccount: targetBundlePDA,
+      targetUserBundleAccount: targetUserPDA,
+    } as never)
+    .instruction()
+  instructions.push(switchIx)
+
+  return instructions
 }

@@ -2,7 +2,7 @@
  * Program IDL in camelCase format in order to be used in JS/TS.
  *
  * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/ntbundle.json`.
+ * IDL can be found at `src/idl/ntbundle.json` (synced from `bundle-sc/target/idl/ntbundle.json`).
  */
 export interface Ntbundle {
   address: 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU'
@@ -282,6 +282,134 @@ export interface Ntbundle {
         {
           name: 'newManager'
           type: 'pubkey'
+        },
+      ]
+    },
+    {
+      name: 'clearUserFeeOverride'
+      discriminator: [
+        97,
+        227,
+        92,
+        191,
+        205,
+        0,
+        154,
+        77,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAccount'
+        },
+      ]
+      args: [
+        {
+          name: 'clearMask'
+          type: 'u8'
+        },
+      ]
+    },
+    {
+      name: 'clearUserWithdrawalTimingOverride'
+      discriminator: [
+        203,
+        96,
+        230,
+        216,
+        217,
+        104,
+        244,
+        74,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAccount'
+        },
+      ]
+      args: [
+        {
+          name: 'clearMask'
+          type: 'u8'
         },
       ]
     },
@@ -1338,6 +1466,208 @@ export interface Ntbundle {
         },
       ]
       args: []
+    },
+    {
+      name: 'managerWithdrawWithSplit'
+      discriminator: [
+        225,
+        117,
+        84,
+        162,
+        37,
+        169,
+        153,
+        89,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'managerTokenAccount'
+          writable: true
+        },
+        {
+          name: 'partnerTokenAccount'
+          writable: true
+        },
+        {
+          name: 'assetAddress'
+          writable: true
+        },
+        {
+          name: 'bundleAssetAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'account'
+                path: 'bundleAssetAuthority'
+              },
+              {
+                kind: 'const'
+                value: [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'assetAddress'
+              },
+            ]
+            program: {
+              kind: 'const'
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89,
+              ]
+            }
+          }
+        },
+        {
+          name: 'bundleAccount'
+          writable: true
+        },
+        {
+          name: 'oracleData'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAssetAuthority'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+        },
+      ]
+      args: [
+        {
+          name: 'partnerPfeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'partnerMfeeBps'
+          type: 'u32'
+        },
+      ]
     },
     {
       name: 'netPendingTransactions'
@@ -2403,6 +2733,501 @@ export interface Ntbundle {
       args: []
     },
     {
+      name: 'processSwitch'
+      discriminator: [
+        186,
+        170,
+        0,
+        66,
+        104,
+        81,
+        57,
+        195,
+      ]
+      accounts: [
+        {
+          name: 'keeper'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userTokenAccount'
+          writable: true
+        },
+        {
+          name: 'assetAddress'
+          writable: true
+        },
+        {
+          name: 'sourceBundleAssetAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'account'
+                path: 'sourceBundleAssetAuthority'
+              },
+              {
+                kind: 'const'
+                value: [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'assetAddress'
+              },
+            ]
+            program: {
+              kind: 'const'
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89,
+              ]
+            }
+          }
+        },
+        {
+          name: 'sourceUserBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'sourceBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'sourceTreasuryAccount'
+          writable: true
+        },
+        {
+          name: 'sourceBundleAssetAuthority'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'sourceBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'sourceBundleAccount'
+          writable: true
+        },
+        {
+          name: 'sourceBundleTempData'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  69,
+                  77,
+                  80,
+                  95,
+                  68,
+                  65,
+                  84,
+                  65,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'sourceBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'sourceOracleData'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'sourceBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'targetBundleAccount'
+        },
+        {
+          name: 'targetUserBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'targetBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'targetBundleTempData'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  69,
+                  77,
+                  80,
+                  95,
+                  68,
+                  65,
+                  84,
+                  65,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'targetBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'targetPendingDepositTokenAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'account'
+                path: 'targetPendingBundleAssetAuthority'
+              },
+              {
+                kind: 'const'
+                value: [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'assetAddress'
+              },
+            ]
+            program: {
+              kind: 'const'
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89,
+              ]
+            }
+          }
+        },
+        {
+          name: 'targetPendingBundleAssetAuthority'
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  80,
+                  69,
+                  78,
+                  68,
+                  73,
+                  78,
+                  71,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'targetBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'targetOracleData'
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'targetBundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'targetTreasuryAccount'
+          writable: true
+        },
+        {
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+        },
+        {
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
+        },
+      ]
+      args: []
+    },
+    {
       name: 'processWithdrawal'
       discriminator: [
         51,
@@ -3016,6 +3841,176 @@ export interface Ntbundle {
         },
       ]
       args: []
+    },
+    {
+      name: 'requestBundleSwitch'
+      discriminator: [
+        66,
+        9,
+        104,
+        111,
+        227,
+        251,
+        51,
+        176,
+      ]
+      accounts: [
+        {
+          name: 'withdrawalRequest'
+          accounts: [
+            {
+              name: 'user'
+              writable: true
+              signer: true
+            },
+            {
+              name: 'userBundleAccount'
+              writable: true
+              pda: {
+                seeds: [
+                  {
+                    kind: 'const'
+                    value: [
+                      85,
+                      83,
+                      69,
+                      82,
+                      95,
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69,
+                    ]
+                  },
+                  {
+                    kind: 'account'
+                    path: 'user'
+                  },
+                  {
+                    kind: 'account'
+                    path: 'bundleAccount'
+                  },
+                ]
+              }
+            },
+            {
+              name: 'bundleAccount'
+              writable: true
+            },
+            {
+              name: 'oracleData'
+              writable: true
+              pda: {
+                seeds: [
+                  {
+                    kind: 'const'
+                    value: [
+                      79,
+                      82,
+                      65,
+                      67,
+                      76,
+                      69,
+                    ]
+                  },
+                  {
+                    kind: 'account'
+                    path: 'bundleAccount'
+                  },
+                ]
+              }
+            },
+            {
+              name: 'bundleTempData'
+              writable: true
+              pda: {
+                seeds: [
+                  {
+                    kind: 'const'
+                    value: [
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69,
+                      95,
+                      84,
+                      69,
+                      77,
+                      80,
+                      95,
+                      68,
+                      65,
+                      84,
+                      65,
+                    ]
+                  },
+                  {
+                    kind: 'account'
+                    path: 'bundleAccount'
+                  },
+                ]
+              }
+            },
+            {
+              name: 'tokenProgram'
+              address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+            },
+            {
+              name: 'systemProgram'
+              address: '11111111111111111111111111111111'
+            },
+            {
+              name: 'rent'
+              address: 'SysvarRent111111111111111111111111111111111'
+            },
+          ]
+        },
+        {
+          name: 'targetBundleAccount'
+        },
+        {
+          name: 'targetUserBundleAccount'
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'withdrawal_request.user'
+                account: 'requestWithdrawal'
+              },
+              {
+                kind: 'account'
+                path: 'targetBundleAccount'
+              },
+            ]
+          }
+        },
+      ]
+      args: [
+        {
+          name: 'sharesAmount'
+          type: 'u128'
+        },
+      ]
     },
     {
       name: 'requestDeposit'
@@ -3786,6 +4781,166 @@ export interface Ntbundle {
       ]
     },
     {
+      name: 'setUserFeeOverride'
+      discriminator: [
+        207,
+        40,
+        210,
+        198,
+        66,
+        33,
+        153,
+        209,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAccount'
+        },
+      ]
+      args: [
+        {
+          name: 'overrideMask'
+          type: 'u8'
+        },
+        {
+          name: 'customDepositFeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'customWithdrawalFeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'customPerformanceFeeBps'
+          type: 'u32'
+        },
+        {
+          name: 'customManagementFeeBps'
+          type: 'u32'
+        },
+      ]
+    },
+    {
+      name: 'setUserWithdrawalTimingOverride'
+      discriminator: [
+        21,
+        31,
+        116,
+        121,
+        140,
+        237,
+        174,
+        244,
+      ]
+      accounts: [
+        {
+          name: 'manager'
+          writable: true
+          signer: true
+        },
+        {
+          name: 'userBundleAccountOwner'
+        },
+        {
+          name: 'userBundleAccount'
+          writable: true
+          pda: {
+            seeds: [
+              {
+                kind: 'const'
+                value: [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                ]
+              },
+              {
+                kind: 'account'
+                path: 'userBundleAccountOwner'
+              },
+              {
+                kind: 'account'
+                path: 'bundleAccount'
+              },
+            ]
+          }
+        },
+        {
+          name: 'bundleAccount'
+        },
+      ]
+      args: [
+        {
+          name: 'overrideMask'
+          type: 'u8'
+        },
+        {
+          name: 'customWithdrawalDelay'
+          type: 'u64'
+        },
+        {
+          name: 'customWithdrawalTMin'
+          type: 'i64'
+        },
+        {
+          name: 'customWithdrawalTMax'
+          type: 'i64'
+        },
+        {
+          name: 'customWithdrawalCurve'
+          type: 'f32'
+        },
+      ]
+    },
+    {
       name: 'setWithdrawalRedemptionSchedule'
       discriminator: [
         134,
@@ -4266,6 +5421,45 @@ export interface Ntbundle {
       ]
     },
     {
+      name: 'bundleSwitchCompleted'
+      discriminator: [
+        189,
+        237,
+        164,
+        90,
+        103,
+        174,
+        64,
+        73,
+      ]
+    },
+    {
+      name: 'bundleSwitchFallbackToWallet'
+      discriminator: [
+        214,
+        242,
+        67,
+        218,
+        119,
+        180,
+        28,
+        139,
+      ]
+    },
+    {
+      name: 'bundleSwitchRequested'
+      discriminator: [
+        88,
+        172,
+        46,
+        180,
+        196,
+        3,
+        226,
+        44,
+      ]
+    },
+    {
       name: 'changedCoreParams'
       discriminator: [
         156,
@@ -4432,6 +5626,19 @@ export interface Ntbundle {
         74,
         94,
         207,
+      ]
+    },
+    {
+      name: 'managerWithdrawalWithSplit'
+      discriminator: [
+        147,
+        151,
+        147,
+        137,
+        189,
+        58,
+        26,
+        122,
       ]
     },
     {
@@ -4666,6 +5873,58 @@ export interface Ntbundle {
         23,
         157,
         183,
+      ]
+    },
+    {
+      name: 'userFeeOverrideCleared'
+      discriminator: [
+        109,
+        200,
+        134,
+        162,
+        195,
+        197,
+        177,
+        189,
+      ]
+    },
+    {
+      name: 'userFeeOverrideSet'
+      discriminator: [
+        194,
+        56,
+        240,
+        83,
+        158,
+        247,
+        78,
+        66,
+      ]
+    },
+    {
+      name: 'userWithdrawalTimingOverrideCleared'
+      discriminator: [
+        78,
+        111,
+        250,
+        12,
+        64,
+        54,
+        226,
+        251,
+      ]
+    },
+    {
+      name: 'userWithdrawalTimingOverrideSet'
+      discriminator: [
+        119,
+        165,
+        226,
+        212,
+        49,
+        249,
+        115,
+        145,
       ]
     },
     {
@@ -5077,6 +6336,71 @@ export interface Ntbundle {
       name: 'invalidWithdrawalRedemptionSchedule'
       msg: 'Invalid withdrawal redemption schedule'
     },
+    {
+      code: 6071
+      name: 'invalidUserFeeConfig'
+      msg: 'Invalid user fee configuration'
+    },
+    {
+      code: 6072
+      name: 'emptyUserFeeClearRequest'
+      msg: 'Empty user fee clear request'
+    },
+    {
+      code: 6073
+      name: 'noUserFeeOverrideToClear'
+      msg: 'No user fee override to clear'
+    },
+    {
+      code: 6074
+      name: 'invalidUserWithdrawalTimingConfig'
+      msg: 'Invalid user withdrawal timing configuration'
+    },
+    {
+      code: 6075
+      name: 'emptyUserWithdrawalTimingClearRequest'
+      msg: 'Empty user withdrawal timing clear request'
+    },
+    {
+      code: 6076
+      name: 'noUserWithdrawalTimingOverrideToClear'
+      msg: 'No user withdrawal timing override to clear'
+    },
+    {
+      code: 6077
+      name: 'switchTargetSameAsSource'
+      msg: 'Switch target cannot be source bundle'
+    },
+    {
+      code: 6078
+      name: 'switchAssetMintMismatch'
+      msg: 'Switch asset mint mismatch'
+    },
+    {
+      code: 6079
+      name: 'switchAlreadyActive'
+      msg: 'Switch already active'
+    },
+    {
+      code: 6080
+      name: 'noPendingSwitch'
+      msg: 'No pending switch'
+    },
+    {
+      code: 6081
+      name: 'switchTargetAccountsMissing'
+      msg: 'Switch target accounts missing'
+    },
+    {
+      code: 6082
+      name: 'switchTargetAccountMismatch'
+      msg: 'Switch target account mismatch'
+    },
+    {
+      code: 6083
+      name: 'invalidFeeSplit'
+      msg: 'Invalid fee split'
+    },
   ]
   types: [
     {
@@ -5413,6 +6737,166 @@ export interface Ntbundle {
           {
             name: 'newAdmin'
             type: 'pubkey'
+          },
+        ]
+      }
+    },
+    {
+      name: 'bundleSwitchCompleted'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'sourceBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'targetBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'sharesRedeemed'
+            type: 'u128'
+          },
+          {
+            name: 'grossRedemption'
+            type: 'u64'
+          },
+          {
+            name: 'netToDestination'
+            type: 'u64'
+          },
+          {
+            name: 'netCreditedToDestination'
+            type: 'u64'
+          },
+          {
+            name: 'withdrawalFeeA'
+            type: 'u64'
+          },
+          {
+            name: 'depositFeeB'
+            type: 'u64'
+          },
+          {
+            name: 'sharePrice'
+            type: 'u128'
+          },
+          {
+            name: 'userSharesBefore'
+            type: 'u128'
+          },
+          {
+            name: 'userSharesAfter'
+            type: 'u128'
+          },
+          {
+            name: 'totalSharesBefore'
+            type: 'u128'
+          },
+          {
+            name: 'totalSharesAfter'
+            type: 'u128'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'bundleSwitchFallbackToWallet'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'sourceBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'targetBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'sharesRedeemed'
+            type: 'u128'
+          },
+          {
+            name: 'grossRedemption'
+            type: 'u64'
+          },
+          {
+            name: 'netToWallet'
+            type: 'u64'
+          },
+          {
+            name: 'withdrawalFeeA'
+            type: 'u64'
+          },
+          {
+            name: 'reason'
+            type: 'u8'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'bundleSwitchRequested'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'sourceBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'targetBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'sharesAmount'
+            type: 'u128'
+          },
+          {
+            name: 'estimatedGrossRedemption'
+            type: 'u64'
+          },
+          {
+            name: 'estimatedNetToDestination'
+            type: 'u64'
+          },
+          {
+            name: 'estimatedDestinationDepositFee'
+            type: 'u64'
+          },
+          {
+            name: 'estimatedDestinationPendingDeposit'
+            type: 'u64'
+          },
+          {
+            name: 'cooldownEndTimestamp'
+            type: 'i64'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
           },
         ]
       }
@@ -5765,6 +7249,38 @@ export interface Ntbundle {
           },
           {
             name: 'redemptionAmount'
+            type: 'u64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'managerWithdrawalWithSplit'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'managerPfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'managerMfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'partnerPfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'partnerMfeeShares'
+            type: 'u128'
+          },
+          {
+            name: 'managerRedemptionAmount'
+            type: 'u64'
+          },
+          {
+            name: 'partnerRedemptionAmount'
             type: 'u64'
           },
         ]
@@ -6174,11 +7690,63 @@ export interface Ntbundle {
             type: 'u64'
           },
           {
+            name: 'customDepositFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customWithdrawalFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customPerformanceFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customManagementFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'feeOverrideFlags'
+            type: 'u8'
+          },
+          {
+            name: 'customWithdrawalDelay'
+            type: 'u64'
+          },
+          {
+            name: 'customWithdrawalTMin'
+            type: 'i64'
+          },
+          {
+            name: 'customWithdrawalTMax'
+            type: 'i64'
+          },
+          {
+            name: 'customWithdrawalCurve'
+            type: 'f32'
+          },
+          {
+            name: 'withdrawalTimingOverrideFlags'
+            type: 'u8'
+          },
+          {
+            name: 'switchActive'
+            type: 'bool'
+          },
+          {
+            name: 'switchTargetBundle'
+            type: 'pubkey'
+          },
+          {
+            name: 'switchCreatedAt'
+            type: 'i64'
+          },
+          {
             name: 'padding'
             type: {
               array: [
                 'u8',
-                264,
+                177,
               ]
             }
           },
@@ -6201,6 +7769,182 @@ export interface Ntbundle {
           {
             name: 'userBundleAccountKey'
             type: 'pubkey'
+          },
+        ]
+      }
+    },
+    {
+      name: 'userFeeOverrideCleared'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'manager'
+            type: 'pubkey'
+          },
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'bundleAccountKey'
+            type: 'pubkey'
+          },
+          {
+            name: 'clearMask'
+            type: 'u8'
+          },
+          {
+            name: 'previousFlags'
+            type: 'u8'
+          },
+          {
+            name: 'newFlags'
+            type: 'u8'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'userFeeOverrideSet'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'manager'
+            type: 'pubkey'
+          },
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'bundleAccountKey'
+            type: 'pubkey'
+          },
+          {
+            name: 'overrideMask'
+            type: 'u8'
+          },
+          {
+            name: 'previousFlags'
+            type: 'u8'
+          },
+          {
+            name: 'newFlags'
+            type: 'u8'
+          },
+          {
+            name: 'customDepositFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customWithdrawalFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customPerformanceFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'customManagementFeeBps'
+            type: 'u32'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'userWithdrawalTimingOverrideCleared'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'manager'
+            type: 'pubkey'
+          },
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'bundleAccountKey'
+            type: 'pubkey'
+          },
+          {
+            name: 'clearMask'
+            type: 'u8'
+          },
+          {
+            name: 'previousFlags'
+            type: 'u8'
+          },
+          {
+            name: 'newFlags'
+            type: 'u8'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
+          },
+        ]
+      }
+    },
+    {
+      name: 'userWithdrawalTimingOverrideSet'
+      type: {
+        kind: 'struct'
+        fields: [
+          {
+            name: 'manager'
+            type: 'pubkey'
+          },
+          {
+            name: 'user'
+            type: 'pubkey'
+          },
+          {
+            name: 'bundleAccountKey'
+            type: 'pubkey'
+          },
+          {
+            name: 'overrideMask'
+            type: 'u8'
+          },
+          {
+            name: 'previousFlags'
+            type: 'u8'
+          },
+          {
+            name: 'newFlags'
+            type: 'u8'
+          },
+          {
+            name: 'customWithdrawalDelay'
+            type: 'u64'
+          },
+          {
+            name: 'customWithdrawalTMin'
+            type: 'i64'
+          },
+          {
+            name: 'customWithdrawalTMax'
+            type: 'i64'
+          },
+          {
+            name: 'customWithdrawalCurve'
+            type: 'f32'
+          },
+          {
+            name: 'timestamp'
+            type: 'i64'
           },
         ]
       }

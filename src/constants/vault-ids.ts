@@ -9,6 +9,8 @@
 export enum VaultId {
   /** Ethereal-USDE-Bundle */
   ethereal_usde_bundle_81 = 81,
+  /** Options-MM-Z */
+  options_mm_z_80 = 80,
   /** Thirdeye-Flagship-USDC-Bundle */
   thirdeye_flagship_usdc_bundle_79 = 79,
   /** Velox-Cross-USDC-Bundle */
