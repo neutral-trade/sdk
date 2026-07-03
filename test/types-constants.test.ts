@@ -159,11 +159,11 @@ describe('types and Constants Validation', () => {
 
   describe('devnet registry', () => {
     it('exposes fixture vault and DevnetVaultId', () => {
-      expect(vaultsDevnet[100000001]).toBeDefined()
-      expect(vaultsDevnet[100000001].name).toBe('Dev1')
-      expect(DevnetVaultId.dev1_100000001).toBe(100000001)
+      expect(vaultsDevnet[100000002]).toBeDefined()
+      expect(vaultsDevnet[100000002].name).toBe('bundle-1')
+      expect(DevnetVaultId.bundle_1_100000002).toBe(100000002)
       expect(getVaultRegistry('devnet')).toBe(vaultsDevnet)
-      expect(getVaultById(100000001, 'devnet')?.vaultAddress).toBe('HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB')
+      expect(getVaultById(100000002, 'devnet')?.vaultAddress).toBe('HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB')
     })
 
     it('devnet USDC mint uses team mock SPL', () => {
