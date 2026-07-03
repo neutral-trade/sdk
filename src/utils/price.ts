@@ -8,6 +8,7 @@ import { SupportedToken } from '../types'
 const TOKEN_TO_PYTH_FEED_ID: Record<SupportedToken, string> = {
   [SupportedToken.USDC]: 'eaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
   [SupportedToken.USDT]: '2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b',
+  [SupportedToken.USDE]: '6ec879b1e9963de5ee97e9c8710b742d6228252a5e2ca12d4ae81d7fe5ee8c5d',
   [SupportedToken.SOL]: 'ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d',
   [SupportedToken.WBTC]: 'e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43',
   [SupportedToken.WETH]: 'ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',

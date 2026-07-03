@@ -19,6 +19,7 @@ describe('types and Constants Validation', () => {
     it('should have all expected tokens', () => {
       expect(SupportedToken.USDC).toBe('USDC')
       expect(SupportedToken.USDT).toBe('USDT')
+      expect(SupportedToken.USDE).toBe('USDE')
       expect(SupportedToken.SOL).toBe('SOL')
       expect(SupportedToken.WBTC).toBe('WBTC')
       expect(SupportedToken.WETH).toBe('WETH')
@@ -40,6 +41,12 @@ describe('types and Constants Validation', () => {
     it('wBTC should have correct decimals', () => {
       const wbtcInfo = tokens[SupportedToken.WBTC].onChain[SupportedChain.Solana]
       expect(wbtcInfo?.decimals).toBe(8)
+    })
+
+    it('uSDE should have correct decimals', () => {
+      const usdeInfo = tokens[SupportedToken.USDE].onChain[SupportedChain.Solana]
+      expect(usdeInfo?.decimals).toBe(9)
+      expect(usdeInfo?.address).toBe('DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT')
     })
   })
 

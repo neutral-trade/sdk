@@ -10,6 +10,7 @@ export enum SupportedChain {
 export enum SupportedToken {
   USDC = 'USDC',
   USDT = 'USDT',
+  USDE = 'USDE',
   SOL = 'SOL',
   WBTC = 'WBTC',
   WETH = 'WETH',
@@ -46,6 +47,17 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Solana]: {
         address: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
         decimals: 6,
+      },
+      [SupportedChain.Hyperliquid]: null,
+    },
+  },
+  [SupportedToken.USDE]: {
+    name: 'Ethena USDe',
+    symbol: 'USDe',
+    onChain: {
+      [SupportedChain.Solana]: {
+        address: 'DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT',
+        decimals: 9,
       },
       [SupportedChain.Hyperliquid]: null,
     },

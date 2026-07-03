@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 81,
+    "name": "Ethereal-USDE-Bundle",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "HuwbT5aUYkFf8oniumt7XXJ1Y6GQv7EJACv55dAhjt6e",
+    "depositToken": "USDE",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 79,
     "name": "Thirdeye-Flagship-USDC-Bundle",
     "type": "Bundle",

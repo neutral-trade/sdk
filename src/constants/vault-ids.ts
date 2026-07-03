@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Ethereal-USDE-Bundle */
+  ethereal_usde_bundle_81 = 81,
   /** Thirdeye-Flagship-USDC-Bundle */
   thirdeye_flagship_usdc_bundle_79 = 79,
   /** Velox-Cross-USDC-Bundle */
