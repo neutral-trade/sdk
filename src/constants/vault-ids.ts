@@ -16,7 +16,7 @@ export enum VaultId {
   /** Velox-Cross-USDC-Bundle */
   velox_cross_usdc_bundle_78 = 78,
   /** Hyperithm CTA */
-  hyperithm_cta_usdc_bundle_77 = 77,
+  hyperithm_cta_77 = 77,
   /** Master Bundle */
   master_bundle_76 = 76,
   /** AdverseGuard Alpha */
