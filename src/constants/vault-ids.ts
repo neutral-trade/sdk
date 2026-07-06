@@ -15,7 +15,7 @@ export enum VaultId {
   thirdeye_flagship_usdc_bundle_79 = 79,
   /** Velox-Cross-USDC-Bundle */
   velox_cross_usdc_bundle_78 = 78,
-  /** Hyperithm-CTA-USDC-Bundle */
+  /** Hyperithm CTA */
   hyperithm_cta_usdc_bundle_77 = 77,
   /** Master Bundle */
   master_bundle_76 = 76,

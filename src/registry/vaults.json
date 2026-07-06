@@ -41,13 +41,13 @@
   },
   {
     "vaultId": 77,
-    "name": "Hyperithm-CTA-USDC-Bundle",
+    "name": "Hyperithm CTA",
     "type": "Bundle",
     "category": "Directional",
     "vaultAddress": "Ec6uSz5EsffwfXp43pvpz4rf9ttJRFKES4ZSVX7gVVkQ",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsEnabled": true
   },
   {
     "vaultId": 76,
@@ -56,8 +56,8 @@
     "category": "Master Vault",
     "vaultAddress": "J7qhMAKnB6G5dvoAN9281ufabajKbyGQxxd2bq6R7fPJ",
     "depositToken": "USDC",
-    "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 75,
