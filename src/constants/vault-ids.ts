@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Nexus-USDC-Bundle */
+  nexus_usdc_bundle_82 = 82,
   /** Ethereal-USDE-Bundle */
   ethereal_usde_bundle_81 = 81,
   /** Options-MM-Z */

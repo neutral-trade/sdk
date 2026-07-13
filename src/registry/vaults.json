@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 82,
+    "name": "Nexus-USDC-Bundle",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 81,
     "name": "Ethereal-USDE-Bundle",
     "type": "Bundle",
