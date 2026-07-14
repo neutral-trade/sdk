@@ -2727,6 +2727,261 @@
       "args": []
     },
     {
+      "name": "process_referrer_withdrawal",
+      "discriminator": [
+        78,
+        133,
+        153,
+        202,
+        251,
+        151,
+        146,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "keeper",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "referrer"
+        },
+        {
+          "name": "referrer_token_account",
+          "writable": true
+        },
+        {
+          "name": "asset_address",
+          "writable": true
+        },
+        {
+          "name": "bundle_asset_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "bundle_asset_authority"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset_address"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "bundle_account",
+          "writable": true
+        },
+        {
+          "name": "oracle_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_temp_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  69,
+                  77,
+                  80,
+                  95,
+                  68,
+                  65,
+                  84,
+                  65
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_asset_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  65,
+                  83,
+                  83,
+                  69,
+                  84,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referrer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  69,
+                  70,
+                  69,
+                  82,
+                  82,
+                  69,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              },
+              {
+                "kind": "account",
+                "path": "referrer_account.referrer",
+                "account": "ReferrerAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "process_switch",
       "discriminator": [
         186,
@@ -3534,6 +3789,115 @@
       "args": []
     },
     {
+      "name": "referrer_request_withdraw",
+      "discriminator": [
+        14,
+        246,
+        94,
+        153,
+        127,
+        117,
+        147,
+        31
+      ],
+      "accounts": [
+        {
+          "name": "referrer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account"
+        },
+        {
+          "name": "oracle_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  82,
+                  65,
+                  67,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_temp_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  69,
+                  77,
+                  80,
+                  95,
+                  68,
+                  65,
+                  84,
+                  65
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referrer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  69,
+                  70,
+                  69,
+                  82,
+                  82,
+                  69,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              },
+              {
+                "kind": "account",
+                "path": "referrer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "refund_deposit",
       "discriminator": [
         19,
@@ -3766,6 +4130,94 @@
         {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "register_referrer",
+      "discriminator": [
+        122,
+        229,
+        215,
+        169,
+        100,
+        145,
+        198,
+        120
+      ],
+      "accounts": [
+        {
+          "name": "referrer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "referrer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  69,
+                  70,
+                  69,
+                  82,
+                  82,
+                  69,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              },
+              {
+                "kind": "account",
+                "path": "referrer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bundle_account"
+        },
+        {
+          "name": "referrer_user_bundle_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "referrer"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
         },
         {
           "name": "system_program",
@@ -4775,6 +5227,174 @@
       ]
     },
     {
+      "name": "set_referrer_active",
+      "discriminator": [
+        173,
+        21,
+        130,
+        158,
+        15,
+        1,
+        83,
+        24
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account"
+        },
+        {
+          "name": "referrer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  69,
+                  70,
+                  69,
+                  82,
+                  82,
+                  69,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              },
+              {
+                "kind": "account",
+                "path": "referrer_account.referrer",
+                "account": "ReferrerAccount"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "set_referrer_config",
+      "discriminator": [
+        85,
+        90,
+        76,
+        126,
+        69,
+        34,
+        205,
+        22
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "referrer_enabled",
+          "type": "bool"
+        },
+        {
+          "name": "referral_pfee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "referral_mfee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "referrer_min_deposit_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_referrer_rate_override",
+      "discriminator": [
+        117,
+        110,
+        164,
+        192,
+        156,
+        211,
+        27,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account"
+        },
+        {
+          "name": "referrer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  69,
+                  70,
+                  69,
+                  82,
+                  82,
+                  69,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              },
+              {
+                "kind": "account",
+                "path": "referrer_account.referrer",
+                "account": "ReferrerAccount"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "override_mask",
+          "type": "u8"
+        },
+        {
+          "name": "custom_pfee_bps",
+          "type": "u32"
+        },
+        {
+          "name": "custom_mfee_bps",
+          "type": "u32"
+        }
+      ]
+    },
+    {
       "name": "set_user_fee_override",
       "discriminator": [
         207,
@@ -4853,6 +5473,122 @@
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "set_user_referrer",
+      "discriminator": [
+        71,
+        167,
+        153,
+        60,
+        26,
+        30,
+        50,
+        114
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "signer": true
+        },
+        {
+          "name": "bundle_account"
+        },
+        {
+          "name": "user_bundle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referrer_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  69,
+                  70,
+                  69,
+                  82,
+                  82,
+                  69,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              },
+              {
+                "kind": "account",
+                "path": "referrer_account.referrer",
+                "account": "ReferrerAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referrer_user_bundle_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "referrer_account.referrer",
+                "account": "ReferrerAccount"
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
     },
     {
       "name": "set_user_withdrawal_timing_override",
@@ -5267,6 +6003,19 @@
         141,
         10,
         37
+      ]
+    },
+    {
+      "name": "ReferrerAccount",
+      "discriminator": [
+        48,
+        19,
+        160,
+        54,
+        76,
+        220,
+        70,
+        9
       ]
     },
     {
@@ -5779,6 +6528,97 @@
       ]
     },
     {
+      "name": "ReferralFeesAccrued",
+      "discriminator": [
+        245,
+        211,
+        52,
+        213,
+        213,
+        35,
+        214,
+        128
+      ]
+    },
+    {
+      "name": "ReferrerActiveSet",
+      "discriminator": [
+        208,
+        28,
+        171,
+        184,
+        192,
+        152,
+        237,
+        18
+      ]
+    },
+    {
+      "name": "ReferrerConfigSet",
+      "discriminator": [
+        21,
+        123,
+        218,
+        66,
+        121,
+        117,
+        89,
+        200
+      ]
+    },
+    {
+      "name": "ReferrerRateOverrideSet",
+      "discriminator": [
+        242,
+        147,
+        205,
+        239,
+        19,
+        211,
+        213,
+        75
+      ]
+    },
+    {
+      "name": "ReferrerRegistered",
+      "discriminator": [
+        106,
+        198,
+        28,
+        51,
+        115,
+        46,
+        57,
+        3
+      ]
+    },
+    {
+      "name": "ReferrerWithdrawalProcessed",
+      "discriminator": [
+        118,
+        14,
+        179,
+        109,
+        134,
+        95,
+        211,
+        194
+      ]
+    },
+    {
+      "name": "ReferrerWithdrawalRequested",
+      "discriminator": [
+        82,
+        234,
+        98,
+        69,
+        123,
+        228,
+        54,
+        239
+      ]
+    },
+    {
       "name": "Refilled",
       "discriminator": [
         103,
@@ -5893,6 +6733,19 @@
         247,
         78,
         66
+      ]
+    },
+    {
+      "name": "UserReferrerSet",
+      "discriminator": [
+        142,
+        193,
+        234,
+        134,
+        173,
+        80,
+        184,
+        232
       ]
     },
     {
@@ -6394,6 +7247,51 @@
       "code": 6083,
       "name": "InvalidFeeSplit",
       "msg": "Invalid fee split"
+    },
+    {
+      "code": 6084,
+      "name": "InvalidReferralConfig",
+      "msg": "Invalid referral configuration"
+    },
+    {
+      "code": 6085,
+      "name": "ReferralsDisabled",
+      "msg": "Referrals disabled for bundle"
+    },
+    {
+      "code": 6086,
+      "name": "ReferralAlreadySet",
+      "msg": "Referral already set"
+    },
+    {
+      "code": 6087,
+      "name": "UserBundleAccountHasActivity",
+      "msg": "User has existing bundle activity"
+    },
+    {
+      "code": 6088,
+      "name": "ReferrerAccountMissing",
+      "msg": "Referrer account missing"
+    },
+    {
+      "code": 6089,
+      "name": "ReferrerAccountMismatch",
+      "msg": "Referrer account mismatch"
+    },
+    {
+      "code": 6090,
+      "name": "ReferrerSharesZero",
+      "msg": "Referrer shares are zero"
+    },
+    {
+      "code": 6091,
+      "name": "UnauthorizedReferrerAction",
+      "msg": "Not referrer"
+    },
+    {
+      "code": 6092,
+      "name": "ReferrerDepositTooLow",
+      "msg": "Referrer deposit too low"
     }
   ],
   "types": [
@@ -6630,11 +7528,27 @@
             "type": "i64"
           },
           {
+            "name": "referral_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referrer_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "referrer_min_deposit_amount",
+            "type": "u64"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                207
+                190
               ]
             }
           }
@@ -7490,6 +8404,291 @@
       }
     },
     {
+      "name": "ReferralFeesAccrued",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer_pfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "referrer_mfee_shares",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "accrued_pfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "accrued_mfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "custom_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "rate_override_flags",
+            "type": "u8"
+          },
+          {
+            "name": "pending_withdraw_shares",
+            "type": "u128"
+          },
+          {
+            "name": "estimated_pending_withdrawal_value",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawal_available_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "last_withdrawal_process_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerActiveSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerConfigSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "referral_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referrer_min_deposit_amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerRateOverrideSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "override_mask",
+            "type": "u8"
+          },
+          {
+            "name": "previous_flags",
+            "type": "u8"
+          },
+          {
+            "name": "new_flags",
+            "type": "u8"
+          },
+          {
+            "name": "custom_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "custom_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerWithdrawalProcessed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_redeemed",
+            "type": "u128"
+          },
+          {
+            "name": "redemption_amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferrerWithdrawalRequested",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares",
+            "type": "u128"
+          },
+          {
+            "name": "estimated_pending_withdrawal_value",
+            "type": "u64"
+          },
+          {
+            "name": "cooldown_end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "Refilled",
       "type": {
         "kind": "struct",
@@ -7736,11 +8935,27 @@
             "type": "i64"
           },
           {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "referral_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_flags",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                177
+                136
               ]
             }
           }
@@ -7846,6 +9061,38 @@
           },
           {
             "name": "custom_management_fee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserReferrerSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "referral_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_mfee_bps",
             "type": "u32"
           },
           {

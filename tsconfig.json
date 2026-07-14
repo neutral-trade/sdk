@@ -9,6 +9,7 @@
       "@/*": ["src/*"]
     },
     "resolveJsonModule": true,
+    "types": ["vitest/globals"],
     "strict": true,
     "strictNullChecks": true,
     "noEmit": true,
@@ -17,5 +18,6 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
 
-  }
+  },
+  "exclude": ["node_modules", "packages"]
 }

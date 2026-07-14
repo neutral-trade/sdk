@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0
+
+Full rewrite. `@neutral-trade/sdk` is now the vault registry plus the Codama-generated client for the ntbundle program, built on `@solana/kit` v6. The client (`src/generated`, `src/extensions`, `test/client`) is vendored from the program monorepo via automated client drops.
+
+Breaking changes from 0.x:
+
+- anchor + web3.js v1 stack removed: `Address` instead of `PublicKey`, native `bigint` instead of `BN`, plain `Instruction` objects instead of `TransactionInstruction`; callers assemble and send their own transactions.
+- `NeutralTrade` facade, `createBundleProgramById`, `BundleProgram`/`BundleProvider`, price fetching, and the `./internal` entry point are gone. Use the generated fetchers plus the extension helpers (`buildDepositInstructions`, `fetchUserBundleBalance`, `resolveEffectiveFees`, …).
+- Vault registry, `VaultId` enums, and token tables are unchanged and stay in this package.
+
+The 0.x line continues on the `legacy-v0` branch.
+
 ## 0.4.0
 
 - Removed `registry`, `registryUrl`, and `includeBuiltInVaults` from `NeutralTrade.create`. Vault configuration now comes **only** from the built-in, compile-time registry shipped with the SDK package.

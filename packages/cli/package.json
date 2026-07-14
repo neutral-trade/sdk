@@ -1,0 +1,26 @@
+{
+  "name": "@neutral-trade/cli",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ntbundle instruction CLI for Neutral Trade — print, simulate, or execute generated instructions",
+  "license": "MIT",
+  "bin": { "ntbundle": "./dist/index.mjs" },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@neutral-trade/sdk": "workspace:*",
+    "@solana/kit": "^6.10.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "tsdown": "catalog:cli",
+    "tsx": "catalog:cli",
+    "typescript": "catalog:cli"
+  }
+}

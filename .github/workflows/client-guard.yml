@@ -1,0 +1,38 @@
+name: Client paths guard
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  guard:
+    name: Bot-owned client paths
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reject human edits to bot-owned paths
+        if: github.head_ref != 'client-drop'
+        run: |
+          set -euo pipefail
+          # Bootstrap: until the client has landed on the base branch (no
+          # manifest there yet), the introducing PR is allowed to add the
+          # bot-owned paths. Once base has a manifest, only the client-drop
+          # branch may touch them.
+          if ! git cat-file -e "origin/${{ github.base_ref }}:client-drop.manifest" 2>/dev/null; then
+            echo "No client-drop.manifest on base yet — bootstrap PR, skipping guard."
+            exit 0
+          fi
+          CHANGED="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD -- src/generated src/extensions src/idl test/client client-drop.manifest || true)"
+          if [ -n "$CHANGED" ]; then
+            echo "::error::These paths are bot-owned and only updated by client drops from bundle-sc:"
+            echo "$CHANGED"
+            exit 1
+          fi
+
+      - name: Verify drop manifest
+        run: |
+          set -euo pipefail
+          grep -v '^#' client-drop.manifest | sha256sum -c --quiet
