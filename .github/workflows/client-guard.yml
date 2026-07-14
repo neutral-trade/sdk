@@ -1,0 +1,30 @@
+name: Client paths guard
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  guard:
+    name: Bot-owned client paths
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reject human edits to bot-owned paths
+        if: github.head_ref != 'client-drop'
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD -- src/generated src/extensions test/client client-drop.manifest || true)"
+          if [ -n "$CHANGED" ]; then
+            echo "::error::These paths are bot-owned and only updated by client drops from bundle-sc:"
+            echo "$CHANGED"
+            exit 1
+          fi
+
+      - name: Verify drop manifest
+        run: |
+          set -euo pipefail
+          grep -v '^#' client-drop.manifest | sha256sum -c --quiet
