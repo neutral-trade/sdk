@@ -26,6 +26,11 @@ jobs:
       - run: nci
       - run: nr lint
       - run: nr typecheck
+      # Build the SDK so the CLI can resolve its emitted dist types, then
+      # typecheck the CLI (it consumes @neutral-trade/sdk and its ./idl subpath;
+      # `pnpm -r` skips the workspace-root SDK, so target the CLI explicitly).
+      - run: nr build
+      - run: pnpm --filter @neutral-trade/cli typecheck
 
   test:
     runs-on: ${{ matrix.os }}
@@ -50,4 +55,7 @@ jobs:
       - run: pnpm i -g @antfu/ni
       - run: nci
       - run: nr build
+      # Build the CLI too (after the SDK) so a CLI that no longer builds
+      # against the SDK fails CI.
+      - run: pnpm --filter @neutral-trade/cli build
       - run: nr test
