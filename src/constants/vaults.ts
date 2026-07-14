@@ -1,4 +1,4 @@
-import type { VaultRegistry, VaultRegistryEntry } from '../types'
+import type { VaultConfig, VaultRegistry, VaultRegistryEntry } from '../types'
 import type { BundleCluster } from './programs'
 import vaultsDevnetJson from '../registry/vaults.devnet.json'
 import vaultsMainnetJson from '../registry/vaults.json'
@@ -23,7 +23,7 @@ export function getBundleProgramId(
 }
 
 /**
- * Get Drift Program ID for a vault config as PublicKey
+ * Get Drift Program ID for a vault config.
  * Uses registry value if present, otherwise defaults to VAULT_PROGRAM_ID
  */
 export function getDriftProgramId(vault: VaultRegistryEntry): string | undefined {
@@ -48,7 +48,7 @@ export function getDriftProgramId(vault: VaultRegistryEntry): string | undefined
 export function toVaultConfig(
   entry: VaultRegistryEntry,
   cluster: BundleCluster = 'mainnet',
-): VaultRegistryEntry {
+): VaultConfig {
   return {
     ...entry,
     driftProgramId: getDriftProgramId(entry),

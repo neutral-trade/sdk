@@ -1,9 +1,9 @@
 {
   "name": "@neutral-trade/sdk",
   "type": "module",
-  "version": "0.4.19",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.25.0",
-  "description": "SDK for Neutral Trade vaults",
+  "description": "Neutral Trade vault registry and Codama-generated ntbundle client for @solana/kit",
   "license": "MIT",
   "homepage": "https://github.com/neutral-trade/sdk#readme",
   "repository": {
@@ -11,11 +11,18 @@
     "url": "git+https://github.com/neutral-trade/sdk.git"
   },
   "bugs": "https://github.com/neutral-trade/sdk/issues",
-  "keywords": [],
+  "keywords": [
+    "solana",
+    "neutral-trade",
+    "ntbundle",
+    "sdk",
+    "codama",
+    "solana-kit"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
-    "./internal": "./dist/internal.mjs",
+    "./generated": "./dist/generated/index.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
@@ -24,8 +31,11 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "generate": "tsx scripts/generate-vault-ids.ts",
+    "generate": "node --import tsx scripts/generate-vault-ids.ts",
     "prebuild": "pnpm generate",
     "build": "tsdown",
     "dev": "tsdown --watch",
@@ -33,33 +43,29 @@
     "prepublishOnly": "nr build",
     "release": "bumpp",
     "start": "tsx src/index.ts",
-    "example:devnet:deposit": "tsx examples/devnet-deposit.ts",
-    "example:devnet:withdraw": "tsx examples/devnet-withdraw.ts",
-    "example:api:deposit": "tsx examples/api-deposit.ts",
-    "example:api:withdraw": "tsx examples/api-withdraw.ts",
     "test": "vitest",
     "typecheck": "tsc",
     "docs:build": "typedoc",
     "docs:preview": "pnpm docs:build && npx serve docs",
     "prepare": "simple-git-hooks"
   },
+  "peerDependencies": {
+    "@solana/kit": "^6.10.0"
+  },
   "dependencies": {
-    "@coral-xyz/anchor": "catalog:",
-    "@solana/spl-token": "catalog:",
-    "@solana/web3.js": "catalog:",
-    "@types/bn.js": "catalog:",
-    "bn.js": "catalog:",
+    "@solana/program-client-core": "^6.10.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
-    "@coral-xyz/anchor": "catalog:",
-    "@solana/web3.js": "catalog:",
+    "@solana/kit": "^6.10.0",
+    "@types/chai": "^5.2.2",
     "@types/node": "catalog:types",
     "baseline-browser-mapping": "catalog:",
     "bumpp": "catalog:cli",
+    "chai": "^5.2.0",
     "dotenv": "catalog:",
     "eslint": "catalog:cli",
     "lint-staged": "catalog:cli",
@@ -73,8 +79,7 @@
     "vite": "catalog:cli",
     "vitest": "catalog:testing",
     "vitest-package-exports": "catalog:testing",
-    "yaml": "catalog:testing",
-    "zod": "catalog:"
+    "yaml": "catalog:testing"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"

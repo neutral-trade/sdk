@@ -47,6 +47,12 @@ export interface VaultRegistryEntry {
   pointsEnabled?: boolean
 }
 
+/** Registry entry after cluster-specific program ids have been resolved. */
+export type VaultConfig = Omit<VaultRegistryEntry, 'bundleProgramId' | 'driftProgramId'> & {
+  bundleProgramId: string | undefined
+  driftProgramId: string | undefined
+}
+
 /** Zod schema for validating registry entries */
 export const VaultRegistryEntrySchema = z.object({
   vaultId: z.number().int().min(0),
@@ -79,4 +85,4 @@ export const VaultRegistryArraySchema = z
   })
 
 /** Vault registry as a record keyed by vaultId */
-export type VaultRegistry = Record<number, VaultRegistryEntry>
+export type VaultRegistry = Record<number, VaultConfig>

@@ -1,12 +1,27 @@
 import { describe, expect, it } from 'vitest'
+import { getPointsVaults } from '../src/constants/points-vaults'
 import {
+  ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER,
+  assertAllowlistedBundleProgramId,
+  BUNDLE_PROGRAM_ID_V2_MAINNET,
   DEFAULT_BUNDLE_PROGRAM_ID_DEVNET,
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
   getDefaultBundleProgramIdByCluster,
+  isAllowlistedBundleProgramId,
 } from '../src/constants/programs'
 import { DevnetVaultId } from '../src/constants/vault-ids.devnet'
-import { getBundleProgramId, getVaultById, getVaultRegistry, vaults, vaultsDevnet } from '../src/constants/vaults'
 import {
+  getBundleProgramId,
+  getDriftProgramId,
+  getVaultById,
+  getVaultRegistry,
+  toVaultConfig,
+  toVaultRegistry,
+  vaults,
+  vaultsDevnet,
+} from '../src/constants/vaults'
+import {
+  getSolanaTokenDecimals,
   getSolanaTokenMint,
   SupportedChain,
   SupportedToken,
@@ -78,6 +93,16 @@ describe('types and Constants Validation', () => {
       expect(getDefaultBundleProgramIdByCluster('mainnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET)
       expect(getDefaultBundleProgramIdByCluster('devnet')).toBe(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
     })
+
+    it('checks and asserts the cluster allowlist', () => {
+      expect(ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER.mainnet).toContain(BUNDLE_PROGRAM_ID_V2_MAINNET)
+      expect(isAllowlistedBundleProgramId(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET, 'mainnet')).toBe(true)
+      expect(isAllowlistedBundleProgramId(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET, 'mainnet')).toBe(false)
+      expect(() => assertAllowlistedBundleProgramId(DEFAULT_BUNDLE_PROGRAM_ID_MAINNET, 'mainnet')).not.toThrow()
+      expect(() => assertAllowlistedBundleProgramId(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET, 'mainnet')).toThrow(
+        'Unsupported bundle program id for mainnet',
+      )
+    })
   })
 
   describe('vaults registry', () => {
@@ -143,6 +168,25 @@ describe('types and Constants Validation', () => {
       const uniqueIds = new Set(vaultIds)
       expect(uniqueIds.size).toBe(vaultIds.length)
     })
+
+    it('transforms raw entries into resolved registry configs', () => {
+      const rawBundleVault = { ...vaults[48], bundleProgramId: undefined }
+      const resolved = toVaultConfig(rawBundleVault, 'devnet')
+      const registry = toVaultRegistry([rawBundleVault], 'devnet')
+
+      expect(resolved.bundleProgramId).toBe(DEFAULT_BUNDLE_PROGRAM_ID_DEVNET)
+      expect(resolved.driftProgramId).toBeUndefined()
+      expect(registry[rawBundleVault.vaultId]).toEqual(resolved)
+    })
+
+    it('resolves Drift ids and points-ready vaults', () => {
+      const driftVault = Object.values(vaults).find(vault => vault.type === VaultType.Drift)!
+      const pointsVaults = getPointsVaults(vaults)
+
+      expect(getDriftProgramId(driftVault)).toBeTruthy()
+      expect(pointsVaults.every(vault => vault.enabled)).toBe(true)
+      expect(pointsVaults.every(vault => vault.depositToken.length > 0)).toBe(true)
+    })
   })
 
   describe('getBundleProgramId function', () => {
@@ -173,6 +217,7 @@ describe('types and Constants Validation', () => {
       expect(getSolanaTokenMint(SupportedToken.USDC, 'mainnet')).toBe(
         tokens[SupportedToken.USDC].onChain[SupportedChain.Solana]!.address,
       )
+      expect(getSolanaTokenDecimals(SupportedToken.USDC)).toBe(6)
     })
   })
 })
