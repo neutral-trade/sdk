@@ -36,6 +36,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "cli": "pnpm --filter @neutral-trade/cli dev --",
     "generate": "node --import tsx scripts/generate-vault-ids.ts",
     "prebuild": "pnpm generate",
     "build": "tsdown",
