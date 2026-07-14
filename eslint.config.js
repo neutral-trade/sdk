@@ -10,6 +10,7 @@ export default antfu(
       'README.md',
       'src/generated/**',
       'src/extensions/**',
+      'src/idl/**',
       'test/client/**',
     ],
     rules: {

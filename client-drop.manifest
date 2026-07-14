@@ -1,4 +1,4 @@
-# source: neutral-trade/bundle-sc@7bb56f1
+# source: neutral-trade/bundle-sc@f625948
 # bot-owned paths; verified by client-guard.yml — do not edit by hand
 3c9eb33417336817effacb78b8f54059db932861520305a5c9605beff6443769  src/extensions/ata.ts
 c2db07270ae46ab280fa17406098d317d29c4c8859489bbaffde17d5352c2a9a  src/extensions/balances.ts
@@ -93,6 +93,8 @@ ef995a17ed88fcfd9f853a4a0d1aa88af41a176e4a0dc0a54e683edc7a90d6bc  src/generated/
 c8231cf732e634aa8345db42cd8ab79764d7172d9b71fe4da3456d4c604b8f20  src/generated/pdas/userBundleAccount.ts
 f8007bef9e0bb7323ea6f210b1798fdcc3bfe18d5f2bacfb90c7454c223e6824  src/generated/programs/index.ts
 2efa10ac8665461a5ddc65b8bf3b7a82f7e433f53df357f982e2673920ef39b5  src/generated/programs/ntbundle.ts
+981d930ac096d897917e87e51c510945c47c35c297b2ab7d40cbcfd3778c051b  src/idl/index.ts
+dd4d64219aa5b2a0b3730d221eeb2baf93e94304ce78a9639cceccee55740016  src/idl/ntbundle.json
 87eaa7f79aec36024cbdc680409f2bcebab955241e71a1489dfdfd3262076331  test/client/balances.test.ts
 0a76e07710006710a0de43ad4a82f6661344691fdc5f8838dd262633abee929c  test/client/fees.test.ts
 a2f6fed20d5af2a965fe6ca60c1fd1867325d30da1b3645a1057a10608ee95c3  test/client/flows.test.ts

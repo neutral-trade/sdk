@@ -23,6 +23,7 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./generated": "./dist/generated/index.mjs",
+    "./idl": "./dist/idl/index.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
