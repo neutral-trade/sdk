@@ -7930,6 +7930,22 @@
           {
             "name": "bundle_account_key",
             "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "manager_pfee_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "manager_mfee_shares_after",
+            "type": "u128"
           }
         ]
       }
@@ -8158,6 +8174,22 @@
           {
             "name": "redemption_amount",
             "type": "u64"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "manager_pfee_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "manager_mfee_shares_after",
+            "type": "u128"
           }
         ]
       }
@@ -8190,6 +8222,22 @@
           {
             "name": "partner_redemption_amount",
             "type": "u64"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "manager_pfee_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "manager_mfee_shares_after",
+            "type": "u128"
           }
         ]
       }
@@ -8230,6 +8278,10 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
           }
         ]
       }
@@ -8326,6 +8378,18 @@
         "fields": [
           {
             "name": "average_external_equity",
+            "type": "u64"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_shares",
+            "type": "u128"
+          },
+          {
+            "name": "bundle_underlying_balance",
             "type": "u64"
           }
         ]
@@ -8426,6 +8490,14 @@
           },
           {
             "name": "referrer_mfee_shares",
+            "type": "u128"
+          },
+          {
+            "name": "accrued_pfee_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "accrued_mfee_shares_after",
             "type": "u128"
           }
         ]
@@ -8652,6 +8724,14 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "accrued_pfee_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "accrued_mfee_shares_after",
+            "type": "u128"
           }
         ]
       }
