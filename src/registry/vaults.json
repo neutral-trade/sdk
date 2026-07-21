@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 83,
+    "name": "CTA-C-USDC-Bundle",
+    "type": "Bundle",
+    "category": "Directional",
+    "vaultAddress": "G5aMxQTbGWMnYycpfjHpD7Y1muoKBwaB1HtCdpUUcQZp",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 82,
     "name": "Nexus-USDC-Bundle",
     "type": "Bundle",
@@ -7,7 +17,7 @@
     "vaultAddress": "C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsEnabled": true
   },
   {
     "vaultId": 81,
