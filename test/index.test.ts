@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER,
+  buildAttributedDepositTx,
+  buildBuilderRegistrationTx,
   buildDepositInstructions,
+  calculateMinimumGrossDepositAmount,
+  deriveReferrerAccountForUser,
   fetchBundle,
   getDefaultBundleProgramIdByCluster,
   getPointsVaults,
@@ -41,5 +45,9 @@ describe('sdk exports', () => {
   it('exports generated bindings and extension helpers', () => {
     expect(fetchBundle).toBeTypeOf('function')
     expect(buildDepositInstructions).toBeTypeOf('function')
+    expect(buildAttributedDepositTx).toBeTypeOf('function')
+    expect(buildBuilderRegistrationTx).toBeTypeOf('function')
+    expect(calculateMinimumGrossDepositAmount).toBeTypeOf('function')
+    expect(deriveReferrerAccountForUser).toBeTypeOf('function')
   })
 })

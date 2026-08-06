@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added `buildAttributedDepositTx` for atomic first-deposit attribution with direct addresses or offchain code resolvers, including vault and referrer preflight validation.
+- Added `buildBuilderRegistrationTx`, including atomic zero-minimum registration and a fee-adjusted two-step plan that accounts for pending deposits and vault deposit minimums.
+- Added the shared `deriveReferrerAccountForUser` PDA helper and exact deposit-fee gross-up calculation.
+
 ## 1.0.0
 
 Full rewrite. `@neutral-trade/sdk` is now the vault registry plus the Codama-generated client for the ntbundle program, built on `@solana/kit` v6. The client (`src/generated`, `src/extensions`, `test/client`) is vendored from the program monorepo via automated client drops.

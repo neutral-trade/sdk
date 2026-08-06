@@ -6,6 +6,8 @@
   assertValidAmountRaw: function
   ASSOCIATED_TOKEN_PROGRAM_ADDRESS: string
   BPS_DENOMINATOR: bigint
+  buildAttributedDepositTx: function
+  buildBuilderRegistrationTx: function
   buildDepositInstructions: function
   buildRequestSwitchInstructions: function
   buildRequestWithdrawInstruction: function
@@ -15,6 +17,7 @@
   BUNDLE_PROGRAM_ID_V2_MAINNET: string
   BUNDLE_TEMP_DATA_DISCRIMINATOR: object
   calculateAssetsFromShares: function
+  calculateMinimumGrossDepositAmount: function
   calculateOnChainPps: function
   CHANGE_BUNDLE_MASTER_ADMIN_DISCRIMINATOR: object
   CHANGE_MANAGER_DISCRIMINATOR: object
@@ -33,6 +36,7 @@
   decodeUserBundleAccount: function
   DEFAULT_BUNDLE_PROGRAM_ID_DEVNET: string
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET: string
+  deriveReferrerAccountForUser: function
   DevnetVaultId: object
   DISTRIBUTE_TO_RECEIVERS_DISCRIMINATOR: object
   ENABLE_STRATEGY_DISCRIMINATOR: object

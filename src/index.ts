@@ -40,5 +40,6 @@ export type {
   VaultRegistryEntry,
 } from './types'
 
+export * from './custom'
 export * from './generated'
 export * from './extensions'
