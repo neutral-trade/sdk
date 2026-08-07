@@ -6,7 +6,11 @@
   assertValidAmountRaw: function
   ASSOCIATED_TOKEN_PROGRAM_ADDRESS: string
   BPS_DENOMINATOR: bigint
+  buildAttributedDepositTx: function
+  buildBuilderRegistrationTx: function
   buildDepositInstructions: function
+  BuilderDepositAmountTooLowError: function
+  buildReferrerWithdrawRequestTx: function
   buildRequestSwitchInstructions: function
   buildRequestWithdrawInstruction: function
   BUNDLE_CREATOR_ACCOUNT_DISCRIMINATOR: object
@@ -15,6 +19,7 @@
   BUNDLE_PROGRAM_ID_V2_MAINNET: string
   BUNDLE_TEMP_DATA_DISCRIMINATOR: object
   calculateAssetsFromShares: function
+  calculateGrossDepositAmount: function
   calculateOnChainPps: function
   CHANGE_BUNDLE_MASTER_ADMIN_DISCRIMINATOR: object
   CHANGE_MANAGER_DISCRIMINATOR: object
@@ -33,11 +38,14 @@
   decodeUserBundleAccount: function
   DEFAULT_BUNDLE_PROGRAM_ID_DEVNET: string
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET: string
+  deriveReferrerAccountForUser: function
   DevnetVaultId: object
   DISTRIBUTE_TO_RECEIVERS_DISCRIMINATOR: object
   ENABLE_STRATEGY_DISCRIMINATOR: object
   END_DISTRIBUTION_DISCRIMINATOR: object
   estimatePendingUserFees: function
+  estimateWithdrawalAvailableTimestamp: function
+  estimateWithdrawalCooldownSeconds: function
   FEE_OVERRIDE_DEPOSIT: number
   FEE_OVERRIDE_MANAGEMENT: number
   FEE_OVERRIDE_PERFORMANCE: number
@@ -72,6 +80,7 @@
   fetchMaybeUserBundleAccount: function
   fetchOracleData: function
   fetchReferrerAccount: function
+  fetchReferrerStatus: function
   fetchStrategy: function
   fetchUserBundleAccount: function
   fetchUserBundleBalance: function
@@ -440,6 +449,7 @@
   isValidVaultAddress: function
   MANAGER_WITHDRAW_DISCRIMINATOR: object
   MANAGER_WITHDRAW_WITH_SPLIT_DISCRIMINATOR: object
+  MAX_DEPOSIT_FEE_BPS: number
   NET_PENDING_TRANSACTIONS_DISCRIMINATOR: object
   NTBUNDLE_ERROR__ALLOCATION_AMOUNT_ZERO: number
   NTBUNDLE_ERROR__ALLOCATION_BPS_GREATER_THAN_GLOBAL_ALLOCATION_BPS: number
@@ -596,6 +606,8 @@
   PROCESS_REFERRER_WITHDRAWAL_DISCRIMINATOR: object
   PROCESS_SWITCH_DISCRIMINATOR: object
   PROCESS_WITHDRAWAL_DISCRIMINATOR: object
+  REFERRAL_OVERRIDE_MFEE: number
+  REFERRAL_OVERRIDE_PFEE: number
   REFERRER_ACCOUNT_DISCRIMINATOR: object
   REFERRER_REQUEST_WITHDRAW_DISCRIMINATOR: object
   REFUND_DEPOSIT_DISCRIMINATOR: object
@@ -605,6 +617,7 @@
   REQUEST_DEPOSIT_DISCRIMINATOR: object
   REQUEST_WITHDRAWAL_DISCRIMINATOR: object
   resolveEffectiveFees: function
+  resolveEffectiveReferralRates: function
   SECONDS_IN_YEAR: bigint
   SET_BUNDLE_CREATOR_DISCRIMINATOR: object
   SET_DELAYS_DISCRIMINATOR: object

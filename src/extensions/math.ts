@@ -1,6 +1,9 @@
 /** Mirrors `BPS_DENOMINATOR` in `constants.rs:12` and its use in `charge_user_fees` at `bundle.rs:693-695`. */
 export const BPS_DENOMINATOR = 10_000n;
 
+/** Maximum deposit fee accepted by `set_fees` and user fee overrides. */
+export const MAX_DEPOSIT_FEE_BPS = 5_000;
+
 /** Mirrors `SECONDS_IN_YEAR` in `constants.rs:11` and its use in `charge_user_fees` at `bundle.rs:693-695`. */
 export const SECONDS_IN_YEAR = 31_536_000n;
 
@@ -30,6 +33,38 @@ export function assertValidAmountRaw(amountRaw: bigint): void {
   if (amountRaw <= 0n || amountRaw > U64_MAX) {
     throw new Error("INVALID_AMOUNT_RAW");
   }
+}
+
+/**
+ * Returns the smallest gross deposit whose net amount meets
+ * `minimumNetAmount`, using the ceiling fee calculation from
+ * `calculate_fee_amount_ceil` at `bundle.rs:299-310`.
+ */
+export function calculateGrossDepositAmount(args: {
+  minimumNetAmount: bigint;
+  depositFeeBps: number;
+}): bigint {
+  if (args.minimumNetAmount < 0n || args.minimumNetAmount > U64_MAX) {
+    throw new Error("INVALID_NET_DEPOSIT_AMOUNT");
+  }
+  if (
+    !Number.isInteger(args.depositFeeBps) ||
+    args.depositFeeBps < 0 ||
+    args.depositFeeBps > MAX_DEPOSIT_FEE_BPS
+  ) {
+    throw new Error("INVALID_DEPOSIT_FEE_BPS");
+  }
+  if (args.minimumNetAmount === 0n) {
+    return 0n;
+  }
+
+  const netBps = BPS_DENOMINATOR - BigInt(args.depositFeeBps);
+  const numerator = args.minimumNetAmount * BPS_DENOMINATOR;
+  const grossAmount = (numerator + netBps - 1n) / netBps;
+  if (grossAmount > U64_MAX) {
+    throw new Error("GROSS_DEPOSIT_AMOUNT_EXCEEDS_U64");
+  }
+  return grossAmount;
 }
 
 /**
@@ -94,6 +129,52 @@ export function calculateAssetsFromShares(args: {
   return args.totalShares === 0n
     ? 0n
     : (args.shares * args.totalAssets) / args.totalShares;
+}
+
+/**
+ * Mirrors `calculate_withdrawal_cooldown_time` at `bundle.rs:220-238`.
+ * The program converts the integer inputs to `f64`; `Number` follows the same
+ * IEEE-754 binary64 arithmetic before the result is rounded up.
+ */
+export function estimateWithdrawalCooldownSeconds(args: {
+  sharesAmount: bigint;
+  totalShares: bigint;
+  withdrawalTMin: bigint;
+  withdrawalTMax: bigint;
+  withdrawalCurve: number;
+}): bigint {
+  if (args.totalShares === 0n) {
+    return args.withdrawalTMax;
+  }
+
+  const shareRatio = Number(args.sharesAmount) / Number(args.totalShares);
+  const scaledRatio = shareRatio ** args.withdrawalCurve;
+  const processingSeconds =
+    Number(args.withdrawalTMin) +
+    Number(args.withdrawalTMax - args.withdrawalTMin) * scaledRatio;
+  return BigInt(Math.ceil(processingSeconds));
+}
+
+/** Mirrors the availability clamp at `referrer_request_withdraw.rs:70-81`. */
+export function estimateWithdrawalAvailableTimestamp(args: {
+  nowUnixSeconds: bigint;
+  cooldownSeconds: bigint;
+  withdrawalRedemptionRequestCutoffTs: bigint;
+  withdrawalRedemptionUnlockCurrentCycleTs: bigint;
+  withdrawalRedemptionUnlockNextCycleTs: bigint;
+}): bigint {
+  const cooldownEndTimestamp = args.nowUnixSeconds + args.cooldownSeconds;
+  if (args.withdrawalRedemptionRequestCutoffTs === 0n) {
+    return cooldownEndTimestamp;
+  }
+
+  const policyUnlockTimestamp =
+    args.nowUnixSeconds <= args.withdrawalRedemptionRequestCutoffTs
+      ? args.withdrawalRedemptionUnlockCurrentCycleTs
+      : args.withdrawalRedemptionUnlockNextCycleTs;
+  return cooldownEndTimestamp > policyUnlockTimestamp
+    ? cooldownEndTimestamp
+    : policyUnlockTimestamp;
 }
 
 /**

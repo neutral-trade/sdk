@@ -6,15 +6,16 @@ import {
   fetchMaybeUserBundleAccount,
   findBundleTempDataPda,
   findOracleDataPda,
-  findPendingBundleAssetAuthorityPda,
   findUserBundleAccountPda,
   getInitializeBundleDepositorInstructionAsync,
   getRequestBundleSwitchInstructionAsync,
-  getRequestDepositInstructionAsync,
   getRequestWithdrawalInstructionAsync,
   NTBUNDLE_PROGRAM_ADDRESS,
 } from "../generated";
-import { findAssociatedTokenPda } from "./ata";
+import {
+  buildDepositInstructionContext,
+  type BuildDepositInstructionsParams,
+} from "./deposit";
 import {
   assertValidAmountRaw,
   computeWithdrawalShares,
@@ -22,99 +23,19 @@ import {
 } from "./math";
 import type { ExtensionsRpc } from "./rpc";
 
-export type BuildDepositInstructionsParams = {
-  user: TransactionSigner;
-  bundleAccount: Address;
-  amountRaw: bigint;
-  /** Defaults to the user's associated token account for the bundle's asset mint. */
-  userTokenAccount?: Address;
-  /** Defaults to NTBUNDLE_PROGRAM_ADDRESS. */
-  programAddress?: Address;
-};
+export type { BuildDepositInstructionsParams } from "./deposit";
 
 /** Mirrors the legacy `buildBundleDepositInstructionsWithVault` flow. */
 export async function buildDepositInstructions(
   rpc: ExtensionsRpc,
   params: BuildDepositInstructionsParams,
 ): Promise<Instruction[]> {
-  assertValidAmountRaw(params.amountRaw);
-  const programAddress = params.programAddress ?? NTBUNDLE_PROGRAM_ADDRESS;
-
-  const bundle = await fetchMaybeBundle(rpc, params.bundleAccount);
-  if (!bundle.exists) {
-    throw new Error("BUNDLE_ACCOUNT_NOT_FOUND");
-  }
-
-  const [userBundleAccount] = await findUserBundleAccountPda(
-    {
-      userBundleAccountOwner: params.user.address,
-      bundleAccount: params.bundleAccount,
-    },
-    { programAddress },
-  );
-  const userBundle = await fetchMaybeUserBundleAccount(rpc, userBundleAccount);
-
-  const userTokenAccount =
-    params.userTokenAccount ??
-    (
-      await findAssociatedTokenPda({
-        owner: params.user.address,
-        mint: bundle.data.assetAddress,
-      })
-    )[0];
-  const [pendingBundleAssetAuthorityPda, oracleDataPda, bundleTempDataPda] =
-    await Promise.all([
-      findPendingBundleAssetAuthorityPda(
-        { bundleAccount: params.bundleAccount },
-        { programAddress },
-      ),
-      findOracleDataPda(
-        { bundleAccount: params.bundleAccount },
-        { programAddress },
-      ),
-      findBundleTempDataPda(
-        { bundleAccount: params.bundleAccount },
-        { programAddress },
-      ),
-    ]);
-  const [pendingDepositTokenAccount] = await findAssociatedTokenPda({
-    owner: pendingBundleAssetAuthorityPda[0],
-    mint: bundle.data.assetAddress,
-  });
-
+  const context = await buildDepositInstructionContext(rpc, params);
   const instructions: Array<Instruction> = [];
-  if (!userBundle.exists) {
-    instructions.push(
-      await getInitializeBundleDepositorInstructionAsync(
-        {
-          payer: params.user,
-          authority: params.user,
-          bundleAccount: params.bundleAccount,
-          userBundleAccount,
-        },
-        { programAddress },
-      ),
-    );
+  if (context.initializeInstruction) {
+    instructions.push(context.initializeInstruction);
   }
-
-  instructions.push(
-    await getRequestDepositInstructionAsync(
-      {
-        user: params.user,
-        bundleAccount: params.bundleAccount,
-        userTokenAccount,
-        pendingDepositTokenAccount,
-        treasuryAccount: bundle.data.treasuryAccount,
-        assetAddress: bundle.data.assetAddress,
-        userBundleAccount,
-        oracleData: oracleDataPda[0],
-        bundleTempData: bundleTempDataPda[0],
-        pendingBundleAssetAuthority: pendingBundleAssetAuthorityPda[0],
-        amount: params.amountRaw,
-      },
-      { programAddress },
-    ),
-  );
+  instructions.push(context.requestInstruction);
 
   return instructions;
 }

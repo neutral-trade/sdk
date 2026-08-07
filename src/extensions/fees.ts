@@ -1,4 +1,9 @@
-import type { Bundle, OracleData, UserBundleAccount } from "../generated";
+import type {
+  Bundle,
+  OracleData,
+  ReferrerAccount,
+  UserBundleAccount,
+} from "../generated";
 
 import {
   BPS_DENOMINATOR,
@@ -19,6 +24,12 @@ export const FEE_OVERRIDE_PERFORMANCE = 1 << 2;
 /** Mirrors `FEE_OVERRIDE_MANAGEMENT` in `constants.rs:18`. */
 export const FEE_OVERRIDE_MANAGEMENT = 1 << 3;
 
+/** Mirrors `REFERRAL_OVERRIDE_PFEE` in `constants.rs:41`. */
+export const REFERRAL_OVERRIDE_PFEE = 1 << 0;
+
+/** Mirrors `REFERRAL_OVERRIDE_MFEE` in `constants.rs:42`. */
+export const REFERRAL_OVERRIDE_MFEE = 1 << 1;
+
 /** Result shape from `resolve_effective_fees` at `bundle.rs:433-457`. */
 export type EffectiveFees = {
   depositFeeBps: number;
@@ -26,6 +37,38 @@ export type EffectiveFees = {
   performanceFeeBps: number;
   managementFeeBps: number;
 };
+
+export type EffectiveReferralRates = {
+  referralPfeeBps: number;
+  referralMfeeBps: number;
+};
+
+/**
+ * Mirrors `resolve_effective_referral_rates` at `bundle.rs:879-896`.
+ * An unregistered referrer has no overrides, so bundle defaults apply.
+ */
+export function resolveEffectiveReferralRates(
+  bundle: Pick<Bundle, "referralPfeeBps" | "referralMfeeBps">,
+  referrerAccount:
+    | Pick<
+        ReferrerAccount,
+        "rateOverrideFlags" | "customPfeeBps" | "customMfeeBps"
+      >
+    | undefined,
+): EffectiveReferralRates {
+  return {
+    referralPfeeBps:
+      referrerAccount &&
+      (referrerAccount.rateOverrideFlags & REFERRAL_OVERRIDE_PFEE) !== 0
+        ? referrerAccount.customPfeeBps
+        : bundle.referralPfeeBps,
+    referralMfeeBps:
+      referrerAccount &&
+      (referrerAccount.rateOverrideFlags & REFERRAL_OVERRIDE_MFEE) !== 0
+        ? referrerAccount.customMfeeBps
+        : bundle.referralMfeeBps,
+  };
+}
 
 /** Mirrors `resolve_effective_fees` at `bundle.rs:433-457`, including zero-valued overrides. */
 export function resolveEffectiveFees(

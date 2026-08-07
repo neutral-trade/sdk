@@ -5,8 +5,11 @@ import {
   FEE_OVERRIDE_MANAGEMENT,
   FEE_OVERRIDE_PERFORMANCE,
   FEE_OVERRIDE_WITHDRAWAL,
+  REFERRAL_OVERRIDE_MFEE,
+  REFERRAL_OVERRIDE_PFEE,
   estimatePendingUserFees,
   resolveEffectiveFees,
+  resolveEffectiveReferralRates,
 } from "../../src/extensions/fees";
 
 const defaultFees = {
@@ -55,6 +58,63 @@ function estimate(
 }
 
 describe("fee extensions", () => {
+  describe("resolveEffectiveReferralRates", () => {
+    const bundleRates = {
+      referralPfeeBps: 1_000,
+      referralMfeeBps: 2_000,
+    };
+    const referrerOverrides = {
+      rateOverrideFlags: 0,
+      customPfeeBps: 3_000,
+      customMfeeBps: 4_000,
+    };
+
+    it("uses bundle defaults for unregistered and unmasked referrers", () => {
+      expect(
+        resolveEffectiveReferralRates(bundleRates, undefined),
+      ).to.deep.equal({
+        referralPfeeBps: 1_000,
+        referralMfeeBps: 2_000,
+      });
+      expect(
+        resolveEffectiveReferralRates(bundleRates, referrerOverrides),
+      ).to.deep.equal({
+        referralPfeeBps: 1_000,
+        referralMfeeBps: 2_000,
+      });
+    });
+
+    it("resolves every referral override mask independently", () => {
+      expect(
+        resolveEffectiveReferralRates(bundleRates, {
+          ...referrerOverrides,
+          rateOverrideFlags: REFERRAL_OVERRIDE_PFEE,
+        }),
+      ).to.deep.equal({
+        referralPfeeBps: 3_000,
+        referralMfeeBps: 2_000,
+      });
+      expect(
+        resolveEffectiveReferralRates(bundleRates, {
+          ...referrerOverrides,
+          rateOverrideFlags: REFERRAL_OVERRIDE_MFEE,
+        }),
+      ).to.deep.equal({
+        referralPfeeBps: 1_000,
+        referralMfeeBps: 4_000,
+      });
+      expect(
+        resolveEffectiveReferralRates(bundleRates, {
+          ...referrerOverrides,
+          rateOverrideFlags: REFERRAL_OVERRIDE_PFEE | REFERRAL_OVERRIDE_MFEE,
+        }),
+      ).to.deep.equal({
+        referralPfeeBps: 3_000,
+        referralMfeeBps: 4_000,
+      });
+    });
+  });
+
   describe("resolveEffectiveFees", () => {
     it("falls back to bundle defaults", () => {
       expect(

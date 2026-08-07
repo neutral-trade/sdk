@@ -1,0 +1,749 @@
+import {
+  address,
+  type Address,
+  type Instruction,
+  type ProgramDerivedAddress,
+  type TransactionSigner,
+} from "@solana/kit";
+
+import {
+  fetchMaybeBundle,
+  fetchMaybeOracleData,
+  fetchMaybeReferrerAccount,
+  fetchMaybeUserBundleAccount,
+  findBundleTempDataPda,
+  findOracleDataPda,
+  findReferrerAccountPda,
+  findUserBundleAccountPda,
+  getInitializeBundleDepositorInstructionAsync,
+  getRegisterReferrerInstructionAsync,
+  getReferrerRequestWithdrawInstructionAsync,
+  getSetUserReferrerInstructionAsync,
+  NTBUNDLE_PROGRAM_ADDRESS,
+  type Bundle,
+  type ReferrerAccount,
+  type UserBundleAccount,
+} from "../generated";
+import { buildDepositInstructionContext } from "./deposit";
+import { FEE_OVERRIDE_DEPOSIT, resolveEffectiveReferralRates } from "./fees";
+import {
+  BPS_DENOMINATOR,
+  assertValidAmountRaw,
+  calculateAssetsFromShares,
+  calculateGrossDepositAmount,
+  estimateWithdrawalAvailableTimestamp,
+  estimateWithdrawalCooldownSeconds,
+  totalEquityRaw,
+} from "./math";
+import type { ExtensionsRpc } from "./rpc";
+
+/**
+ * Builders preflight durable account state that would deterministically fail
+ * or silently no-op. Transient keeper-cycle state, including pause windows and
+ * oracle freshness, remains authoritative onchain because it can race a build.
+ */
+const DEFAULT_PUBLIC_KEY =
+  "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
+
+export type BundleVaultInput =
+  | Address
+  | {
+      vaultAddress: string;
+      bundleProgramId?: string;
+      type?: string;
+    };
+
+export type ReferrerCodeResolver = (code: string) => Address | Promise<Address>;
+
+type ReferrerInput =
+  | {
+      referrer: Address;
+      code?: never;
+      resolveCode?: never;
+    }
+  | {
+      referrer?: never;
+      code: string;
+      resolveCode: ReferrerCodeResolver;
+    };
+
+export type BuildAttributedDepositTxParams = ReferrerInput & {
+  user: TransactionSigner;
+  vault: BundleVaultInput;
+  amount: bigint;
+  userTokenAccount?: Address;
+  programAddress?: Address;
+};
+
+export type BuildBuilderRegistrationTxParams = {
+  referrer: TransactionSigner;
+  vault: BundleVaultInput;
+  depositAmount?: bigint;
+  userTokenAccount?: Address;
+  programAddress?: Address;
+};
+
+export type SingleTransactionBuilderRegistration = {
+  kind: "single-transaction";
+  instructions: Array<Instruction>;
+};
+
+export type NettingRequiredBuilderRegistration = {
+  kind: "netting-required";
+  depositInstructions: Array<Instruction>;
+  registrationInstructions: [Instruction];
+  grossDepositAmount: bigint;
+  requiredGrossDepositAmount: bigint;
+  referrerMinDepositAmount: bigint;
+};
+
+export type BuilderRegistrationPlan =
+  | SingleTransactionBuilderRegistration
+  | NettingRequiredBuilderRegistration;
+
+export type BuildReferrerWithdrawRequestTxParams = {
+  referrer: TransactionSigner;
+  vault: BundleVaultInput;
+  programAddress?: Address;
+  /** Unix seconds; when present, the plan estimates the availability timestamp. */
+  nowUnixSeconds?: number | bigint;
+};
+
+export type ReferrerWithdrawRequestPlan = {
+  instructions: Array<Instruction>;
+  sharesToWithdraw: bigint;
+  estimatedWithdrawalValueRaw: bigint;
+  estimatedAvailableTimestamp: bigint | undefined;
+};
+
+export type ReferrerStatus = {
+  registered: boolean;
+  active: boolean;
+  hasUserBundleAccount: boolean;
+  netDeposits: bigint;
+  pendingDeposit: bigint;
+  referralsEnabled: boolean;
+  referrerMinDepositAmount: bigint;
+  effectiveReferralPfeeBps: number;
+  effectiveReferralMfeeBps: number;
+  accruedPfeeShares: bigint;
+  accruedMfeeShares: bigint;
+  pendingWithdrawShares: bigint;
+  estimatedPendingWithdrawalValue: bigint;
+  withdrawalAvailableTimestamp: bigint;
+  meetsMinDeposit: boolean;
+  meetsMinDepositAfterNetting: boolean;
+  canBindNewUsers: boolean;
+  needsReactivation: boolean;
+};
+
+export class BuilderDepositAmountTooLowError extends Error {
+  readonly requiredGrossDepositAmount: bigint;
+
+  constructor(requiredGrossDepositAmount: bigint) {
+    super("BUILDER_DEPOSIT_AMOUNT_TOO_LOW");
+    this.name = "BuilderDepositAmountTooLowError";
+    this.requiredGrossDepositAmount = requiredGrossDepositAmount;
+  }
+}
+
+type ResolvedBundleVault = {
+  bundleAccount: Address;
+  programAddress: Address;
+};
+
+function resolveBundleVault(
+  vault: BundleVaultInput,
+  programAddressOverride?: Address,
+): ResolvedBundleVault {
+  if (typeof vault === "string") {
+    return {
+      bundleAccount: address(vault),
+      programAddress: programAddressOverride ?? NTBUNDLE_PROGRAM_ADDRESS,
+    };
+  }
+  if (vault.type !== undefined && vault.type !== "Bundle") {
+    throw new Error("UNSUPPORTED_VAULT_TYPE");
+  }
+  return {
+    bundleAccount: address(vault.vaultAddress),
+    programAddress:
+      programAddressOverride ??
+      (vault.bundleProgramId
+        ? address(vault.bundleProgramId)
+        : NTBUNDLE_PROGRAM_ADDRESS),
+  };
+}
+
+async function resolveReferrer(params: ReferrerInput): Promise<Address> {
+  if (params.referrer !== undefined) {
+    return params.referrer;
+  }
+  const code = params.code.trim();
+  if (code.length === 0) {
+    throw new Error("INVALID_REFERRER_CODE");
+  }
+  return await params.resolveCode(code);
+}
+
+async function resolveReferrerState(
+  rpc: ExtensionsRpc,
+  params: {
+    bundleAccount: Address;
+    referrer: Address;
+    programAddress: Address;
+  },
+) {
+  const [[referrerAccountAddress], [referrerUserBundleAccountAddress]] =
+    await Promise.all([
+      findReferrerAccountPda(
+        {
+          bundleAccount: params.bundleAccount,
+          referrer: params.referrer,
+        },
+        { programAddress: params.programAddress },
+      ),
+      findUserBundleAccountPda(
+        {
+          userBundleAccountOwner: params.referrer,
+          bundleAccount: params.bundleAccount,
+        },
+        { programAddress: params.programAddress },
+      ),
+    ]);
+  const [referrerAccount, referrerUserBundleAccount] = await Promise.all([
+    fetchMaybeReferrerAccount(rpc, referrerAccountAddress),
+    fetchMaybeUserBundleAccount(rpc, referrerUserBundleAccountAddress),
+  ]);
+
+  return {
+    referrerAccountAddress,
+    referrerUserBundleAccountAddress,
+    referrerAccount,
+    referrerUserBundleAccount,
+  };
+}
+
+function assertValidReferrer(
+  bundle: Pick<Bundle, "manager" | "referrerEnabled">,
+  referrer: Address,
+): void {
+  if (!bundle.referrerEnabled) {
+    throw new Error("REFERRALS_DISABLED");
+  }
+  if (referrer === DEFAULT_PUBLIC_KEY || referrer === bundle.manager) {
+    throw new Error("INVALID_REFERRER");
+  }
+}
+
+function assertVirginUserBundleAccount(userBundle: UserBundleAccount): void {
+  if (userBundle.referrer !== DEFAULT_PUBLIC_KEY) {
+    throw new Error("REFERRAL_ALREADY_SET");
+  }
+  if (
+    userBundle.shares !== 0n ||
+    userBundle.pendingDeposit !== 0n ||
+    userBundle.pendingShares !== 0n ||
+    userBundle.estimatedPendingWithdrawalValue !== 0n ||
+    userBundle.netDeposits !== 0n ||
+    userBundle.totalFeeCharged !== 0n ||
+    userBundle.lastDepositTimestamp !== 0n
+  ) {
+    throw new Error("USER_BUNDLE_ACCOUNT_HAS_ACTIVITY");
+  }
+}
+
+function assertEligibleReferrerForAttribution(args: {
+  bundle: Pick<
+    Bundle,
+    "referralPfeeBps" | "referralMfeeBps" | "referrerMinDepositAmount"
+  >;
+  referrerAccount: ReferrerAccount | undefined;
+  referrerUserBundle: UserBundleAccount | undefined;
+}): void {
+  if (!args.referrerAccount) {
+    throw new Error("REFERRER_NOT_REGISTERED");
+  }
+  if (!args.referrerAccount.active) {
+    throw new Error("REFERRER_DEACTIVATED");
+  }
+  if (
+    !args.referrerUserBundle ||
+    args.referrerUserBundle.netDeposits < args.bundle.referrerMinDepositAmount
+  ) {
+    throw new Error("REFERRER_DEPOSIT_TOO_LOW");
+  }
+
+  const rates = resolveEffectiveReferralRates(
+    args.bundle,
+    args.referrerAccount,
+  );
+  if (rates.referralPfeeBps === 0 && rates.referralMfeeBps === 0) {
+    throw new Error("REFERRAL_RATES_NOT_CONFIGURED");
+  }
+}
+
+function calculateNetDepositAmount(
+  grossDepositAmount: bigint,
+  depositFeeBps: number,
+): bigint {
+  const feeNumerator = grossDepositAmount * BigInt(depositFeeBps);
+  const feeAmount = (feeNumerator + BPS_DENOMINATOR - 1n) / BPS_DENOMINATOR;
+  return grossDepositAmount - feeAmount;
+}
+
+function getEffectiveDepositFeeBps(
+  bundle: Pick<Bundle, "depositFee">,
+  userBundle: UserBundleAccount | undefined,
+): number {
+  if (
+    userBundle &&
+    (userBundle.feeOverrideFlags & FEE_OVERRIDE_DEPOSIT) !== 0
+  ) {
+    return userBundle.customDepositFeeBps;
+  }
+  return bundle.depositFee;
+}
+
+/**
+ * Derives `ReferrerAccount` from the referrer stored for a user. Builders,
+ * keepers, and apps can use this path instead of reproducing PDA seeds.
+ */
+export async function deriveReferrerAccountForUser(params: {
+  vault: BundleVaultInput;
+  referrer: Address;
+  programAddress?: Address;
+}): Promise<ProgramDerivedAddress> {
+  const resolvedVault = resolveBundleVault(params.vault, params.programAddress);
+  return await findReferrerAccountPda(
+    {
+      bundleAccount: resolvedVault.bundleAccount,
+      referrer: params.referrer,
+    },
+    { programAddress: resolvedVault.programAddress },
+  );
+}
+
+/**
+ * Reads raw referrer state and the two eligibility verdicts used by partner
+ * onboarding surfaces. Missing referrer accounts are represented in the
+ * result; only a missing bundle is an error.
+ */
+export async function fetchReferrerStatus(
+  rpc: ExtensionsRpc,
+  params: {
+    vault: BundleVaultInput;
+    referrer: Address;
+    programAddress?: Address;
+  },
+): Promise<ReferrerStatus> {
+  const resolvedVault = resolveBundleVault(params.vault, params.programAddress);
+  const [bundle, referrerState] = await Promise.all([
+    fetchMaybeBundle(rpc, resolvedVault.bundleAccount),
+    resolveReferrerState(rpc, {
+      bundleAccount: resolvedVault.bundleAccount,
+      referrer: params.referrer,
+      programAddress: resolvedVault.programAddress,
+    }),
+  ]);
+  if (!bundle.exists) {
+    throw new Error("BUNDLE_ACCOUNT_NOT_FOUND");
+  }
+
+  const referrerAccount = referrerState.referrerAccount.exists
+    ? referrerState.referrerAccount.data
+    : undefined;
+  const referrerUserBundleAccount = referrerState.referrerUserBundleAccount
+    .exists
+    ? referrerState.referrerUserBundleAccount.data
+    : undefined;
+  const rates = resolveEffectiveReferralRates(bundle.data, referrerAccount);
+  const registered = referrerAccount !== undefined;
+  const active = referrerAccount?.active ?? false;
+  const netDeposits = referrerUserBundleAccount?.netDeposits ?? 0n;
+  const pendingDeposit = referrerUserBundleAccount?.pendingDeposit ?? 0n;
+  const hasUserBundleAccount = referrerUserBundleAccount !== undefined;
+  const meetsMinDeposit = netDeposits >= bundle.data.referrerMinDepositAmount;
+  const meetsMinDepositAfterNetting =
+    netDeposits + pendingDeposit >= bundle.data.referrerMinDepositAmount;
+  const hasConfiguredRates =
+    rates.referralPfeeBps !== 0 || rates.referralMfeeBps !== 0;
+
+  return {
+    registered,
+    active,
+    hasUserBundleAccount,
+    netDeposits,
+    pendingDeposit,
+    referralsEnabled: bundle.data.referrerEnabled,
+    referrerMinDepositAmount: bundle.data.referrerMinDepositAmount,
+    effectiveReferralPfeeBps: rates.referralPfeeBps,
+    effectiveReferralMfeeBps: rates.referralMfeeBps,
+    accruedPfeeShares: referrerAccount?.accruedPfeeShares ?? 0n,
+    accruedMfeeShares: referrerAccount?.accruedMfeeShares ?? 0n,
+    pendingWithdrawShares: referrerAccount?.pendingWithdrawShares ?? 0n,
+    estimatedPendingWithdrawalValue:
+      referrerAccount?.estimatedPendingWithdrawalValue ?? 0n,
+    withdrawalAvailableTimestamp:
+      referrerAccount?.withdrawalAvailableTimestamp ?? 0n,
+    meetsMinDeposit,
+    meetsMinDepositAfterNetting,
+    canBindNewUsers:
+      registered &&
+      active &&
+      bundle.data.referrerEnabled &&
+      hasUserBundleAccount &&
+      meetsMinDeposit &&
+      hasConfiguredRates,
+    needsReactivation: registered && !active,
+  };
+}
+
+/**
+ * Builds the only valid first-deposit ordering: initialize (when needed),
+ * bind the referrer, then request the deposit. The current referral rates are
+ * copied into the user's account by `set_user_referrer`; later referrer-rate
+ * overrides do not change this user's snapshot.
+ *
+ * The returned instructions belong in one transaction. A user account with
+ * any prior activity cannot be attributed under the current program rules.
+ * The builder also fetches the referrer's registration and depositor accounts
+ * to verify active status, the net-deposit threshold, and effective rates.
+ * Deterministic eligibility failures use stable error messages; deposits below
+ * the vault minimum throw `BuilderDepositAmountTooLowError`.
+ */
+export async function buildAttributedDepositTx(
+  rpc: ExtensionsRpc,
+  params: BuildAttributedDepositTxParams,
+): Promise<Array<Instruction>> {
+  assertValidAmountRaw(params.amount);
+  const resolvedVault = resolveBundleVault(params.vault, params.programAddress);
+  const [referrer, depositContext] = await Promise.all([
+    resolveReferrer(params),
+    buildDepositInstructionContext(rpc, {
+      user: params.user,
+      bundleAccount: resolvedVault.bundleAccount,
+      amountRaw: params.amount,
+      userTokenAccount: params.userTokenAccount,
+      programAddress: resolvedVault.programAddress,
+    }),
+  ]);
+
+  if (params.amount < depositContext.bundle.minDepositAmount) {
+    throw new BuilderDepositAmountTooLowError(
+      depositContext.bundle.minDepositAmount,
+    );
+  }
+  assertValidReferrer(depositContext.bundle, referrer);
+  if (referrer === params.user.address) {
+    throw new Error("INVALID_REFERRER");
+  }
+  if (depositContext.userBundle) {
+    assertVirginUserBundleAccount(depositContext.userBundle);
+  }
+
+  const referrerState = await resolveReferrerState(rpc, {
+    bundleAccount: resolvedVault.bundleAccount,
+    referrer,
+    programAddress: resolvedVault.programAddress,
+  });
+  assertEligibleReferrerForAttribution({
+    bundle: depositContext.bundle,
+    referrerAccount: referrerState.referrerAccount.exists
+      ? referrerState.referrerAccount.data
+      : undefined,
+    referrerUserBundle: referrerState.referrerUserBundleAccount.exists
+      ? referrerState.referrerUserBundleAccount.data
+      : undefined,
+  });
+  const setUserReferrerInstruction = await getSetUserReferrerInstructionAsync(
+    {
+      user: params.user,
+      bundleAccount: resolvedVault.bundleAccount,
+      userBundleAccount: depositContext.userBundleAccount,
+      referrerAccount: referrerState.referrerAccountAddress,
+      referrerUserBundleAccount: referrerState.referrerUserBundleAccountAddress,
+    },
+    { programAddress: resolvedVault.programAddress },
+  );
+
+  const instructions: Array<Instruction> = [];
+  if (depositContext.initializeInstruction) {
+    instructions.push(depositContext.initializeInstruction);
+  }
+  instructions.push(
+    setUserReferrerInstruction,
+    depositContext.requestInstruction,
+  );
+  return instructions;
+}
+
+/**
+ * Builds referrer registration as one transaction when current net deposits
+ * already meet the vault requirement. Otherwise it returns a deposit step and
+ * a registration step that must be submitted after keeper netting processes
+ * the deposit. A caller-specified `depositAmount` is never increased silently.
+ *
+ * A zero `referrerMinDepositAmount` is the capital-light configuration: a new
+ * partner can initialize and register atomically without depositing. With a
+ * nonzero minimum, `netDeposits` changes only during keeper processing, so an
+ * unqualified partner cannot deposit and register in the same transaction.
+ * The generated gross amount covers both the effective deposit fee and the
+ * vault's ordinary minimum deposit amount. `depositInstructions` is empty when
+ * an existing pending net deposit already covers the referral minimum. An
+ * existing inactive registration throws `REFERRER_DEACTIVATED` because the
+ * registration instruction handler does not reactivate it.
+ */
+export async function buildBuilderRegistrationTx(
+  rpc: ExtensionsRpc,
+  params: BuildBuilderRegistrationTxParams,
+): Promise<BuilderRegistrationPlan> {
+  if (params.depositAmount !== undefined) {
+    assertValidAmountRaw(params.depositAmount);
+  }
+  const resolvedVault = resolveBundleVault(params.vault, params.programAddress);
+  const [bundle, referrerState] = await Promise.all([
+    fetchMaybeBundle(rpc, resolvedVault.bundleAccount),
+    resolveReferrerState(rpc, {
+      bundleAccount: resolvedVault.bundleAccount,
+      referrer: params.referrer.address,
+      programAddress: resolvedVault.programAddress,
+    }),
+  ]);
+  if (!bundle.exists) {
+    throw new Error("BUNDLE_ACCOUNT_NOT_FOUND");
+  }
+  assertValidReferrer(bundle.data, params.referrer.address);
+
+  if (
+    referrerState.referrerAccount.exists &&
+    !referrerState.referrerAccount.data.active
+  ) {
+    throw new Error("REFERRER_DEACTIVATED");
+  }
+  const userBundle = referrerState.referrerUserBundleAccount.exists
+    ? referrerState.referrerUserBundleAccount.data
+    : undefined;
+  const currentNetDeposits = userBundle?.netDeposits ?? 0n;
+  const referrerMinDepositAmount = bundle.data.referrerMinDepositAmount;
+  const registrationInstruction = await getRegisterReferrerInstructionAsync(
+    {
+      referrer: params.referrer,
+      referrerAccount: referrerState.referrerAccountAddress,
+      bundleAccount: resolvedVault.bundleAccount,
+      referrerUserBundleAccount: referrerState.referrerUserBundleAccountAddress,
+    },
+    { programAddress: resolvedVault.programAddress },
+  );
+
+  if (currentNetDeposits >= referrerMinDepositAmount) {
+    if (
+      params.depositAmount !== undefined &&
+      params.depositAmount < bundle.data.minDepositAmount
+    ) {
+      throw new BuilderDepositAmountTooLowError(bundle.data.minDepositAmount);
+    }
+    const instructions: Array<Instruction> = [];
+    if (params.depositAmount !== undefined) {
+      const depositContext = await buildDepositInstructionContext(rpc, {
+        user: params.referrer,
+        bundleAccount: resolvedVault.bundleAccount,
+        amountRaw: params.depositAmount,
+        userTokenAccount: params.userTokenAccount,
+        programAddress: resolvedVault.programAddress,
+      });
+      if (depositContext.initializeInstruction) {
+        instructions.push(depositContext.initializeInstruction);
+      }
+      instructions.push(depositContext.requestInstruction);
+    } else if (!userBundle) {
+      instructions.push(
+        await getInitializeBundleDepositorInstructionAsync(
+          {
+            payer: params.referrer,
+            authority: params.referrer,
+            bundleAccount: resolvedVault.bundleAccount,
+            userBundleAccount: referrerState.referrerUserBundleAccountAddress,
+          },
+          { programAddress: resolvedVault.programAddress },
+        ),
+      );
+    }
+    instructions.push(registrationInstruction);
+    return { kind: "single-transaction", instructions };
+  }
+
+  const pendingNetDeposit = userBundle?.pendingDeposit ?? 0n;
+  const remainingNetDeposit =
+    currentNetDeposits + pendingNetDeposit >= referrerMinDepositAmount
+      ? 0n
+      : referrerMinDepositAmount - currentNetDeposits - pendingNetDeposit;
+  const effectiveDepositFeeBps = getEffectiveDepositFeeBps(
+    bundle.data,
+    userBundle,
+  );
+  const grossAmountForReferralMinimum = calculateGrossDepositAmount({
+    minimumNetAmount: remainingNetDeposit,
+    depositFeeBps: effectiveDepositFeeBps,
+  });
+  const requiredGrossDepositAmount =
+    grossAmountForReferralMinimum === 0n && params.depositAmount === undefined
+      ? 0n
+      : grossAmountForReferralMinimum > bundle.data.minDepositAmount
+        ? grossAmountForReferralMinimum
+        : bundle.data.minDepositAmount;
+  if (
+    params.depositAmount !== undefined &&
+    params.depositAmount < requiredGrossDepositAmount
+  ) {
+    throw new BuilderDepositAmountTooLowError(requiredGrossDepositAmount);
+  }
+  const grossDepositAmount = params.depositAmount ?? requiredGrossDepositAmount;
+  const depositInstructions: Array<Instruction> = [];
+  if (grossDepositAmount > 0n) {
+    const depositContext = await buildDepositInstructionContext(rpc, {
+      user: params.referrer,
+      bundleAccount: resolvedVault.bundleAccount,
+      amountRaw: grossDepositAmount,
+      userTokenAccount: params.userTokenAccount,
+      programAddress: resolvedVault.programAddress,
+    });
+    if (depositContext.initializeInstruction) {
+      depositInstructions.push(depositContext.initializeInstruction);
+    }
+    depositInstructions.push(depositContext.requestInstruction);
+
+    const expectedNetDeposits =
+      currentNetDeposits +
+      pendingNetDeposit +
+      calculateNetDepositAmount(grossDepositAmount, effectiveDepositFeeBps);
+    if (expectedNetDeposits < referrerMinDepositAmount) {
+      throw new BuilderDepositAmountTooLowError(requiredGrossDepositAmount);
+    }
+  }
+
+  return {
+    kind: "netting-required",
+    depositInstructions,
+    registrationInstructions: [registrationInstruction],
+    grossDepositAmount,
+    requiredGrossDepositAmount,
+    referrerMinDepositAmount,
+  };
+}
+
+/**
+ * Builds the partner-signed request that moves all accrued referral shares
+ * into the keeper settlement queue. Deactivation does not remove claim rights.
+ * Pause windows and oracle freshness remain transaction-time checks.
+ */
+export async function buildReferrerWithdrawRequestTx(
+  rpc: ExtensionsRpc,
+  params: BuildReferrerWithdrawRequestTxParams,
+): Promise<ReferrerWithdrawRequestPlan> {
+  const resolvedVault = resolveBundleVault(params.vault, params.programAddress);
+  const [
+    [referrerAccountAddress],
+    [oracleDataAddress],
+    [bundleTempDataAddress],
+  ] = await Promise.all([
+    findReferrerAccountPda(
+      {
+        bundleAccount: resolvedVault.bundleAccount,
+        referrer: params.referrer.address,
+      },
+      { programAddress: resolvedVault.programAddress },
+    ),
+    findOracleDataPda(
+      { bundleAccount: resolvedVault.bundleAccount },
+      { programAddress: resolvedVault.programAddress },
+    ),
+    findBundleTempDataPda(
+      { bundleAccount: resolvedVault.bundleAccount },
+      { programAddress: resolvedVault.programAddress },
+    ),
+  ]);
+  const [bundle, referrerAccount, oracleData] = await Promise.all([
+    fetchMaybeBundle(rpc, resolvedVault.bundleAccount),
+    fetchMaybeReferrerAccount(rpc, referrerAccountAddress),
+    fetchMaybeOracleData(rpc, oracleDataAddress),
+  ]);
+
+  if (!bundle.exists) {
+    throw new Error("BUNDLE_ACCOUNT_NOT_FOUND");
+  }
+  if (!referrerAccount.exists) {
+    throw new Error("REFERRER_NOT_REGISTERED");
+  }
+  if (referrerAccount.data.bundle !== resolvedVault.bundleAccount) {
+    throw new Error("REFERRER_ACCOUNT_MISMATCH");
+  }
+  if (referrerAccount.data.estimatedPendingWithdrawalValue !== 0n) {
+    throw new Error("WITHDRAWAL_ALREADY_PENDING");
+  }
+
+  const sharesToWithdraw =
+    referrerAccount.data.accruedPfeeShares +
+    referrerAccount.data.accruedMfeeShares;
+  if (sharesToWithdraw === 0n) {
+    throw new Error("NO_ACCRUED_REFERRAL_SHARES");
+  }
+  if (bundle.data.totalShares === 0n) {
+    throw new Error("WITHDRAWAL_VALUE_TOO_SMALL");
+  }
+  if (!oracleData.exists) {
+    throw new Error("ORACLE_DATA_NOT_FOUND");
+  }
+
+  const totalEquity = totalEquityRaw({
+    bundleUnderlyingBalance: bundle.data.bundleUnderlyingBalance,
+    averageExternalEquity: oracleData.data.averageExternalEquity,
+  });
+  const estimatedWithdrawalValueRaw = calculateAssetsFromShares({
+    shares: sharesToWithdraw,
+    totalAssets: totalEquity,
+    totalShares: bundle.data.totalShares,
+  });
+  if (estimatedWithdrawalValueRaw === 0n) {
+    throw new Error("WITHDRAWAL_VALUE_TOO_SMALL");
+  }
+
+  let estimatedAvailableTimestamp: bigint | undefined;
+  if (params.nowUnixSeconds !== undefined) {
+    const cooldownSeconds = estimateWithdrawalCooldownSeconds({
+      sharesAmount: sharesToWithdraw,
+      totalShares: bundle.data.totalShares,
+      withdrawalTMin: bundle.data.withdrawalTMin,
+      withdrawalTMax: bundle.data.withdrawalTMax,
+      withdrawalCurve: bundle.data.withdrawalCurve,
+    });
+    estimatedAvailableTimestamp = estimateWithdrawalAvailableTimestamp({
+      nowUnixSeconds: BigInt(params.nowUnixSeconds),
+      cooldownSeconds,
+      withdrawalRedemptionRequestCutoffTs:
+        bundle.data.withdrawalRedemptionRequestCutoffTs,
+      withdrawalRedemptionUnlockCurrentCycleTs:
+        bundle.data.withdrawalRedemptionUnlockCurrentCycleTs,
+      withdrawalRedemptionUnlockNextCycleTs:
+        bundle.data.withdrawalRedemptionUnlockNextCycleTs,
+    });
+  }
+
+  const instruction = await getReferrerRequestWithdrawInstructionAsync(
+    {
+      referrer: params.referrer,
+      bundleAccount: resolvedVault.bundleAccount,
+      oracleData: oracleDataAddress,
+      bundleTempData: bundleTempDataAddress,
+      referrerAccount: referrerAccountAddress,
+    },
+    { programAddress: resolvedVault.programAddress },
+  );
+
+  return {
+    instructions: [instruction],
+    sharesToWithdraw,
+    estimatedWithdrawalValueRaw,
+    estimatedAvailableTimestamp,
+  };
+}

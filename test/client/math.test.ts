@@ -1,11 +1,15 @@
 import { expect } from "chai";
 
 import {
+  MAX_DEPOSIT_FEE_BPS,
   U64_MAX,
   assertValidAmountRaw,
   calculateAssetsFromShares,
+  calculateGrossDepositAmount,
   calculateOnChainPps,
   computeWithdrawalShares,
+  estimateWithdrawalAvailableTimestamp,
+  estimateWithdrawalCooldownSeconds,
   humanFloatToAmountRaw,
   parseAmountRaw,
   sharePriceRaw,
@@ -41,6 +45,80 @@ describe("math extensions", () => {
       expect(() => assertValidAmountRaw(U64_MAX + 1n)).to.throw(
         "INVALID_AMOUNT_RAW",
       );
+    });
+  });
+
+  describe("calculateGrossDepositAmount", () => {
+    function netAfterProgramFee(
+      grossAmount: bigint,
+      depositFeeBps: number,
+    ): bigint {
+      const fee = (grossAmount * BigInt(depositFeeBps) + 9_999n) / 10_000n;
+      return grossAmount - fee;
+    }
+
+    it("returns the exact fee-free amount and zero boundary", () => {
+      expect(
+        calculateGrossDepositAmount({
+          minimumNetAmount: 0n,
+          depositFeeBps: 0,
+        }),
+      ).to.equal(0n);
+      expect(
+        calculateGrossDepositAmount({
+          minimumNetAmount: U64_MAX,
+          depositFeeBps: 0,
+        }),
+      ).to.equal(U64_MAX);
+    });
+
+    it("produces the smallest sufficient gross across generated inputs", () => {
+      const feeRates = [0, 1, 17, 100, 333, 2_500, MAX_DEPOSIT_FEE_BPS];
+      let generatedMinimum = 7_919n;
+      for (const depositFeeBps of feeRates) {
+        for (let caseIndex = 0; caseIndex < 200; caseIndex += 1) {
+          generatedMinimum =
+            (generatedMinimum * 48_271n + 1n) % 1_000_000_000_000n;
+          const minimumNetAmount = generatedMinimum + 1n;
+          const grossAmount = calculateGrossDepositAmount({
+            minimumNetAmount,
+            depositFeeBps,
+          });
+
+          expect(
+            netAfterProgramFee(grossAmount, depositFeeBps) >= minimumNetAmount,
+          ).to.equal(true);
+          expect(
+            netAfterProgramFee(grossAmount - 1n, depositFeeBps) <
+              minimumNetAmount,
+          ).to.equal(true);
+        }
+      }
+    });
+
+    it("rejects invalid domains and gross amounts above u64", () => {
+      for (const depositFeeBps of [-1, 1.5, MAX_DEPOSIT_FEE_BPS + 1]) {
+        expect(() =>
+          calculateGrossDepositAmount({
+            minimumNetAmount: 1n,
+            depositFeeBps,
+          }),
+        ).to.throw("INVALID_DEPOSIT_FEE_BPS");
+      }
+      for (const minimumNetAmount of [-1n, U64_MAX + 1n]) {
+        expect(() =>
+          calculateGrossDepositAmount({
+            minimumNetAmount,
+            depositFeeBps: 0,
+          }),
+        ).to.throw("INVALID_NET_DEPOSIT_AMOUNT");
+      }
+      expect(() =>
+        calculateGrossDepositAmount({
+          minimumNetAmount: U64_MAX,
+          depositFeeBps: 1,
+        }),
+      ).to.throw("GROSS_DEPOSIT_AMOUNT_EXCEEDS_U64");
     });
   });
 
@@ -122,6 +200,133 @@ describe("math extensions", () => {
           totalShares: 0n,
         }),
       ).to.equal(0n);
+    });
+  });
+
+  describe("estimateWithdrawalCooldownSeconds", () => {
+    it("returns the maximum when total shares are zero", () => {
+      expect(
+        estimateWithdrawalCooldownSeconds({
+          sharesAmount: 25n,
+          totalShares: 0n,
+          withdrawalTMin: 10n,
+          withdrawalTMax: 90n,
+          withdrawalCurve: 2,
+        }),
+      ).to.equal(90n);
+    });
+
+    it("matches linear endpoints and rounds fractional seconds up", () => {
+      expect(
+        estimateWithdrawalCooldownSeconds({
+          sharesAmount: 25n,
+          totalShares: 100n,
+          withdrawalTMin: 10n,
+          withdrawalTMax: 30n,
+          withdrawalCurve: 1,
+        }),
+      ).to.equal(15n);
+      expect(
+        estimateWithdrawalCooldownSeconds({
+          sharesAmount: 1n,
+          totalShares: 3n,
+          withdrawalTMin: 10n,
+          withdrawalTMax: 20n,
+          withdrawalCurve: 1,
+        }),
+      ).to.equal(14n);
+      expect(
+        estimateWithdrawalCooldownSeconds({
+          sharesAmount: 100n,
+          totalShares: 100n,
+          withdrawalTMin: 10n,
+          withdrawalTMax: 30n,
+          withdrawalCurve: 1,
+        }),
+      ).to.equal(30n);
+    });
+
+    it("stays bounded and monotonic across share fractions and curves", () => {
+      const withdrawalTMin = 17n;
+      const withdrawalTMax = 503n;
+      const totalShares = 200n;
+
+      for (const withdrawalCurve of [0.5, 1, 2, 4]) {
+        let previousCooldown = withdrawalTMin;
+        for (
+          let sharesAmount = 0n;
+          sharesAmount <= totalShares;
+          sharesAmount += 1n
+        ) {
+          const cooldown = estimateWithdrawalCooldownSeconds({
+            sharesAmount,
+            totalShares,
+            withdrawalTMin,
+            withdrawalTMax,
+            withdrawalCurve,
+          });
+          expect(cooldown >= withdrawalTMin).to.equal(true);
+          expect(cooldown <= withdrawalTMax).to.equal(true);
+          expect(cooldown >= previousCooldown).to.equal(true);
+          previousCooldown = cooldown;
+        }
+      }
+    });
+  });
+
+  describe("estimateWithdrawalAvailableTimestamp", () => {
+    it("returns the cooldown end when no redemption schedule is configured", () => {
+      expect(
+        estimateWithdrawalAvailableTimestamp({
+          nowUnixSeconds: 100n,
+          cooldownSeconds: 20n,
+          withdrawalRedemptionRequestCutoffTs: 0n,
+          withdrawalRedemptionUnlockCurrentCycleTs: 500n,
+          withdrawalRedemptionUnlockNextCycleTs: 700n,
+        }),
+      ).to.equal(120n);
+    });
+
+    it("selects the current cycle at the cutoff and the next cycle after it", () => {
+      expect(
+        estimateWithdrawalAvailableTimestamp({
+          nowUnixSeconds: 100n,
+          cooldownSeconds: 20n,
+          withdrawalRedemptionRequestCutoffTs: 100n,
+          withdrawalRedemptionUnlockCurrentCycleTs: 200n,
+          withdrawalRedemptionUnlockNextCycleTs: 300n,
+        }),
+      ).to.equal(200n);
+      expect(
+        estimateWithdrawalAvailableTimestamp({
+          nowUnixSeconds: 101n,
+          cooldownSeconds: 20n,
+          withdrawalRedemptionRequestCutoffTs: 100n,
+          withdrawalRedemptionUnlockCurrentCycleTs: 200n,
+          withdrawalRedemptionUnlockNextCycleTs: 300n,
+        }),
+      ).to.equal(300n);
+    });
+
+    it("uses the later of cooldown end and the selected policy unlock", () => {
+      expect(
+        estimateWithdrawalAvailableTimestamp({
+          nowUnixSeconds: 100n,
+          cooldownSeconds: 150n,
+          withdrawalRedemptionRequestCutoffTs: 200n,
+          withdrawalRedemptionUnlockCurrentCycleTs: 220n,
+          withdrawalRedemptionUnlockNextCycleTs: 400n,
+        }),
+      ).to.equal(250n);
+      expect(
+        estimateWithdrawalAvailableTimestamp({
+          nowUnixSeconds: 100n,
+          cooldownSeconds: 20n,
+          withdrawalRedemptionRequestCutoffTs: 200n,
+          withdrawalRedemptionUnlockCurrentCycleTs: 220n,
+          withdrawalRedemptionUnlockNextCycleTs: 400n,
+        }),
+      ).to.equal(220n);
     });
   });
 
