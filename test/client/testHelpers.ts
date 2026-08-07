@@ -9,10 +9,12 @@ import { type ExtensionsRpc } from "../../src/extensions/rpc";
 import {
   getBundleEncoder,
   getOracleDataEncoder,
+  getReferrerAccountEncoder,
   getUserBundleAccountEncoder,
   NTBUNDLE_PROGRAM_ADDRESS,
   type BundleArgs,
   type OracleDataArgs,
+  type ReferrerAccountArgs,
   type UserBundleAccountArgs,
 } from "../../src/generated";
 
@@ -135,6 +137,25 @@ export function emptyUserBundleArgs(): UserBundleAccountArgs {
   };
 }
 
+export function emptyReferrerAccountArgs(): ReferrerAccountArgs {
+  return {
+    bundle: TEST_BUNDLE_ADDRESS,
+    referrer: TEST_USER_ADDRESS,
+    accruedPfeeShares: 0n,
+    accruedMfeeShares: 0n,
+    active: true,
+    bump: 0,
+    customPfeeBps: 0,
+    customMfeeBps: 0,
+    rateOverrideFlags: 0,
+    pendingWithdrawShares: 0n,
+    estimatedPendingWithdrawalValue: 0n,
+    withdrawalAvailableTimestamp: 0n,
+    lastWithdrawalProcessTimestamp: 0n,
+    padding: new Uint8Array(64),
+  };
+}
+
 export function emptyOracleDataArgs(): OracleDataArgs {
   return {
     averageExternalEquity: 0n,
@@ -155,6 +176,13 @@ export function buildEncodedUserBundleBytes(
 ): Uint8Array {
   const args = deepMerge(emptyUserBundleArgs(), overrides);
   return getUserBundleAccountEncoder().encode(args) as Uint8Array;
+}
+
+export function buildEncodedReferrerAccountBytes(
+  overrides: DeepPartial<ReferrerAccountArgs> = {},
+): Uint8Array {
+  const args = deepMerge(emptyReferrerAccountArgs(), overrides);
+  return getReferrerAccountEncoder().encode(args) as Uint8Array;
 }
 
 export function buildEncodedOracleDataBytes(
