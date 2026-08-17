@@ -2,6 +2,7 @@ import type {
   Bundle,
   OracleData,
   ReferrerAccount,
+  ReferralTier,
   UserBundleAccount,
 } from "../generated";
 
@@ -12,25 +13,28 @@ import {
   totalEquityRaw,
 } from "./math";
 
-/** Mirrors `FEE_OVERRIDE_DEPOSIT` in `constants.rs:15`. */
+/** Mirrors the onchain `FEE_OVERRIDE_DEPOSIT` flag. */
 export const FEE_OVERRIDE_DEPOSIT = 1 << 0;
 
-/** Mirrors `FEE_OVERRIDE_WITHDRAWAL` in `constants.rs:16`. */
+/** Mirrors the onchain `FEE_OVERRIDE_WITHDRAWAL` flag. */
 export const FEE_OVERRIDE_WITHDRAWAL = 1 << 1;
 
-/** Mirrors `FEE_OVERRIDE_PERFORMANCE` in `constants.rs:17`. */
+/** Mirrors the onchain `FEE_OVERRIDE_PERFORMANCE` flag. */
 export const FEE_OVERRIDE_PERFORMANCE = 1 << 2;
 
-/** Mirrors `FEE_OVERRIDE_MANAGEMENT` in `constants.rs:18`. */
+/** Mirrors the onchain `FEE_OVERRIDE_MANAGEMENT` flag. */
 export const FEE_OVERRIDE_MANAGEMENT = 1 << 3;
 
-/** Mirrors `REFERRAL_OVERRIDE_PFEE` in `constants.rs:41`. */
+/** Mirrors the onchain `REFERRAL_OVERRIDE_PFEE` flag. */
 export const REFERRAL_OVERRIDE_PFEE = 1 << 0;
 
-/** Mirrors `REFERRAL_OVERRIDE_MFEE` in `constants.rs:42`. */
+/** Mirrors the onchain `REFERRAL_OVERRIDE_MFEE` flag. */
 export const REFERRAL_OVERRIDE_MFEE = 1 << 1;
 
-/** Result shape from `resolve_effective_fees` at `bundle.rs:433-457`. */
+/** Maximum number of entries accepted by `set_referral_tier_config`. */
+export const MAX_REFERRAL_TIERS = 5;
+
+/** Result shape from the onchain `resolve_effective_fees` function. */
 export type EffectiveFees = {
   depositFeeBps: number;
   withdrawalFeeBps: number;
@@ -41,36 +45,95 @@ export type EffectiveFees = {
 export type EffectiveReferralRates = {
   referralPfeeBps: number;
   referralMfeeBps: number;
+  referralTierIndex: number | undefined;
 };
 
+type BundleReferralRateConfig = Pick<Bundle, "referralTiers" | "tierCount">;
+
+type ReferrerRateConfig = Pick<
+  ReferrerAccount,
+  "rateOverrideFlags" | "customPfeeBps" | "customMfeeBps"
+> &
+  Partial<Pick<ReferrerAccount, "referredNetDeposits">>;
+
+/** Resolves the bundle schedule before applying any per-referrer override. */
+export function resolveBundleReferralRates(
+  bundle: BundleReferralRateConfig,
+  referredNetDeposits: bigint,
+): EffectiveReferralRates {
+  const activeTierCount = Math.min(
+    bundle.tierCount,
+    bundle.referralTiers.length,
+    MAX_REFERRAL_TIERS,
+  );
+  let resolvedRates: EffectiveReferralRates = {
+    referralPfeeBps: 0,
+    referralMfeeBps: 0,
+    referralTierIndex: undefined,
+  };
+  for (let tierIndex = 0; tierIndex < activeTierCount; tierIndex += 1) {
+    const referralTier = bundle.referralTiers[tierIndex];
+    if (
+      referralTier === undefined ||
+      referredNetDeposits < referralTier.threshold
+    ) {
+      break;
+    }
+    resolvedRates = {
+      referralPfeeBps: referralTier.pfeeBps,
+      referralMfeeBps: referralTier.mfeeBps,
+      referralTierIndex: tierIndex,
+    };
+  }
+
+  return resolvedRates;
+}
+
 /**
- * Mirrors `resolve_effective_referral_rates` at `bundle.rs:879-896`.
- * An unregistered referrer has no overrides, so bundle defaults apply.
+ * Resolves the live rates used by fee settlement. An empty schedule resolves
+ * to zero. A partial override replaces only its flagged component; a full
+ * override bypasses the tier schedule.
  */
 export function resolveEffectiveReferralRates(
-  bundle: Pick<Bundle, "referralPfeeBps" | "referralMfeeBps">,
-  referrerAccount:
-    | Pick<
-        ReferrerAccount,
-        "rateOverrideFlags" | "customPfeeBps" | "customMfeeBps"
-      >
-    | undefined,
+  bundle: BundleReferralRateConfig,
+  referrerAccount: ReferrerRateConfig | undefined,
 ): EffectiveReferralRates {
+  if (
+    referrerAccount !== undefined &&
+    (referrerAccount.rateOverrideFlags &
+      (REFERRAL_OVERRIDE_PFEE | REFERRAL_OVERRIDE_MFEE)) ===
+      (REFERRAL_OVERRIDE_PFEE | REFERRAL_OVERRIDE_MFEE)
+  ) {
+    return {
+      referralPfeeBps: referrerAccount.customPfeeBps,
+      referralMfeeBps: referrerAccount.customMfeeBps,
+      referralTierIndex: undefined,
+    };
+  }
+
+  const bundleRates = resolveBundleReferralRates(
+    bundle,
+    referrerAccount?.referredNetDeposits ?? 0n,
+  );
+  const pfeeOverridden =
+    referrerAccount !== undefined &&
+    (referrerAccount.rateOverrideFlags & REFERRAL_OVERRIDE_PFEE) !== 0;
+  const mfeeOverridden =
+    referrerAccount !== undefined &&
+    (referrerAccount.rateOverrideFlags & REFERRAL_OVERRIDE_MFEE) !== 0;
+
   return {
-    referralPfeeBps:
-      referrerAccount &&
-      (referrerAccount.rateOverrideFlags & REFERRAL_OVERRIDE_PFEE) !== 0
-        ? referrerAccount.customPfeeBps
-        : bundle.referralPfeeBps,
-    referralMfeeBps:
-      referrerAccount &&
-      (referrerAccount.rateOverrideFlags & REFERRAL_OVERRIDE_MFEE) !== 0
-        ? referrerAccount.customMfeeBps
-        : bundle.referralMfeeBps,
+    referralPfeeBps: pfeeOverridden
+      ? referrerAccount.customPfeeBps
+      : bundleRates.referralPfeeBps,
+    referralMfeeBps: mfeeOverridden
+      ? referrerAccount.customMfeeBps
+      : bundleRates.referralMfeeBps,
+    referralTierIndex: bundleRates.referralTierIndex,
   };
 }
 
-/** Mirrors `resolve_effective_fees` at `bundle.rs:433-457`, including zero-valued overrides. */
+/** Mirrors onchain `resolve_effective_fees`, including zero-valued overrides. */
 export function resolveEffectiveFees(
   bundle: Pick<
     Bundle,
@@ -105,7 +168,7 @@ export function resolveEffectiveFees(
   };
 }
 
-/** Read-only result corresponding to `ChargedUserFees` returned at `bundle.rs:842-850`. */
+/** Read-only estimate of the user-fee totals represented by `ChargedUserFees`. */
 export type PendingFeeEstimate = {
   managementFeeShares: bigint;
   performanceFeeShares: bigint;
@@ -115,11 +178,11 @@ export type PendingFeeEstimate = {
 };
 
 /**
- * Estimates the user-share deductions in `charge_user_fees` at
- * `bundle.rs:653-851`. Referral handling at `bundle.rs:767-800` is omitted
- * because it only divides the same deducted shares between manager and
- * referrer. If `assetPrecision` is zero, this helper returns a zero fee value;
- * the Rust function reports a division error at `bundle.rs:829-834`.
+ * Estimates the user-share deductions calculated by `charge_user_fees_at_time`.
+ * Referral handling is omitted because it only divides the same deducted
+ * shares between manager and referrer. If `assetPrecision` is zero, this helper
+ * returns a zero fee value; onchain settlement rejects zero asset precision
+ * during its value calculations.
  */
 export function estimatePendingUserFees(args: {
   bundle: Pick<

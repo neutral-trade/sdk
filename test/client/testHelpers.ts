@@ -93,11 +93,15 @@ export function emptyBundleArgs(): BundleArgs {
     withdrawalRedemptionRequestCutoffTs: 0n,
     withdrawalRedemptionUnlockCurrentCycleTs: 0n,
     withdrawalRedemptionUnlockNextCycleTs: 0n,
-    referralPfeeBps: 0,
-    referralMfeeBps: 0,
     referrerEnabled: false,
     referrerMinDepositAmount: 0n,
-    padding: new Uint8Array(190),
+    referralTiers: Array.from({ length: 5 }, () => ({
+      threshold: 0n,
+      pfeeBps: 0,
+      mfeeBps: 0,
+    })),
+    tierCount: 0,
+    padding: new Uint8Array(117),
   };
 }
 
@@ -130,10 +134,7 @@ export function emptyUserBundleArgs(): UserBundleAccountArgs {
     switchTargetBundle: ZERO_ADDRESS,
     switchCreatedAt: 0n,
     referrer: ZERO_ADDRESS,
-    referralPfeeBps: 0,
-    referralMfeeBps: 0,
-    referralFlags: 0,
-    padding: new Uint8Array(136),
+    padding: new Uint8Array(145),
   };
 }
 
@@ -152,7 +153,8 @@ export function emptyReferrerAccountArgs(): ReferrerAccountArgs {
     estimatedPendingWithdrawalValue: 0n,
     withdrawalAvailableTimestamp: 0n,
     lastWithdrawalProcessTimestamp: 0n,
-    padding: new Uint8Array(64),
+    referredNetDeposits: 0n,
+    padding: new Uint8Array(48),
   };
 }
 

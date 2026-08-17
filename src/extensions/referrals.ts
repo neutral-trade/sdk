@@ -22,10 +22,15 @@ import {
   NTBUNDLE_PROGRAM_ADDRESS,
   type Bundle,
   type ReferrerAccount,
+  type ReferralTier,
   type UserBundleAccount,
 } from "../generated";
 import { buildDepositInstructionContext } from "./deposit";
-import { FEE_OVERRIDE_DEPOSIT, resolveEffectiveReferralRates } from "./fees";
+import {
+  FEE_OVERRIDE_DEPOSIT,
+  MAX_REFERRAL_TIERS,
+  resolveEffectiveReferralRates,
+} from "./fees";
 import {
   BPS_DENOMINATOR,
   assertValidAmountRaw,
@@ -126,8 +131,10 @@ export type ReferrerStatus = {
   referrerMinDepositAmount: bigint;
   effectiveReferralPfeeBps: number;
   effectiveReferralMfeeBps: number;
+  effectiveReferralTierIndex: number | undefined;
   accruedPfeeShares: bigint;
   accruedMfeeShares: bigint;
+  referredNetDeposits: bigint;
   pendingWithdrawShares: bigint;
   estimatedPendingWithdrawalValue: bigint;
   withdrawalAvailableTimestamp: bigint;
@@ -136,6 +143,161 @@ export type ReferrerStatus = {
   canBindNewUsers: boolean;
   needsReactivation: boolean;
 };
+
+export type ReferrerTierProgress = {
+  referredNetDeposits: bigint;
+  currentTierMinimum: bigint;
+  nextTierMinimum: bigint;
+  remainingNetDeposits: bigint;
+  progressBps: number;
+  isComplete: boolean;
+};
+
+export type ReferrerTierScheduleProgress = {
+  referredNetDeposits: bigint;
+  currentTierIndex: number | undefined;
+  currentTier: ReferralTier | undefined;
+  nextTierIndex: number | undefined;
+  nextTier: ReferralTier | undefined;
+  remainingNetDeposits: bigint;
+  progressBps: number;
+  isHighestTier: boolean;
+};
+
+/**
+ * Converts the signed aggregate from one `ReferrerAccount` read into exact
+ * basis-point progress between two product-supplied tier thresholds.
+ */
+export function calculateReferrerTierProgress(args: {
+  referredNetDeposits: bigint;
+  currentTierMinimum: bigint;
+  nextTierMinimum: bigint;
+}): ReferrerTierProgress {
+  if (
+    args.currentTierMinimum < 0n ||
+    args.nextTierMinimum <= args.currentTierMinimum
+  ) {
+    throw new Error("INVALID_REFERRER_TIER_THRESHOLDS");
+  }
+
+  const progressFloor =
+    args.referredNetDeposits > args.currentTierMinimum
+      ? args.referredNetDeposits
+      : args.currentTierMinimum;
+  const progressCeiling =
+    progressFloor < args.nextTierMinimum ? progressFloor : args.nextTierMinimum;
+  const tierSpan = args.nextTierMinimum - args.currentTierMinimum;
+  const progressBps = Number(
+    ((progressCeiling - args.currentTierMinimum) * BPS_DENOMINATOR) / tierSpan,
+  );
+  const remainingNetDeposits =
+    args.referredNetDeposits >= args.nextTierMinimum
+      ? 0n
+      : args.nextTierMinimum - args.referredNetDeposits;
+
+  return {
+    ...args,
+    remainingNetDeposits,
+    progressBps,
+    isComplete: remainingNetDeposits === 0n,
+  };
+}
+
+/** Resolves current/next tier display state directly from one bundle read. */
+export function calculateReferrerTierScheduleProgress(args: {
+  referredNetDeposits: bigint;
+  referralTiers: Array<ReferralTier>;
+  tierCount: number;
+}): ReferrerTierScheduleProgress {
+  if (
+    !Number.isInteger(args.tierCount) ||
+    args.tierCount < 0 ||
+    args.tierCount > MAX_REFERRAL_TIERS ||
+    args.tierCount > args.referralTiers.length
+  ) {
+    throw new Error("INVALID_REFERRAL_TIER_SCHEDULE");
+  }
+
+  const referralTiers = args.referralTiers.slice(0, args.tierCount);
+  for (let tierIndex = 0; tierIndex < referralTiers.length; tierIndex += 1) {
+    const referralTier = referralTiers[tierIndex];
+    const previousTier = referralTiers[tierIndex - 1];
+    if (
+      referralTier === undefined ||
+      referralTier.threshold < 0n ||
+      (previousTier !== undefined &&
+        referralTier.threshold <= previousTier.threshold)
+    ) {
+      throw new Error("INVALID_REFERRAL_TIER_SCHEDULE");
+    }
+  }
+
+  let currentTierIndex: number | undefined;
+  for (let tierIndex = 0; tierIndex < referralTiers.length; tierIndex += 1) {
+    const referralTier = referralTiers[tierIndex];
+    if (
+      referralTier === undefined ||
+      args.referredNetDeposits < referralTier.threshold
+    ) {
+      break;
+    }
+    currentTierIndex = tierIndex;
+  }
+
+  const nextTierIndex =
+    currentTierIndex === undefined
+      ? referralTiers.length > 0
+        ? 0
+        : undefined
+      : currentTierIndex + 1 < referralTiers.length
+        ? currentTierIndex + 1
+        : undefined;
+  const currentTier =
+    currentTierIndex === undefined
+      ? undefined
+      : referralTiers[currentTierIndex];
+  const nextTier =
+    nextTierIndex === undefined ? undefined : referralTiers[nextTierIndex];
+
+  if (nextTier === undefined) {
+    return {
+      referredNetDeposits: args.referredNetDeposits,
+      currentTierIndex,
+      currentTier,
+      nextTierIndex,
+      nextTier,
+      remainingNetDeposits: 0n,
+      progressBps: currentTier === undefined ? 0 : Number(BPS_DENOMINATOR),
+      isHighestTier: currentTier !== undefined,
+    };
+  }
+
+  const remainingNetDeposits =
+    args.referredNetDeposits >= nextTier.threshold
+      ? 0n
+      : nextTier.threshold - args.referredNetDeposits;
+  let progressBps = 0;
+  const currentThreshold = currentTier?.threshold ?? 0n;
+  const tierSpan = nextTier.threshold - currentThreshold;
+  if (tierSpan > 0n && args.referredNetDeposits > currentThreshold) {
+    const progress = args.referredNetDeposits - currentThreshold;
+    progressBps = Number(
+      ((progress < tierSpan ? progress : tierSpan) * BPS_DENOMINATOR) /
+        tierSpan,
+    );
+  }
+
+  return {
+    referredNetDeposits: args.referredNetDeposits,
+    currentTierIndex,
+    currentTier,
+    nextTierIndex,
+    nextTier,
+    remainingNetDeposits,
+    progressBps,
+    isHighestTier: false,
+  };
+}
 
 export class BuilderDepositAmountTooLowError extends Error {
   readonly requiredGrossDepositAmount: bigint;
@@ -254,10 +416,7 @@ function assertVirginUserBundleAccount(userBundle: UserBundleAccount): void {
 }
 
 function assertEligibleReferrerForAttribution(args: {
-  bundle: Pick<
-    Bundle,
-    "referralPfeeBps" | "referralMfeeBps" | "referrerMinDepositAmount"
-  >;
+  bundle: Pick<Bundle, "referrerMinDepositAmount">;
   referrerAccount: ReferrerAccount | undefined;
   referrerUserBundle: UserBundleAccount | undefined;
 }): void {
@@ -272,14 +431,6 @@ function assertEligibleReferrerForAttribution(args: {
     args.referrerUserBundle.netDeposits < args.bundle.referrerMinDepositAmount
   ) {
     throw new Error("REFERRER_DEPOSIT_TOO_LOW");
-  }
-
-  const rates = resolveEffectiveReferralRates(
-    args.bundle,
-    args.referrerAccount,
-  );
-  if (rates.referralPfeeBps === 0 && rates.referralMfeeBps === 0) {
-    throw new Error("REFERRAL_RATES_NOT_CONFIGURED");
   }
 }
 
@@ -366,9 +517,6 @@ export async function fetchReferrerStatus(
   const meetsMinDeposit = netDeposits >= bundle.data.referrerMinDepositAmount;
   const meetsMinDepositAfterNetting =
     netDeposits + pendingDeposit >= bundle.data.referrerMinDepositAmount;
-  const hasConfiguredRates =
-    rates.referralPfeeBps !== 0 || rates.referralMfeeBps !== 0;
-
   return {
     registered,
     active,
@@ -379,8 +527,10 @@ export async function fetchReferrerStatus(
     referrerMinDepositAmount: bundle.data.referrerMinDepositAmount,
     effectiveReferralPfeeBps: rates.referralPfeeBps,
     effectiveReferralMfeeBps: rates.referralMfeeBps,
+    effectiveReferralTierIndex: rates.referralTierIndex,
     accruedPfeeShares: referrerAccount?.accruedPfeeShares ?? 0n,
     accruedMfeeShares: referrerAccount?.accruedMfeeShares ?? 0n,
+    referredNetDeposits: referrerAccount?.referredNetDeposits ?? 0n,
     pendingWithdrawShares: referrerAccount?.pendingWithdrawShares ?? 0n,
     estimatedPendingWithdrawalValue:
       referrerAccount?.estimatedPendingWithdrawalValue ?? 0n,
@@ -393,22 +543,21 @@ export async function fetchReferrerStatus(
       active &&
       bundle.data.referrerEnabled &&
       hasUserBundleAccount &&
-      meetsMinDeposit &&
-      hasConfiguredRates,
+      meetsMinDeposit,
     needsReactivation: registered && !active,
   };
 }
 
 /**
  * Builds the only valid first-deposit ordering: initialize (when needed),
- * bind the referrer, then request the deposit. The current referral rates are
- * copied into the user's account by `set_user_referrer`; later referrer-rate
- * overrides do not change this user's snapshot.
+ * bind the referrer, then request the deposit. Fee settlement uses the
+ * referrer's live effective rates, including later tier-schedule and override
+ * changes that raise, lower, or zero either component.
  *
  * The returned instructions belong in one transaction. A user account with
  * any prior activity cannot be attributed under the current program rules.
  * The builder also fetches the referrer's registration and depositor accounts
- * to verify active status, the net-deposit threshold, and effective rates.
+ * to verify active status and the net-deposit threshold.
  * Deterministic eligibility failures use stable error messages; deposits below
  * the vault minimum throw `BuilderDepositAmountTooLowError`.
  */

@@ -8,6 +8,7 @@ import {
   REFERRAL_OVERRIDE_MFEE,
   REFERRAL_OVERRIDE_PFEE,
   estimatePendingUserFees,
+  resolveBundleReferralRates,
   resolveEffectiveFees,
   resolveEffectiveReferralRates,
 } from "../../src/extensions/fees";
@@ -60,8 +61,8 @@ function estimate(
 describe("fee extensions", () => {
   describe("resolveEffectiveReferralRates", () => {
     const bundleRates = {
-      referralPfeeBps: 1_000,
-      referralMfeeBps: 2_000,
+      referralTiers: [{ threshold: 0n, pfeeBps: 1_000, mfeeBps: 2_000 }],
+      tierCount: 1,
     };
     const referrerOverrides = {
       rateOverrideFlags: 0,
@@ -69,18 +70,20 @@ describe("fee extensions", () => {
       customMfeeBps: 4_000,
     };
 
-    it("uses bundle defaults for unregistered and unmasked referrers", () => {
+    it("uses the bundle tier for unregistered and unmasked referrers", () => {
       expect(
         resolveEffectiveReferralRates(bundleRates, undefined),
       ).to.deep.equal({
         referralPfeeBps: 1_000,
         referralMfeeBps: 2_000,
+        referralTierIndex: 0,
       });
       expect(
         resolveEffectiveReferralRates(bundleRates, referrerOverrides),
       ).to.deep.equal({
         referralPfeeBps: 1_000,
         referralMfeeBps: 2_000,
+        referralTierIndex: 0,
       });
     });
 
@@ -93,6 +96,7 @@ describe("fee extensions", () => {
       ).to.deep.equal({
         referralPfeeBps: 3_000,
         referralMfeeBps: 2_000,
+        referralTierIndex: 0,
       });
       expect(
         resolveEffectiveReferralRates(bundleRates, {
@@ -102,6 +106,7 @@ describe("fee extensions", () => {
       ).to.deep.equal({
         referralPfeeBps: 1_000,
         referralMfeeBps: 4_000,
+        referralTierIndex: 0,
       });
       expect(
         resolveEffectiveReferralRates(bundleRates, {
@@ -111,6 +116,77 @@ describe("fee extensions", () => {
       ).to.deep.equal({
         referralPfeeBps: 3_000,
         referralMfeeBps: 4_000,
+        referralTierIndex: undefined,
+      });
+    });
+
+    it("returns zero rates for an empty schedule", () => {
+      expect(
+        resolveBundleReferralRates({ referralTiers: [], tierCount: 0 }, 500n),
+      ).to.deep.equal({
+        referralPfeeBps: 0,
+        referralMfeeBps: 0,
+        referralTierIndex: undefined,
+      });
+    });
+
+    it("resolves inclusive tiers and returns zero below the first threshold", () => {
+      const tieredBundle = {
+        ...bundleRates,
+        referralTiers: [
+          { threshold: 100n, pfeeBps: 1_500, mfeeBps: 2_500 },
+          { threshold: 500n, pfeeBps: 3_500, mfeeBps: 4_500 },
+        ],
+        tierCount: 2,
+      };
+
+      expect(resolveBundleReferralRates(tieredBundle, -1n)).to.deep.equal({
+        referralPfeeBps: 0,
+        referralMfeeBps: 0,
+        referralTierIndex: undefined,
+      });
+      expect(resolveBundleReferralRates(tieredBundle, 100n)).to.deep.equal({
+        referralPfeeBps: 1_500,
+        referralMfeeBps: 2_500,
+        referralTierIndex: 0,
+      });
+      expect(resolveBundleReferralRates(tieredBundle, 500n)).to.deep.equal({
+        referralPfeeBps: 3_500,
+        referralMfeeBps: 4_500,
+        referralTierIndex: 1,
+      });
+    });
+
+    it("combines tier rates with partial overrides and bypasses tiers for a full override", () => {
+      const tieredBundle = {
+        ...bundleRates,
+        referralTiers: [{ threshold: 100n, pfeeBps: 1_500, mfeeBps: 2_500 }],
+        tierCount: 1,
+      };
+      const tieredReferrer = {
+        ...referrerOverrides,
+        referredNetDeposits: 100n,
+      };
+
+      expect(
+        resolveEffectiveReferralRates(tieredBundle, {
+          ...tieredReferrer,
+          rateOverrideFlags: REFERRAL_OVERRIDE_PFEE,
+        }),
+      ).to.deep.equal({
+        referralPfeeBps: 3_000,
+        referralMfeeBps: 2_500,
+        referralTierIndex: 0,
+      });
+      expect(
+        resolveEffectiveReferralRates(tieredBundle, {
+          ...tieredReferrer,
+          rateOverrideFlags: REFERRAL_OVERRIDE_PFEE | REFERRAL_OVERRIDE_MFEE,
+        }),
+      ).to.deep.equal({
+        referralPfeeBps: 3_000,
+        referralMfeeBps: 4_000,
+        referralTierIndex: undefined,
       });
     });
   });
