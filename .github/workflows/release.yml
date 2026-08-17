@@ -13,3 +13,24 @@ jobs:
     permissions:
       contents: write
       id-token: write
+
+  # Tells every repo that consumes @neutral-trade/sdk to open a bump PR right
+  # away instead of waiting for Dependabot's daily scan. Consumers handle this
+  # event in .github/workflows/bump-neutral-trade.yml.
+  notify-consumers:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch to consumers
+        env:
+          GH_TOKEN: ${{ secrets.NT_BOT_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#v}"
+          for repo in neutral-trade/internal neutral-trade/cms; do
+            echo "dispatching to $repo for @neutral-trade/sdk@$VERSION"
+            gh api "repos/$repo/dispatches" \
+              -f event_type=neutral-trade-released \
+              -f 'client_payload[package]=@neutral-trade/sdk' \
+              -f "client_payload[version]=$VERSION"
+          done
