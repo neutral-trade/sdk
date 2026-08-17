@@ -200,6 +200,8 @@ export const NTBUNDLE_ERROR__REFERRER_SHARES_ZERO = 0x17ca; // 6090
 export const NTBUNDLE_ERROR__UNAUTHORIZED_REFERRER_ACTION = 0x17cb; // 6091
 /** ReferrerDepositTooLow: Referrer deposit too low */
 export const NTBUNDLE_ERROR__REFERRER_DEPOSIT_TOO_LOW = 0x17cc; // 6092
+/** InvalidReferralTierConfig: Invalid referral tier configuration */
+export const NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG = 0x17cd; // 6093
 
 export type NtbundleError =
   | typeof NTBUNDLE_ERROR__ALLOCATION_AMOUNT_ZERO
@@ -234,6 +236,7 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__INVALID_PERMISSIONNED_DEPOSITOR
   | typeof NTBUNDLE_ERROR__INVALID_RECEIVER
   | typeof NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG
+  | typeof NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG
   | typeof NTBUNDLE_ERROR__INVALID_TWAP_PERIOD
   | typeof NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG
   | typeof NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG
@@ -331,6 +334,7 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__INVALID_PERMISSIONNED_DEPOSITOR]: `Invalid permissionned depositor`,
     [NTBUNDLE_ERROR__INVALID_RECEIVER]: `Invalid receiver address`,
     [NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG]: `Invalid referral configuration`,
+    [NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG]: `Invalid referral tier configuration`,
     [NTBUNDLE_ERROR__INVALID_TWAP_PERIOD]: `Invalid twap period`,
     [NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG]: `Invalid user fee configuration`,
     [NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG]: `Invalid user withdrawal timing configuration`,

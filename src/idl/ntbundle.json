@@ -5227,6 +5227,42 @@
       ]
     },
     {
+      "name": "set_referral_tier_config",
+      "discriminator": [
+        9,
+        78,
+        137,
+        136,
+        182,
+        116,
+        76,
+        138
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "referral_tiers",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "ReferralTier"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "set_referrer_active",
       "discriminator": [
         173,
@@ -5312,14 +5348,6 @@
         {
           "name": "referrer_enabled",
           "type": "bool"
-        },
-        {
-          "name": "referral_pfee_bps",
-          "type": "u32"
-        },
-        {
-          "name": "referral_mfee_bps",
-          "type": "u32"
         },
         {
           "name": "referrer_min_deposit_amount",
@@ -6541,6 +6569,19 @@
       ]
     },
     {
+      "name": "ReferralTierConfigSet",
+      "discriminator": [
+        104,
+        196,
+        57,
+        135,
+        223,
+        13,
+        6,
+        51
+      ]
+    },
+    {
       "name": "ReferrerActiveSet",
       "discriminator": [
         208,
@@ -7292,6 +7333,11 @@
       "code": 6092,
       "name": "ReferrerDepositTooLow",
       "msg": "Referrer deposit too low"
+    },
+    {
+      "code": 6093,
+      "name": "InvalidReferralTierConfig",
+      "msg": "Invalid referral tier configuration"
     }
   ],
   "types": [
@@ -7339,6 +7385,12 @@
           {
             "name": "total_shares",
             "type": "u128"
+          },
+          {
+            "name": "referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
@@ -7528,14 +7580,6 @@
             "type": "i64"
           },
           {
-            "name": "referral_pfee_bps",
-            "type": "u32"
-          },
-          {
-            "name": "referral_mfee_bps",
-            "type": "u32"
-          },
-          {
             "name": "referrer_enabled",
             "type": "bool"
           },
@@ -7544,11 +7588,28 @@
             "type": "u64"
           },
           {
+            "name": "referral_tiers",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "ReferralTier"
+                  }
+                },
+                5
+              ]
+            }
+          },
+          {
+            "name": "tier_count",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                190
+                117
               ]
             }
           }
@@ -7713,6 +7774,12 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "source_referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
@@ -7757,6 +7824,12 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "source_referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
@@ -7946,6 +8019,23 @@
           {
             "name": "manager_mfee_shares_after",
             "type": "u128"
+          },
+          {
+            "name": "referral_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_tier_index",
+            "docs": [
+              "None when no bundle tier supplies an unmasked rate."
+            ],
+            "type": {
+              "option": "u8"
+            }
           }
         ]
       }
@@ -8463,6 +8553,12 @@
           {
             "name": "total_shares_after",
             "type": "u128"
+          },
+          {
+            "name": "referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
@@ -8499,6 +8595,77 @@
           {
             "name": "accrued_mfee_shares_after",
             "type": "u128"
+          },
+          {
+            "name": "referral_pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_mfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "referral_tier_index",
+            "docs": [
+              "None when no bundle tier supplies an unmasked rate."
+            ],
+            "type": {
+              "option": "u8"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralTier",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "threshold",
+            "type": "u64"
+          },
+          {
+            "name": "pfee_bps",
+            "type": "u32"
+          },
+          {
+            "name": "mfee_bps",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralTierConfigSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "manager",
+            "type": "pubkey"
+          },
+          {
+            "name": "bundle_account_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "tier_count",
+            "type": "u8"
+          },
+          {
+            "name": "referral_tiers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "ReferralTier"
+                }
+              }
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }
@@ -8561,11 +8728,15 @@
             "type": "i64"
           },
           {
+            "name": "referred_net_deposits",
+            "type": "i128"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                64
+                48
               ]
             }
           }
@@ -8616,14 +8787,6 @@
           {
             "name": "referrer_enabled",
             "type": "bool"
-          },
-          {
-            "name": "referral_pfee_bps",
-            "type": "u32"
-          },
-          {
-            "name": "referral_mfee_bps",
-            "type": "u32"
           },
           {
             "name": "referrer_min_deposit_amount",
@@ -8808,6 +8971,12 @@
           {
             "name": "bundle_account_key",
             "type": "pubkey"
+          },
+          {
+            "name": "referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
@@ -9019,23 +9188,11 @@
             "type": "pubkey"
           },
           {
-            "name": "referral_pfee_bps",
-            "type": "u32"
-          },
-          {
-            "name": "referral_mfee_bps",
-            "type": "u32"
-          },
-          {
-            "name": "referral_flags",
-            "type": "u8"
-          },
-          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                136
+                145
               ]
             }
           }
@@ -9058,6 +9215,12 @@
           {
             "name": "user_bundle_account_key",
             "type": "pubkey"
+          },
+          {
+            "name": "referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
@@ -9178,6 +9341,15 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "referral_tier_index",
+            "docs": [
+              "None when no bundle tier supplies an unmasked rate."
+            ],
+            "type": {
+              "option": "u8"
+            }
           }
         ]
       }

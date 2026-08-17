@@ -21,6 +21,8 @@
   calculateAssetsFromShares: function
   calculateGrossDepositAmount: function
   calculateOnChainPps: function
+  calculateReferrerTierProgress: function
+  calculateReferrerTierScheduleProgress: function
   CHANGE_BUNDLE_MASTER_ADMIN_DISCRIMINATOR: object
   CHANGE_MANAGER_DISCRIMINATOR: object
   CLEAR_USER_FEE_OVERRIDE_DISCRIMINATOR: object
@@ -273,6 +275,9 @@
   getProcessWithdrawalInstructionDataCodec: function
   getProcessWithdrawalInstructionDataDecoder: function
   getProcessWithdrawalInstructionDataEncoder: function
+  getReferralTierCodec: function
+  getReferralTierDecoder: function
+  getReferralTierEncoder: function
   getReferrerAccountCodec: function
   getReferrerAccountDecoder: function
   getReferrerAccountDiscriminatorBytes: function
@@ -366,6 +371,11 @@
   getSetOracleUpdateTimeLimitInstructionDataCodec: function
   getSetOracleUpdateTimeLimitInstructionDataDecoder: function
   getSetOracleUpdateTimeLimitInstructionDataEncoder: function
+  getSetReferralTierConfigDiscriminatorBytes: function
+  getSetReferralTierConfigInstruction: function
+  getSetReferralTierConfigInstructionDataCodec: function
+  getSetReferralTierConfigInstructionDataDecoder: function
+  getSetReferralTierConfigInstructionDataEncoder: function
   getSetReferrerActiveDiscriminatorBytes: function
   getSetReferrerActiveInstruction: function
   getSetReferrerActiveInstructionDataCodec: function
@@ -450,6 +460,7 @@
   MANAGER_WITHDRAW_DISCRIMINATOR: object
   MANAGER_WITHDRAW_WITH_SPLIT_DISCRIMINATOR: object
   MAX_DEPOSIT_FEE_BPS: number
+  MAX_REFERRAL_TIERS: number
   NET_PENDING_TRANSACTIONS_DISCRIMINATOR: object
   NTBUNDLE_ERROR__ALLOCATION_AMOUNT_ZERO: number
   NTBUNDLE_ERROR__ALLOCATION_BPS_GREATER_THAN_GLOBAL_ALLOCATION_BPS: number
@@ -483,6 +494,7 @@
   NTBUNDLE_ERROR__INVALID_PERMISSIONNED_DEPOSITOR: number
   NTBUNDLE_ERROR__INVALID_RECEIVER: number
   NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG: number
+  NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG: number
   NTBUNDLE_ERROR__INVALID_TWAP_PERIOD: number
   NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG: number
   NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG: number
@@ -590,6 +602,7 @@
   parseSetOracleBufferInstruction: function
   parseSetOracleMaxAgeInstruction: function
   parseSetOracleUpdateTimeLimitInstruction: function
+  parseSetReferralTierConfigInstruction: function
   parseSetReferrerActiveInstruction: function
   parseSetReferrerConfigInstruction: function
   parseSetReferrerRateOverrideInstruction: function
@@ -616,6 +629,7 @@
   REQUEST_BUNDLE_SWITCH_DISCRIMINATOR: object
   REQUEST_DEPOSIT_DISCRIMINATOR: object
   REQUEST_WITHDRAWAL_DISCRIMINATOR: object
+  resolveBundleReferralRates: function
   resolveEffectiveFees: function
   resolveEffectiveReferralRates: function
   SECONDS_IN_YEAR: bigint
@@ -628,6 +642,7 @@
   SET_ORACLE_BUFFER_DISCRIMINATOR: object
   SET_ORACLE_MAX_AGE_DISCRIMINATOR: object
   SET_ORACLE_UPDATE_TIME_LIMIT_DISCRIMINATOR: object
+  SET_REFERRAL_TIER_CONFIG_DISCRIMINATOR: object
   SET_REFERRER_ACTIVE_DISCRIMINATOR: object
   SET_REFERRER_CONFIG_DISCRIMINATOR: object
   SET_REFERRER_RATE_OVERRIDE_DISCRIMINATOR: object
@@ -892,6 +907,9 @@
   getProcessWithdrawalInstructionDataCodec: function
   getProcessWithdrawalInstructionDataDecoder: function
   getProcessWithdrawalInstructionDataEncoder: function
+  getReferralTierCodec: function
+  getReferralTierDecoder: function
+  getReferralTierEncoder: function
   getReferrerAccountCodec: function
   getReferrerAccountDecoder: function
   getReferrerAccountDiscriminatorBytes: function
@@ -985,6 +1003,11 @@
   getSetOracleUpdateTimeLimitInstructionDataCodec: function
   getSetOracleUpdateTimeLimitInstructionDataDecoder: function
   getSetOracleUpdateTimeLimitInstructionDataEncoder: function
+  getSetReferralTierConfigDiscriminatorBytes: function
+  getSetReferralTierConfigInstruction: function
+  getSetReferralTierConfigInstructionDataCodec: function
+  getSetReferralTierConfigInstructionDataDecoder: function
+  getSetReferralTierConfigInstructionDataEncoder: function
   getSetReferrerActiveDiscriminatorBytes: function
   getSetReferrerActiveInstruction: function
   getSetReferrerActiveInstructionDataCodec: function
@@ -1093,6 +1116,7 @@
   NTBUNDLE_ERROR__INVALID_PERMISSIONNED_DEPOSITOR: number
   NTBUNDLE_ERROR__INVALID_RECEIVER: number
   NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG: number
+  NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG: number
   NTBUNDLE_ERROR__INVALID_TWAP_PERIOD: number
   NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG: number
   NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG: number
@@ -1199,6 +1223,7 @@
   parseSetOracleBufferInstruction: function
   parseSetOracleMaxAgeInstruction: function
   parseSetOracleUpdateTimeLimitInstruction: function
+  parseSetReferralTierConfigInstruction: function
   parseSetReferrerActiveInstruction: function
   parseSetReferrerConfigInstruction: function
   parseSetReferrerRateOverrideInstruction: function
@@ -1232,6 +1257,7 @@
   SET_ORACLE_BUFFER_DISCRIMINATOR: object
   SET_ORACLE_MAX_AGE_DISCRIMINATOR: object
   SET_ORACLE_UPDATE_TIME_LIMIT_DISCRIMINATOR: object
+  SET_REFERRAL_TIER_CONFIG_DISCRIMINATOR: object
   SET_REFERRER_ACTIVE_DISCRIMINATOR: object
   SET_REFERRER_CONFIG_DISCRIMINATOR: object
   SET_REFERRER_RATE_OVERRIDE_DISCRIMINATOR: object

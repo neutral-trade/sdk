@@ -100,6 +100,7 @@ import {
   getSetOracleBufferInstruction,
   getSetOracleMaxAgeInstruction,
   getSetOracleUpdateTimeLimitInstruction,
+  getSetReferralTierConfigInstruction,
   getSetReferrerActiveInstruction,
   getSetReferrerConfigInstruction,
   getSetReferrerRateOverrideInstruction,
@@ -149,6 +150,7 @@ import {
   parseSetOracleBufferInstruction,
   parseSetOracleMaxAgeInstruction,
   parseSetOracleUpdateTimeLimitInstruction,
+  parseSetReferralTierConfigInstruction,
   parseSetReferrerActiveInstruction,
   parseSetReferrerConfigInstruction,
   parseSetReferrerRateOverrideInstruction,
@@ -215,6 +217,7 @@ import {
   type ParsedSetOracleBufferInstruction,
   type ParsedSetOracleMaxAgeInstruction,
   type ParsedSetOracleUpdateTimeLimitInstruction,
+  type ParsedSetReferralTierConfigInstruction,
   type ParsedSetReferrerActiveInstruction,
   type ParsedSetReferrerConfigInstruction,
   type ParsedSetReferrerRateOverrideInstruction,
@@ -247,6 +250,7 @@ import {
   type SetOracleBufferInput,
   type SetOracleMaxAgeInput,
   type SetOracleUpdateTimeLimitInput,
+  type SetReferralTierConfigInput,
   type SetReferrerActiveInput,
   type SetReferrerConfigInput,
   type SetReferrerRateOverrideInput,
@@ -434,6 +438,7 @@ export enum NtbundleInstruction {
   SetOracleBuffer,
   SetOracleMaxAge,
   SetOracleUpdateTimeLimit,
+  SetReferralTierConfig,
   SetReferrerActive,
   SetReferrerConfig,
   SetReferrerRateOverride,
@@ -883,6 +888,17 @@ export function identifyNtbundleInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([9, 78, 137, 136, 182, 116, 76, 138]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.SetReferralTierConfig;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([173, 21, 130, 158, 15, 1, 83, 24]),
       ),
       0,
@@ -1115,6 +1131,9 @@ export type ParsedNtbundleInstruction<
   | ({
       instructionType: NtbundleInstruction.SetOracleUpdateTimeLimit;
     } & ParsedSetOracleUpdateTimeLimitInstruction<TProgram>)
+  | ({
+      instructionType: NtbundleInstruction.SetReferralTierConfig;
+    } & ParsedSetReferralTierConfigInstruction<TProgram>)
   | ({
       instructionType: NtbundleInstruction.SetReferrerActive;
     } & ParsedSetReferrerActiveInstruction<TProgram>)
@@ -1425,6 +1444,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
         ...parseSetOracleUpdateTimeLimitInstruction(instruction),
       };
     }
+    case NtbundleInstruction.SetReferralTierConfig: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.SetReferralTierConfig,
+        ...parseSetReferralTierConfigInstruction(instruction),
+      };
+    }
     case NtbundleInstruction.SetReferrerActive: {
       assertIsInstructionWithAccounts(instruction);
       return {
@@ -1689,6 +1715,10 @@ export type NtbundlePluginInstructions = {
   setOracleUpdateTimeLimit: (
     input: SetOracleUpdateTimeLimitInput,
   ) => ReturnType<typeof getSetOracleUpdateTimeLimitInstruction> &
+    SelfPlanAndSendFunctions;
+  setReferralTierConfig: (
+    input: SetReferralTierConfigInput,
+  ) => ReturnType<typeof getSetReferralTierConfigInstruction> &
     SelfPlanAndSendFunctions;
   setReferrerActive: (
     input: SetReferrerActiveInput,
@@ -1986,6 +2016,11 @@ export function ntbundleProgram() {
             addSelfPlanAndSendFunctions(
               client,
               getSetOracleUpdateTimeLimitInstruction(input),
+            ),
+          setReferralTierConfig: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getSetReferralTierConfigInstruction(input),
             ),
           setReferrerActive: (input) =>
             addSelfPlanAndSendFunctions(
