@@ -89,9 +89,6 @@ export type UserBundleAccount = {
   switchTargetBundle: Address;
   switchCreatedAt: bigint;
   referrer: Address;
-  referralPfeeBps: number;
-  referralMfeeBps: number;
-  referralFlags: number;
   padding: ReadonlyUint8Array;
 };
 
@@ -123,9 +120,6 @@ export type UserBundleAccountArgs = {
   switchTargetBundle: Address;
   switchCreatedAt: number | bigint;
   referrer: Address;
-  referralPfeeBps: number;
-  referralMfeeBps: number;
-  referralFlags: number;
   padding: ReadonlyUint8Array;
 };
 
@@ -161,10 +155,7 @@ export function getUserBundleAccountEncoder(): FixedSizeEncoder<UserBundleAccoun
       ["switchTargetBundle", getAddressEncoder()],
       ["switchCreatedAt", getI64Encoder()],
       ["referrer", getAddressEncoder()],
-      ["referralPfeeBps", getU32Encoder()],
-      ["referralMfeeBps", getU32Encoder()],
-      ["referralFlags", getU8Encoder()],
-      ["padding", fixEncoderSize(getBytesEncoder(), 136)],
+      ["padding", fixEncoderSize(getBytesEncoder(), 145)],
     ]),
     (value) => ({ ...value, discriminator: USER_BUNDLE_ACCOUNT_DISCRIMINATOR }),
   );
@@ -201,10 +192,7 @@ export function getUserBundleAccountDecoder(): FixedSizeDecoder<UserBundleAccoun
     ["switchTargetBundle", getAddressDecoder()],
     ["switchCreatedAt", getI64Decoder()],
     ["referrer", getAddressDecoder()],
-    ["referralPfeeBps", getU32Decoder()],
-    ["referralMfeeBps", getU32Decoder()],
-    ["referralFlags", getU8Decoder()],
-    ["padding", fixDecoderSize(getBytesDecoder(), 136)],
+    ["padding", fixDecoderSize(getBytesDecoder(), 145)],
   ]);
 }
 

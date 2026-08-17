@@ -21,6 +21,8 @@ import {
   getBooleanEncoder,
   getBytesDecoder,
   getBytesEncoder,
+  getI128Decoder,
+  getI128Encoder,
   getI64Decoder,
   getI64Encoder,
   getStructDecoder,
@@ -71,6 +73,7 @@ export type ReferrerAccount = {
   estimatedPendingWithdrawalValue: bigint;
   withdrawalAvailableTimestamp: bigint;
   lastWithdrawalProcessTimestamp: bigint;
+  referredNetDeposits: bigint;
   padding: ReadonlyUint8Array;
 };
 
@@ -88,6 +91,7 @@ export type ReferrerAccountArgs = {
   estimatedPendingWithdrawalValue: number | bigint;
   withdrawalAvailableTimestamp: number | bigint;
   lastWithdrawalProcessTimestamp: number | bigint;
+  referredNetDeposits: number | bigint;
   padding: ReadonlyUint8Array;
 };
 
@@ -109,7 +113,8 @@ export function getReferrerAccountEncoder(): FixedSizeEncoder<ReferrerAccountArg
       ["estimatedPendingWithdrawalValue", getU64Encoder()],
       ["withdrawalAvailableTimestamp", getI64Encoder()],
       ["lastWithdrawalProcessTimestamp", getI64Encoder()],
-      ["padding", fixEncoderSize(getBytesEncoder(), 64)],
+      ["referredNetDeposits", getI128Encoder()],
+      ["padding", fixEncoderSize(getBytesEncoder(), 48)],
     ]),
     (value) => ({ ...value, discriminator: REFERRER_ACCOUNT_DISCRIMINATOR }),
   );
@@ -132,7 +137,8 @@ export function getReferrerAccountDecoder(): FixedSizeDecoder<ReferrerAccount> {
     ["estimatedPendingWithdrawalValue", getU64Decoder()],
     ["withdrawalAvailableTimestamp", getI64Decoder()],
     ["lastWithdrawalProcessTimestamp", getI64Decoder()],
-    ["padding", fixDecoderSize(getBytesDecoder(), 64)],
+    ["referredNetDeposits", getI128Decoder()],
+    ["padding", fixDecoderSize(getBytesDecoder(), 48)],
   ]);
 }
 

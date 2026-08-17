@@ -45,6 +45,7 @@ export * from "./setMinDepositAmount";
 export * from "./setOracleBuffer";
 export * from "./setOracleMaxAge";
 export * from "./setOracleUpdateTimeLimit";
+export * from "./setReferralTierConfig";
 export * from "./setReferrerActive";
 export * from "./setReferrerConfig";
 export * from "./setReferrerRateOverride";

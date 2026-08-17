@@ -16,6 +16,8 @@ import {
   buildAttributedDepositTx,
   buildBuilderRegistrationTx,
   buildReferrerWithdrawRequestTx,
+  calculateReferrerTierProgress,
+  calculateReferrerTierScheduleProgress,
   deriveReferrerAccountForUser,
   fetchReferrerStatus,
 } from "../../src/extensions/referrals";
@@ -28,12 +30,14 @@ import {
   findOracleDataPda,
   findReferrerAccountPda,
   findUserBundleAccountPda,
+  getSetReferralTierConfigInstruction,
   NTBUNDLE_PROGRAM_ADDRESS,
   parseInitializeBundleDepositorInstruction,
   parseRegisterReferrerInstruction,
   parseReferrerRequestWithdrawInstruction,
   parseRequestDepositInstruction,
   parseSetUserReferrerInstruction,
+  parseSetReferralTierConfigInstruction,
 } from "../../src/generated";
 import {
   accountsRegistry,
@@ -53,6 +57,17 @@ type ParsableInstruction = Instruction &
 
 const referrer = createNoopSigner(fakeAddress(51));
 const user = createNoopSigner(TEST_USER_ADDRESS);
+
+function oneTierReferralSchedule(pfeeBps: number, mfeeBps: number) {
+  return [
+    { threshold: 0n, pfeeBps, mfeeBps },
+    ...Array.from({ length: 4 }, () => ({
+      threshold: 0n,
+      pfeeBps: 0,
+      mfeeBps: 0,
+    })),
+  ];
+}
 
 function assertParsableInstruction(
   instruction: Instruction,
@@ -133,7 +148,8 @@ async function referralRpc(options: ReferralRpcOptions = {}) {
       TEST_BUNDLE_ADDRESS,
       buildEncodedBundleBytes({
         referrerEnabled: true,
-        referralPfeeBps: 1_000,
+        referralTiers: oneTierReferralSchedule(1_000, 0),
+        tierCount: 1,
         ...options.bundleOverrides,
       }),
     ],
@@ -192,6 +208,124 @@ async function attributedDepositRpc(options: ReferralRpcOptions = {}) {
 }
 
 describe("referral extensions", () => {
+  describe("calculateReferrerTierProgress", () => {
+    it("reports exact progress before, within, and after a tier", () => {
+      expect(
+        calculateReferrerTierProgress({
+          referredNetDeposits: -25n,
+          currentTierMinimum: 0n,
+          nextTierMinimum: 100n,
+        }),
+      ).to.deep.equal({
+        referredNetDeposits: -25n,
+        currentTierMinimum: 0n,
+        nextTierMinimum: 100n,
+        remainingNetDeposits: 125n,
+        progressBps: 0,
+        isComplete: false,
+      });
+      expect(
+        calculateReferrerTierProgress({
+          referredNetDeposits: 175n,
+          currentTierMinimum: 100n,
+          nextTierMinimum: 300n,
+        }),
+      ).to.include({
+        remainingNetDeposits: 125n,
+        progressBps: 3_750,
+        isComplete: false,
+      });
+      expect(
+        calculateReferrerTierProgress({
+          referredNetDeposits: 350n,
+          currentTierMinimum: 100n,
+          nextTierMinimum: 300n,
+        }),
+      ).to.include({
+        remainingNetDeposits: 0n,
+        progressBps: 10_000,
+        isComplete: true,
+      });
+    });
+
+    it("rejects negative, equal, and descending tier thresholds", () => {
+      for (const [currentTierMinimum, nextTierMinimum] of [
+        [-1n, 100n],
+        [100n, 100n],
+        [101n, 100n],
+      ]) {
+        expect(() =>
+          calculateReferrerTierProgress({
+            referredNetDeposits: 0n,
+            currentTierMinimum,
+            nextTierMinimum,
+          }),
+        ).to.throw("INVALID_REFERRER_TIER_THRESHOLDS");
+      }
+    });
+
+    it("derives current and next tiers from the stored bundle schedule", () => {
+      const referralTiers = [
+        { threshold: 100n, pfeeBps: 1_000, mfeeBps: 2_000 },
+        { threshold: 500n, pfeeBps: 3_000, mfeeBps: 4_000 },
+        { threshold: 1_000n, pfeeBps: 5_000, mfeeBps: 6_000 },
+      ];
+
+      expect(
+        calculateReferrerTierScheduleProgress({
+          referredNetDeposits: -25n,
+          referralTiers,
+          tierCount: 3,
+        }),
+      ).to.include({
+        currentTierIndex: undefined,
+        nextTierIndex: 0,
+        remainingNetDeposits: 125n,
+        progressBps: 0,
+        isHighestTier: false,
+      });
+      expect(
+        calculateReferrerTierScheduleProgress({
+          referredNetDeposits: 300n,
+          referralTiers,
+          tierCount: 3,
+        }),
+      ).to.include({
+        currentTierIndex: 0,
+        nextTierIndex: 1,
+        remainingNetDeposits: 200n,
+        progressBps: 5_000,
+        isHighestTier: false,
+      });
+      expect(
+        calculateReferrerTierScheduleProgress({
+          referredNetDeposits: 1_500n,
+          referralTiers,
+          tierCount: 3,
+        }),
+      ).to.include({
+        currentTierIndex: 2,
+        nextTierIndex: undefined,
+        remainingNetDeposits: 0n,
+        progressBps: 10_000,
+        isHighestTier: true,
+      });
+    });
+
+    it("rejects malformed stored tier schedules", () => {
+      expect(() =>
+        calculateReferrerTierScheduleProgress({
+          referredNetDeposits: 0n,
+          referralTiers: [
+            { threshold: 100n, pfeeBps: 1_000, mfeeBps: 2_000 },
+            { threshold: 100n, pfeeBps: 3_000, mfeeBps: 4_000 },
+          ],
+          tierCount: 2,
+        }),
+      ).to.throw("INVALID_REFERRAL_TIER_SCHEDULE");
+    });
+  });
+
   describe("deriveReferrerAccountForUser", () => {
     it("matches the generated PDA helper for raw and registry vault inputs", async () => {
       const programAddress = fakeAddress(52);
@@ -233,6 +367,30 @@ describe("referral extensions", () => {
         }),
         "UNSUPPORTED_VAULT_TYPE",
       );
+    });
+  });
+
+  describe("generated referral tier config", () => {
+    it("encodes and parses the fixed schedule input", () => {
+      const instruction = getSetReferralTierConfigInstruction({
+        manager: referrer,
+        bundleAccount: TEST_BUNDLE_ADDRESS,
+        referralTiers: [
+          { threshold: 100n, pfeeBps: 1_000, mfeeBps: 2_000 },
+          { threshold: 500n, pfeeBps: 3_000, mfeeBps: 4_000 },
+        ],
+      });
+      assertParsableInstruction(instruction);
+
+      const parsed = parseSetReferralTierConfigInstruction(instruction);
+      expect(parsed.accounts.manager.address).to.equal(referrer.address);
+      expect(parsed.accounts.bundleAccount.address).to.equal(
+        TEST_BUNDLE_ADDRESS,
+      );
+      expect(parsed.data.referralTiers).to.deep.equal([
+        { threshold: 100n, pfeeBps: 1_000, mfeeBps: 2_000 },
+        { threshold: 500n, pfeeBps: 3_000, mfeeBps: 4_000 },
+      ]);
     });
   });
 
@@ -430,31 +588,14 @@ describe("referral extensions", () => {
       );
     });
 
-    it("resolves referrer rate overrides before accepting attribution", async () => {
-      const unavailable = await attributedDepositRpc({
-        referrerAccountOverrides: {
-          rateOverrideFlags: REFERRAL_OVERRIDE_PFEE,
-          customPfeeBps: 0,
+    it("allows attribution while the live referral rates are zero", async () => {
+      const zeroRates = await attributedDepositRpc({
+        bundleOverrides: {
+          referralTiers: oneTierReferralSchedule(0, 0),
+          tierCount: 1,
         },
       });
-      await expectError(
-        buildAttributedDepositTx(unavailable.rpc, {
-          user,
-          referrer: referrer.address,
-          vault: TEST_BUNDLE_ADDRESS,
-          amount: 1n,
-        }),
-        "REFERRAL_RATES_NOT_CONFIGURED",
-      );
-
-      const customOnly = await attributedDepositRpc({
-        bundleOverrides: { referralPfeeBps: 0 },
-        referrerAccountOverrides: {
-          rateOverrideFlags: REFERRAL_OVERRIDE_PFEE,
-          customPfeeBps: 500,
-        },
-      });
-      const instructions = await buildAttributedDepositTx(customOnly.rpc, {
+      const instructions = await buildAttributedDepositTx(zeroRates.rpc, {
         user,
         referrer: referrer.address,
         vault: TEST_BUNDLE_ADDRESS,
@@ -515,12 +656,12 @@ describe("referral extensions", () => {
   });
 
   describe("fetchReferrerStatus", () => {
-    it("represents an unregistered referrer with bundle-default rates", async () => {
+    it("represents an unregistered referrer with bundle tier rates", async () => {
       const { rpc } = await referralRpc({
         includeRegisteredReferrer: false,
         bundleOverrides: {
-          referralPfeeBps: 125,
-          referralMfeeBps: 250,
+          referralTiers: oneTierReferralSchedule(125, 250),
+          tierCount: 1,
           referrerMinDepositAmount: 10n,
         },
       });
@@ -540,8 +681,10 @@ describe("referral extensions", () => {
         referrerMinDepositAmount: 10n,
         effectiveReferralPfeeBps: 125,
         effectiveReferralMfeeBps: 250,
+        effectiveReferralTierIndex: 0,
         accruedPfeeShares: 0n,
         accruedMfeeShares: 0n,
+        referredNetDeposits: 0n,
         pendingWithdrawShares: 0n,
         estimatedPendingWithdrawalValue: 0n,
         withdrawalAvailableTimestamp: 0n,
@@ -555,8 +698,8 @@ describe("referral extensions", () => {
     it("reports active eligibility and manager-only reactivation needs", async () => {
       const activeFixture = await referralRpc({
         bundleOverrides: {
-          referralPfeeBps: 0,
-          referralMfeeBps: 200,
+          referralTiers: oneTierReferralSchedule(0, 200),
+          tierCount: 1,
           referrerMinDepositAmount: 100n,
         },
         referrerUserOverrides: { netDeposits: 100n },
@@ -573,8 +716,8 @@ describe("referral extensions", () => {
 
       const inactiveFixture = await referralRpc({
         bundleOverrides: {
-          referralPfeeBps: 0,
-          referralMfeeBps: 200,
+          referralTiers: oneTierReferralSchedule(0, 200),
+          tierCount: 1,
           referrerMinDepositAmount: 100n,
         },
         referrerAccountOverrides: { active: false },
@@ -646,8 +789,8 @@ describe("referral extensions", () => {
       for (const testCase of cases) {
         const { rpc } = await referralRpc({
           bundleOverrides: {
-            referralPfeeBps: 100,
-            referralMfeeBps: 200,
+            referralTiers: oneTierReferralSchedule(100, 200),
+            tierCount: 1,
           },
           referrerAccountOverrides: {
             rateOverrideFlags: testCase.flags,

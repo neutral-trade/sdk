@@ -10,23 +10,21 @@ import {
   combineCodec,
   fixDecoderSize,
   fixEncoderSize,
-  getBooleanDecoder,
-  getBooleanEncoder,
+  getArrayDecoder,
+  getArrayEncoder,
   getBytesDecoder,
   getBytesEncoder,
   getStructDecoder,
   getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
   SOLANA_ERROR__PROGRAM_CLIENTS__INSUFFICIENT_ACCOUNT_METAS,
   SolanaError,
   transformEncoder,
   type AccountMeta,
   type AccountSignerMeta,
   type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
+  type Codec,
+  type Decoder,
+  type Encoder,
   type Instruction,
   type InstructionWithAccounts,
   type InstructionWithData,
@@ -40,17 +38,23 @@ import {
   type ResolvedInstructionAccount,
 } from "@solana/program-client-core";
 import { NTBUNDLE_PROGRAM_ADDRESS } from "../programs";
+import {
+  getReferralTierDecoder,
+  getReferralTierEncoder,
+  type ReferralTier,
+  type ReferralTierArgs,
+} from "../types";
 
-export const SET_REFERRER_CONFIG_DISCRIMINATOR: ReadonlyUint8Array =
-  new Uint8Array([85, 90, 76, 126, 69, 34, 205, 22]);
+export const SET_REFERRAL_TIER_CONFIG_DISCRIMINATOR: ReadonlyUint8Array =
+  new Uint8Array([9, 78, 137, 136, 182, 116, 76, 138]);
 
-export function getSetReferrerConfigDiscriminatorBytes(): ReadonlyUint8Array {
+export function getSetReferralTierConfigDiscriminatorBytes(): ReadonlyUint8Array {
   return fixEncoderSize(getBytesEncoder(), 8).encode(
-    SET_REFERRER_CONFIG_DISCRIMINATOR,
+    SET_REFERRAL_TIER_CONFIG_DISCRIMINATOR,
   );
 }
 
-export type SetReferrerConfigInstruction<
+export type SetReferralTierConfigInstruction<
   TProgram extends string = typeof NTBUNDLE_PROGRAM_ADDRESS,
   TAccountManager extends string | AccountMeta<string> = string,
   TAccountBundleAccount extends string | AccountMeta<string> = string,
@@ -70,64 +74,62 @@ export type SetReferrerConfigInstruction<
     ]
   >;
 
-export type SetReferrerConfigInstructionData = {
+export type SetReferralTierConfigInstructionData = {
   discriminator: ReadonlyUint8Array;
-  referrerEnabled: boolean;
-  referrerMinDepositAmount: bigint;
+  referralTiers: Array<ReferralTier>;
 };
 
-export type SetReferrerConfigInstructionDataArgs = {
-  referrerEnabled: boolean;
-  referrerMinDepositAmount: number | bigint;
+export type SetReferralTierConfigInstructionDataArgs = {
+  referralTiers: Array<ReferralTierArgs>;
 };
 
-export function getSetReferrerConfigInstructionDataEncoder(): FixedSizeEncoder<SetReferrerConfigInstructionDataArgs> {
+export function getSetReferralTierConfigInstructionDataEncoder(): Encoder<SetReferralTierConfigInstructionDataArgs> {
   return transformEncoder(
     getStructEncoder([
       ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["referrerEnabled", getBooleanEncoder()],
-      ["referrerMinDepositAmount", getU64Encoder()],
+      ["referralTiers", getArrayEncoder(getReferralTierEncoder())],
     ]),
-    (value) => ({ ...value, discriminator: SET_REFERRER_CONFIG_DISCRIMINATOR }),
+    (value) => ({
+      ...value,
+      discriminator: SET_REFERRAL_TIER_CONFIG_DISCRIMINATOR,
+    }),
   );
 }
 
-export function getSetReferrerConfigInstructionDataDecoder(): FixedSizeDecoder<SetReferrerConfigInstructionData> {
+export function getSetReferralTierConfigInstructionDataDecoder(): Decoder<SetReferralTierConfigInstructionData> {
   return getStructDecoder([
     ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["referrerEnabled", getBooleanDecoder()],
-    ["referrerMinDepositAmount", getU64Decoder()],
+    ["referralTiers", getArrayDecoder(getReferralTierDecoder())],
   ]);
 }
 
-export function getSetReferrerConfigInstructionDataCodec(): FixedSizeCodec<
-  SetReferrerConfigInstructionDataArgs,
-  SetReferrerConfigInstructionData
+export function getSetReferralTierConfigInstructionDataCodec(): Codec<
+  SetReferralTierConfigInstructionDataArgs,
+  SetReferralTierConfigInstructionData
 > {
   return combineCodec(
-    getSetReferrerConfigInstructionDataEncoder(),
-    getSetReferrerConfigInstructionDataDecoder(),
+    getSetReferralTierConfigInstructionDataEncoder(),
+    getSetReferralTierConfigInstructionDataDecoder(),
   );
 }
 
-export type SetReferrerConfigInput<
+export type SetReferralTierConfigInput<
   TAccountManager extends string = string,
   TAccountBundleAccount extends string = string,
 > = {
   manager: TransactionSigner<TAccountManager>;
   bundleAccount: Address<TAccountBundleAccount>;
-  referrerEnabled: SetReferrerConfigInstructionDataArgs["referrerEnabled"];
-  referrerMinDepositAmount: SetReferrerConfigInstructionDataArgs["referrerMinDepositAmount"];
+  referralTiers: SetReferralTierConfigInstructionDataArgs["referralTiers"];
 };
 
-export function getSetReferrerConfigInstruction<
+export function getSetReferralTierConfigInstruction<
   TAccountManager extends string,
   TAccountBundleAccount extends string,
   TProgramAddress extends Address = typeof NTBUNDLE_PROGRAM_ADDRESS,
 >(
-  input: SetReferrerConfigInput<TAccountManager, TAccountBundleAccount>,
+  input: SetReferralTierConfigInput<TAccountManager, TAccountBundleAccount>,
   config?: { programAddress?: TProgramAddress },
-): SetReferrerConfigInstruction<
+): SetReferralTierConfigInstruction<
   TProgramAddress,
   TAccountManager,
   TAccountBundleAccount
@@ -154,18 +156,18 @@ export function getSetReferrerConfigInstruction<
       getAccountMeta("manager", accounts.manager),
       getAccountMeta("bundleAccount", accounts.bundleAccount),
     ],
-    data: getSetReferrerConfigInstructionDataEncoder().encode(
-      args as SetReferrerConfigInstructionDataArgs,
+    data: getSetReferralTierConfigInstructionDataEncoder().encode(
+      args as SetReferralTierConfigInstructionDataArgs,
     ),
     programAddress,
-  } as SetReferrerConfigInstruction<
+  } as SetReferralTierConfigInstruction<
     TProgramAddress,
     TAccountManager,
     TAccountBundleAccount
   >);
 }
 
-export type ParsedSetReferrerConfigInstruction<
+export type ParsedSetReferralTierConfigInstruction<
   TProgram extends string = typeof NTBUNDLE_PROGRAM_ADDRESS,
   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
@@ -174,17 +176,17 @@ export type ParsedSetReferrerConfigInstruction<
     manager: TAccountMetas[0];
     bundleAccount: TAccountMetas[1];
   };
-  data: SetReferrerConfigInstructionData;
+  data: SetReferralTierConfigInstructionData;
 };
 
-export function parseSetReferrerConfigInstruction<
+export function parseSetReferralTierConfigInstruction<
   TProgram extends string,
   TAccountMetas extends readonly AccountMeta[],
 >(
   instruction: Instruction<TProgram> &
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>,
-): ParsedSetReferrerConfigInstruction<TProgram, TAccountMetas> {
+): ParsedSetReferralTierConfigInstruction<TProgram, TAccountMetas> {
   if (instruction.accounts.length < 2) {
     throw new SolanaError(
       SOLANA_ERROR__PROGRAM_CLIENTS__INSUFFICIENT_ACCOUNT_METAS,
@@ -203,6 +205,8 @@ export function parseSetReferrerConfigInstruction<
   return {
     programAddress: instruction.programAddress,
     accounts: { manager: getNextAccount(), bundleAccount: getNextAccount() },
-    data: getSetReferrerConfigInstructionDataDecoder().decode(instruction.data),
+    data: getSetReferralTierConfigInstructionDataDecoder().decode(
+      instruction.data,
+    ),
   };
 }

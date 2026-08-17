@@ -5,11 +5,14 @@ import {
   fetchBundle,
   fetchMaybeBundle,
   fetchMaybeOracleData,
+  fetchMaybeReferrerAccount,
+  getReferrerAccountSize,
 } from "../../src/generated";
 import {
   accountsRegistry,
   buildEncodedBundleBytes,
   buildEncodedOracleDataBytes,
+  buildEncodedReferrerAccountBytes,
   buildEncodedUserBundleBytes,
   fakeAddress,
   fakeRpc,
@@ -27,6 +30,14 @@ describe("testHelpers fakeRpc", () => {
             totalShares: 123_456_789n,
             assetPrecision: 1_000_000n,
             bundleUnderlyingBalance: 42n,
+            referralTiers: [
+              { threshold: 100n, pfeeBps: 1_000, mfeeBps: 2_000 },
+              { threshold: 500n, pfeeBps: 3_000, mfeeBps: 4_000 },
+              { threshold: 0n, pfeeBps: 0, mfeeBps: 0 },
+              { threshold: 0n, pfeeBps: 0, mfeeBps: 0 },
+              { threshold: 0n, pfeeBps: 0, mfeeBps: 0 },
+            ],
+            tierCount: 2,
           }),
         ],
       ]),
@@ -37,6 +48,12 @@ describe("testHelpers fakeRpc", () => {
     expect(bundle.data.totalShares).to.equal(123_456_789n);
     expect(bundle.data.assetPrecision).to.equal(1_000_000n);
     expect(bundle.data.bundleUnderlyingBalance).to.equal(42n);
+    expect(bundle.data.tierCount).to.equal(2);
+    expect(bundle.data.referralTiers[1]).to.deep.equal({
+      threshold: 500n,
+      pfeeBps: 3_000,
+      mfeeBps: 4_000,
+    });
   });
 
   it("returns exists=false for missing accounts via fetchMaybe*", async () => {
@@ -89,6 +106,26 @@ describe("testHelpers fakeRpc", () => {
     expect(oracle.exists).to.equal(true);
     if (oracle.exists) {
       expect(oracle.data.averageExternalEquity).to.equal(999n);
+    }
+  });
+
+  it("preserves ReferrerAccount size and signed net deposits", async () => {
+    const referrerAccountAddress = fakeAddress(31);
+    const encodedAccount = buildEncodedReferrerAccountBytes({
+      referredNetDeposits: -123n,
+    });
+    expect(encodedAccount).to.have.length(getReferrerAccountSize());
+
+    const rpc = fakeRpc(
+      accountsRegistry([[referrerAccountAddress, encodedAccount]]),
+    );
+    const referrerAccount = await fetchMaybeReferrerAccount(
+      rpc,
+      referrerAccountAddress,
+    );
+    expect(referrerAccount.exists).to.equal(true);
+    if (referrerAccount.exists) {
+      expect(referrerAccount.data.referredNetDeposits).to.equal(-123n);
     }
   });
 });

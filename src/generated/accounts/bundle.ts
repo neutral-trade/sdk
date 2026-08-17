@@ -50,6 +50,12 @@ import {
   type MaybeEncodedAccount,
   type ReadonlyUint8Array,
 } from "@solana/kit";
+import {
+  getReferralTierDecoder,
+  getReferralTierEncoder,
+  type ReferralTier,
+  type ReferralTierArgs,
+} from "../types";
 
 export const BUNDLE_DISCRIMINATOR: ReadonlyUint8Array = new Uint8Array([
   15, 82, 167, 230, 37, 214, 82, 80,
@@ -91,10 +97,10 @@ export type Bundle = {
   withdrawalRedemptionRequestCutoffTs: bigint;
   withdrawalRedemptionUnlockCurrentCycleTs: bigint;
   withdrawalRedemptionUnlockNextCycleTs: bigint;
-  referralPfeeBps: number;
-  referralMfeeBps: number;
   referrerEnabled: boolean;
   referrerMinDepositAmount: bigint;
+  referralTiers: Array<ReferralTier>;
+  tierCount: number;
   padding: ReadonlyUint8Array;
 };
 
@@ -129,10 +135,10 @@ export type BundleArgs = {
   withdrawalRedemptionRequestCutoffTs: number | bigint;
   withdrawalRedemptionUnlockCurrentCycleTs: number | bigint;
   withdrawalRedemptionUnlockNextCycleTs: number | bigint;
-  referralPfeeBps: number;
-  referralMfeeBps: number;
   referrerEnabled: boolean;
   referrerMinDepositAmount: number | bigint;
+  referralTiers: Array<ReferralTierArgs>;
+  tierCount: number;
   padding: ReadonlyUint8Array;
 };
 
@@ -171,11 +177,11 @@ export function getBundleEncoder(): Encoder<BundleArgs> {
       ["withdrawalRedemptionRequestCutoffTs", getI64Encoder()],
       ["withdrawalRedemptionUnlockCurrentCycleTs", getI64Encoder()],
       ["withdrawalRedemptionUnlockNextCycleTs", getI64Encoder()],
-      ["referralPfeeBps", getU32Encoder()],
-      ["referralMfeeBps", getU32Encoder()],
       ["referrerEnabled", getBooleanEncoder()],
       ["referrerMinDepositAmount", getU64Encoder()],
-      ["padding", fixEncoderSize(getBytesEncoder(), 190)],
+      ["referralTiers", getArrayEncoder(getReferralTierEncoder(), { size: 5 })],
+      ["tierCount", getU8Encoder()],
+      ["padding", fixEncoderSize(getBytesEncoder(), 117)],
     ]),
     (value) => ({ ...value, discriminator: BUNDLE_DISCRIMINATOR }),
   );
@@ -215,11 +221,11 @@ export function getBundleDecoder(): Decoder<Bundle> {
     ["withdrawalRedemptionRequestCutoffTs", getI64Decoder()],
     ["withdrawalRedemptionUnlockCurrentCycleTs", getI64Decoder()],
     ["withdrawalRedemptionUnlockNextCycleTs", getI64Decoder()],
-    ["referralPfeeBps", getU32Decoder()],
-    ["referralMfeeBps", getU32Decoder()],
     ["referrerEnabled", getBooleanDecoder()],
     ["referrerMinDepositAmount", getU64Decoder()],
-    ["padding", fixDecoderSize(getBytesDecoder(), 190)],
+    ["referralTiers", getArrayDecoder(getReferralTierDecoder(), { size: 5 })],
+    ["tierCount", getU8Decoder()],
+    ["padding", fixDecoderSize(getBytesDecoder(), 117)],
   ]);
 }
 
