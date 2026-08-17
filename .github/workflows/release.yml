@@ -15,8 +15,9 @@ jobs:
       id-token: write
 
   # Tells every repo that consumes @neutral-trade/sdk to open a bump PR right
-  # away instead of waiting for Dependabot's daily scan. Consumers handle this
-  # event in .github/workflows/bump-neutral-trade.yml.
+  # away. This is the only mechanism keeping consumers current — there is no
+  # Dependabot fallback — so a failure here means they silently drift behind.
+  # Consumers handle this event in .github/workflows/bump-neutral-trade.yml.
   notify-consumers:
     needs: release
     runs-on: ubuntu-latest
