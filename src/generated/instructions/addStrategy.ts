@@ -181,16 +181,19 @@ export async function getAddStrategyInstructionAsync<
 
   // Resolve default values.
   if (!accounts.strategyAccount.value) {
-    accounts.strategyAccount.value = await findStrategyAccountPda({
-      receiverAddress: getAddressFromResolvedInstructionAccount(
-        "receiverAddress",
-        accounts.receiverAddress.value,
-      ),
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.strategyAccount.value = await findStrategyAccountPda(
+      {
+        receiverAddress: getAddressFromResolvedInstructionAccount(
+          "receiverAddress",
+          accounts.receiverAddress.value,
+        ),
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.systemProgram.value) {
     accounts.systemProgram.value =

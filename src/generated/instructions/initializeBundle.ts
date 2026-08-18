@@ -321,37 +321,49 @@ export async function getInitializeBundleInstructionAsync<
 
   // Resolve default values.
   if (!accounts.bundleCreatorAccount.value) {
-    accounts.bundleCreatorAccount.value = await findBundleCreatorAccountPda({
-      creator: getAddressFromResolvedInstructionAccount(
-        "creator",
-        accounts.creator.value,
-      ),
-    });
+    accounts.bundleCreatorAccount.value = await findBundleCreatorAccountPda(
+      {
+        creator: getAddressFromResolvedInstructionAccount(
+          "creator",
+          accounts.creator.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.systemProgram.value) {
     accounts.systemProgram.value =
       "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
   }
   if (!accounts.bundleAccount.value) {
-    accounts.bundleAccount.value = await findBundleAccountPda({
-      name: getNonNullResolvedInstructionInput("name", args.name),
-    });
+    accounts.bundleAccount.value = await findBundleAccountPda(
+      {
+        name: getNonNullResolvedInstructionInput("name", args.name),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleTempData.value) {
-    accounts.bundleTempData.value = await findBundleTempDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleTempData.value = await findBundleTempDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.oracleData.value) {
-    accounts.oracleData.value = await findOracleDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.oracleData.value = await findOracleDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
 
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");

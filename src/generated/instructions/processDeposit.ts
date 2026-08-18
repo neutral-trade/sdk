@@ -281,25 +281,31 @@ export async function getProcessDepositInstructionAsync<
 
   // Resolve default values.
   if (!accounts.userBundleAccount.value) {
-    accounts.userBundleAccount.value = await findUserBundleAccountPda({
-      userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
-        "userBundleAccountOwner",
-        accounts.userBundleAccountOwner.value,
-      ),
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
-  }
-  if (!accounts.pendingBundleAssetAuthority.value) {
-    accounts.pendingBundleAssetAuthority.value =
-      await findPendingBundleAssetAuthorityPda({
+    accounts.userBundleAccount.value = await findUserBundleAccountPda(
+      {
+        userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
+          "userBundleAccountOwner",
+          accounts.userBundleAccountOwner.value,
+        ),
         bundleAccount: getAddressFromResolvedInstructionAccount(
           "bundleAccount",
           accounts.bundleAccount.value,
         ),
-      });
+      },
+      { programAddress },
+    );
+  }
+  if (!accounts.pendingBundleAssetAuthority.value) {
+    accounts.pendingBundleAssetAuthority.value =
+      await findPendingBundleAssetAuthorityPda(
+        {
+          bundleAccount: getAddressFromResolvedInstructionAccount(
+            "bundleAccount",
+            accounts.bundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
   }
   if (!accounts.pendingDepositTokenAccount.value) {
     accounts.pendingDepositTokenAccount.value = await getProgramDerivedAddress({
@@ -329,12 +335,15 @@ export async function getProcessDepositInstructionAsync<
     });
   }
   if (!accounts.bundleAssetAuthority.value) {
-    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleAssetAccount.value) {
     accounts.bundleAssetAccount.value = await getProgramDerivedAddress({
@@ -364,20 +373,26 @@ export async function getProcessDepositInstructionAsync<
     });
   }
   if (!accounts.bundleTempData.value) {
-    accounts.bundleTempData.value = await findBundleTempDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleTempData.value = await findBundleTempDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.oracleData.value) {
-    accounts.oracleData.value = await findOracleDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.oracleData.value = await findOracleDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.tokenProgram.value) {
     accounts.tokenProgram.value =
