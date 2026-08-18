@@ -210,12 +210,15 @@ export async function getManagerWithdrawInstructionAsync<
 
   // Resolve default values.
   if (!accounts.bundleAssetAuthority.value) {
-    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleAssetAccount.value) {
     accounts.bundleAssetAccount.value = await getProgramDerivedAddress({
@@ -245,12 +248,15 @@ export async function getManagerWithdrawInstructionAsync<
     });
   }
   if (!accounts.oracleData.value) {
-    accounts.oracleData.value = await findOracleDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.oracleData.value = await findOracleDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.tokenProgram.value) {
     accounts.tokenProgram.value =

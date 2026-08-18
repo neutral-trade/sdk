@@ -178,16 +178,19 @@ export async function getSetUserReferrerInstructionAsync<
   // Resolve default values.
   if (!accounts.userBundleAccount.value) {
     accounts.userBundleAccount.value =
-      await findRequestBundleSwitchUserBundleAccountPda({
-        user: getAddressFromResolvedInstructionAccount(
-          "user",
-          accounts.user.value,
-        ),
-        bundleAccount: getAddressFromResolvedInstructionAccount(
-          "bundleAccount",
-          accounts.bundleAccount.value,
-        ),
-      });
+      await findRequestBundleSwitchUserBundleAccountPda(
+        {
+          user: getAddressFromResolvedInstructionAccount(
+            "user",
+            accounts.user.value,
+          ),
+          bundleAccount: getAddressFromResolvedInstructionAccount(
+            "bundleAccount",
+            accounts.bundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
   }
 
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");

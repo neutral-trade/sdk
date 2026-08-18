@@ -387,12 +387,15 @@ export async function getProcessSwitchInstructionAsync<
   // Resolve default values.
   if (!accounts.sourceBundleAssetAuthority.value) {
     accounts.sourceBundleAssetAuthority.value =
-      await findSourceBundleAssetAuthorityPda({
-        sourceBundleAccount: getAddressFromResolvedInstructionAccount(
-          "sourceBundleAccount",
-          accounts.sourceBundleAccount.value,
-        ),
-      });
+      await findSourceBundleAssetAuthorityPda(
+        {
+          sourceBundleAccount: getAddressFromResolvedInstructionAccount(
+            "sourceBundleAccount",
+            accounts.sourceBundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
   }
   if (!accounts.sourceBundleAssetAccount.value) {
     accounts.sourceBundleAssetAccount.value = await getProgramDerivedAddress({
@@ -423,62 +426,80 @@ export async function getProcessSwitchInstructionAsync<
   }
   if (!accounts.sourceUserBundleAccount.value) {
     accounts.sourceUserBundleAccount.value =
-      await findSourceUserBundleAccountPda({
-        userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
-          "userBundleAccountOwner",
-          accounts.userBundleAccountOwner.value,
-        ),
+      await findSourceUserBundleAccountPda(
+        {
+          userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
+            "userBundleAccountOwner",
+            accounts.userBundleAccountOwner.value,
+          ),
+          sourceBundleAccount: getAddressFromResolvedInstructionAccount(
+            "sourceBundleAccount",
+            accounts.sourceBundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
+  }
+  if (!accounts.sourceBundleTempData.value) {
+    accounts.sourceBundleTempData.value = await findSourceBundleTempDataPda(
+      {
         sourceBundleAccount: getAddressFromResolvedInstructionAccount(
           "sourceBundleAccount",
           accounts.sourceBundleAccount.value,
         ),
-      });
-  }
-  if (!accounts.sourceBundleTempData.value) {
-    accounts.sourceBundleTempData.value = await findSourceBundleTempDataPda({
-      sourceBundleAccount: getAddressFromResolvedInstructionAccount(
-        "sourceBundleAccount",
-        accounts.sourceBundleAccount.value,
-      ),
-    });
+      },
+      { programAddress },
+    );
   }
   if (!accounts.sourceOracleData.value) {
-    accounts.sourceOracleData.value = await findSourceOracleDataPda({
-      sourceBundleAccount: getAddressFromResolvedInstructionAccount(
-        "sourceBundleAccount",
-        accounts.sourceBundleAccount.value,
-      ),
-    });
+    accounts.sourceOracleData.value = await findSourceOracleDataPda(
+      {
+        sourceBundleAccount: getAddressFromResolvedInstructionAccount(
+          "sourceBundleAccount",
+          accounts.sourceBundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.targetUserBundleAccount.value) {
     accounts.targetUserBundleAccount.value =
-      await findTargetUserBundleAccountPda({
-        userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
-          "userBundleAccountOwner",
-          accounts.userBundleAccountOwner.value,
-        ),
+      await findTargetUserBundleAccountPda(
+        {
+          userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
+            "userBundleAccountOwner",
+            accounts.userBundleAccountOwner.value,
+          ),
+          targetBundleAccount: getAddressFromResolvedInstructionAccount(
+            "targetBundleAccount",
+            accounts.targetBundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
+  }
+  if (!accounts.targetBundleTempData.value) {
+    accounts.targetBundleTempData.value = await findTargetBundleTempDataPda(
+      {
         targetBundleAccount: getAddressFromResolvedInstructionAccount(
           "targetBundleAccount",
           accounts.targetBundleAccount.value,
         ),
-      });
-  }
-  if (!accounts.targetBundleTempData.value) {
-    accounts.targetBundleTempData.value = await findTargetBundleTempDataPda({
-      targetBundleAccount: getAddressFromResolvedInstructionAccount(
-        "targetBundleAccount",
-        accounts.targetBundleAccount.value,
-      ),
-    });
+      },
+      { programAddress },
+    );
   }
   if (!accounts.targetPendingBundleAssetAuthority.value) {
     accounts.targetPendingBundleAssetAuthority.value =
-      await findTargetPendingBundleAssetAuthorityPda({
-        targetBundleAccount: getAddressFromResolvedInstructionAccount(
-          "targetBundleAccount",
-          accounts.targetBundleAccount.value,
-        ),
-      });
+      await findTargetPendingBundleAssetAuthorityPda(
+        {
+          targetBundleAccount: getAddressFromResolvedInstructionAccount(
+            "targetBundleAccount",
+            accounts.targetBundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
   }
   if (!accounts.targetPendingDepositTokenAccount.value) {
     accounts.targetPendingDepositTokenAccount.value =
@@ -509,12 +530,15 @@ export async function getProcessSwitchInstructionAsync<
       });
   }
   if (!accounts.targetOracleData.value) {
-    accounts.targetOracleData.value = await findTargetOracleDataPda({
-      targetBundleAccount: getAddressFromResolvedInstructionAccount(
-        "targetBundleAccount",
-        accounts.targetBundleAccount.value,
-      ),
-    });
+    accounts.targetOracleData.value = await findTargetOracleDataPda(
+      {
+        targetBundleAccount: getAddressFromResolvedInstructionAccount(
+          "targetBundleAccount",
+          accounts.targetBundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.tokenProgram.value) {
     accounts.tokenProgram.value =

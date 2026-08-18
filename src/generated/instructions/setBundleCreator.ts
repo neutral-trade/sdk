@@ -190,15 +190,20 @@ export async function getSetBundleCreatorInstructionAsync<
 
   // Resolve default values.
   if (!accounts.bundleMasterAccount.value) {
-    accounts.bundleMasterAccount.value = await findBundleMasterAccountPda();
+    accounts.bundleMasterAccount.value = await findBundleMasterAccountPda({
+      programAddress,
+    });
   }
   if (!accounts.bundleCreatorAccount.value) {
-    accounts.bundleCreatorAccount.value = await findBundleCreatorAccountPda({
-      creator: getAddressFromResolvedInstructionAccount(
-        "creator",
-        accounts.creator.value,
-      ),
-    });
+    accounts.bundleCreatorAccount.value = await findBundleCreatorAccountPda(
+      {
+        creator: getAddressFromResolvedInstructionAccount(
+          "creator",
+          accounts.creator.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.systemProgram.value) {
     accounts.systemProgram.value =

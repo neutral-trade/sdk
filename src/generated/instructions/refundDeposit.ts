@@ -253,24 +253,30 @@ export async function getRefundDepositInstructionAsync<
 
   // Resolve default values.
   if (!accounts.userBundleAccount.value) {
-    accounts.userBundleAccount.value = await findUserBundleAccountPda({
-      userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
-        "userBundleAccountOwner",
-        accounts.userBundleAccountOwner.value,
-      ),
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.userBundleAccount.value = await findUserBundleAccountPda(
+      {
+        userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
+          "userBundleAccountOwner",
+          accounts.userBundleAccountOwner.value,
+        ),
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleAssetAuthority.value) {
-    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleAssetAccount.value) {
     accounts.bundleAssetAccount.value = await getProgramDerivedAddress({
@@ -300,12 +306,15 @@ export async function getRefundDepositInstructionAsync<
     });
   }
   if (!accounts.bundleTempData.value) {
-    accounts.bundleTempData.value = await findBundleTempDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleTempData.value = await findBundleTempDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.tokenProgram.value) {
     accounts.tokenProgram.value =
