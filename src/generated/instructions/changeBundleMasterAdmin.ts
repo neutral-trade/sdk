@@ -153,7 +153,9 @@ export async function getChangeBundleMasterAdminInstructionAsync<
 
   // Resolve default values.
   if (!accounts.bundleMasterAccount.value) {
-    accounts.bundleMasterAccount.value = await findBundleMasterAccountPda();
+    accounts.bundleMasterAccount.value = await findBundleMasterAccountPda({
+      programAddress,
+    });
   }
 
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");

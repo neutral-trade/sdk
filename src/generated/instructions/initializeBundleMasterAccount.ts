@@ -154,7 +154,9 @@ export async function getInitializeBundleMasterAccountInstructionAsync<
 
   // Resolve default values.
   if (!accounts.bundleMasterAccount.value) {
-    accounts.bundleMasterAccount.value = await findBundleMasterAccountPda();
+    accounts.bundleMasterAccount.value = await findBundleMasterAccountPda({
+      programAddress,
+    });
   }
   if (!accounts.systemProgram.value) {
     accounts.systemProgram.value =

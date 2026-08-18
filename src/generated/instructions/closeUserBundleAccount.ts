@@ -155,16 +155,19 @@ export async function getCloseUserBundleAccountInstructionAsync<
   // Resolve default values.
   if (!accounts.userBundleAccount.value) {
     accounts.userBundleAccount.value =
-      await findCloseUserBundleAccountUserBundleAccountPda({
-        authority: getAddressFromResolvedInstructionAccount(
-          "authority",
-          accounts.authority.value,
-        ),
-        bundleAccount: getAddressFromResolvedInstructionAccount(
-          "bundleAccount",
-          accounts.bundleAccount.value,
-        ),
-      });
+      await findCloseUserBundleAccountUserBundleAccountPda(
+        {
+          authority: getAddressFromResolvedInstructionAccount(
+            "authority",
+            accounts.authority.value,
+          ),
+          bundleAccount: getAddressFromResolvedInstructionAccount(
+            "bundleAccount",
+            accounts.bundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
   }
 
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");

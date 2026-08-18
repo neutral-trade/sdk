@@ -235,12 +235,15 @@ export async function getPerformRefillInstructionAsync<
 
   // Resolve default values.
   if (!accounts.bundleAssetAuthority.value) {
-    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleAssetAuthority.value = await findBundleAssetAuthorityPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleAssetAccount.value) {
     accounts.bundleAssetAccount.value = await getProgramDerivedAddress({
@@ -270,24 +273,30 @@ export async function getPerformRefillInstructionAsync<
     });
   }
   if (!accounts.strategyAccount.value) {
-    accounts.strategyAccount.value = await findStrategyAccountPda({
-      receiverAddress: getAddressFromResolvedInstructionAccount(
-        "receiverAddress",
-        accounts.receiverAddress.value,
-      ),
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.strategyAccount.value = await findStrategyAccountPda(
+      {
+        receiverAddress: getAddressFromResolvedInstructionAccount(
+          "receiverAddress",
+          accounts.receiverAddress.value,
+        ),
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.oracleData.value) {
-    accounts.oracleData.value = await findOracleDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.oracleData.value = await findOracleDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.tokenProgram.value) {
     accounts.tokenProgram.value =

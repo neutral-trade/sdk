@@ -206,16 +206,19 @@ export async function getSetUserWithdrawalTimingOverrideInstructionAsync<
 
   // Resolve default values.
   if (!accounts.userBundleAccount.value) {
-    accounts.userBundleAccount.value = await findUserBundleAccountPda({
-      userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
-        "userBundleAccountOwner",
-        accounts.userBundleAccountOwner.value,
-      ),
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.userBundleAccount.value = await findUserBundleAccountPda(
+      {
+        userBundleAccountOwner: getAddressFromResolvedInstructionAccount(
+          "userBundleAccountOwner",
+          accounts.userBundleAccountOwner.value,
+        ),
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
 
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");

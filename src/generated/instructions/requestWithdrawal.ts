@@ -221,32 +221,41 @@ export async function getRequestWithdrawalInstructionAsync<
   // Resolve default values.
   if (!accounts.userBundleAccount.value) {
     accounts.userBundleAccount.value =
-      await findRequestBundleSwitchUserBundleAccountPda({
-        user: getAddressFromResolvedInstructionAccount(
-          "user",
-          accounts.user.value,
-        ),
+      await findRequestBundleSwitchUserBundleAccountPda(
+        {
+          user: getAddressFromResolvedInstructionAccount(
+            "user",
+            accounts.user.value,
+          ),
+          bundleAccount: getAddressFromResolvedInstructionAccount(
+            "bundleAccount",
+            accounts.bundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
+  }
+  if (!accounts.oracleData.value) {
+    accounts.oracleData.value = await findOracleDataPda(
+      {
         bundleAccount: getAddressFromResolvedInstructionAccount(
           "bundleAccount",
           accounts.bundleAccount.value,
         ),
-      });
-  }
-  if (!accounts.oracleData.value) {
-    accounts.oracleData.value = await findOracleDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+      },
+      { programAddress },
+    );
   }
   if (!accounts.bundleTempData.value) {
-    accounts.bundleTempData.value = await findBundleTempDataPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-    });
+    accounts.bundleTempData.value = await findBundleTempDataPda(
+      {
+        bundleAccount: getAddressFromResolvedInstructionAccount(
+          "bundleAccount",
+          accounts.bundleAccount.value,
+        ),
+      },
+      { programAddress },
+    );
   }
   if (!accounts.tokenProgram.value) {
     accounts.tokenProgram.value =

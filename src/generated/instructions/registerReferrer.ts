@@ -176,29 +176,35 @@ export async function getRegisterReferrerInstructionAsync<
 
   // Resolve default values.
   if (!accounts.referrerAccount.value) {
-    accounts.referrerAccount.value = await findReferrerAccountPda({
-      bundleAccount: getAddressFromResolvedInstructionAccount(
-        "bundleAccount",
-        accounts.bundleAccount.value,
-      ),
-      referrer: getAddressFromResolvedInstructionAccount(
-        "referrer",
-        accounts.referrer.value,
-      ),
-    });
-  }
-  if (!accounts.referrerUserBundleAccount.value) {
-    accounts.referrerUserBundleAccount.value =
-      await findReferrerUserBundleAccountPda({
-        referrer: getAddressFromResolvedInstructionAccount(
-          "referrer",
-          accounts.referrer.value,
-        ),
+    accounts.referrerAccount.value = await findReferrerAccountPda(
+      {
         bundleAccount: getAddressFromResolvedInstructionAccount(
           "bundleAccount",
           accounts.bundleAccount.value,
         ),
-      });
+        referrer: getAddressFromResolvedInstructionAccount(
+          "referrer",
+          accounts.referrer.value,
+        ),
+      },
+      { programAddress },
+    );
+  }
+  if (!accounts.referrerUserBundleAccount.value) {
+    accounts.referrerUserBundleAccount.value =
+      await findReferrerUserBundleAccountPda(
+        {
+          referrer: getAddressFromResolvedInstructionAccount(
+            "referrer",
+            accounts.referrer.value,
+          ),
+          bundleAccount: getAddressFromResolvedInstructionAccount(
+            "bundleAccount",
+            accounts.bundleAccount.value,
+          ),
+        },
+        { programAddress },
+      );
   }
   if (!accounts.systemProgram.value) {
     accounts.systemProgram.value =
