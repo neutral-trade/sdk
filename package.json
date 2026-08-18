@@ -1,7 +1,7 @@
 {
   "name": "@neutral-trade/sdk",
   "type": "module",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "packageManager": "pnpm@10.25.0",
   "description": "Neutral Trade vault registry and Codama-generated ntbundle client for @solana/kit",
   "license": "MIT",
