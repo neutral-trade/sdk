@@ -75,10 +75,12 @@ async function verify(
   wireTransaction: Uint8Array,
   request: WidgetOperationRequestMessage,
   isBlockhashValid = true,
+  expectedReferrer?: string,
 ) {
   return await verifyWidgetTransaction({
     allowedVaults: [FIXTURE_ADDRESSES.vault, FIXTURE_ADDRESSES.alternateVault],
     cluster: 'devnet',
+    expectedReferrer,
     isBlockhashValid: async () => isBlockhashValid,
     request,
     walletAddress: FIXTURE_ADDRESSES.user,
@@ -111,7 +113,12 @@ describe('verifyWidgetTransaction golden fixtures', () => {
       },
     })
 
-    const verified = await verify(wireTransaction, request)
+    const verified = await verify(
+      wireTransaction,
+      request,
+      true,
+      FIXTURE_ADDRESSES.referrer,
+    )
 
     if (verified.operation !== 'deposit')
       assert.fail('Expected a verified deposit')
@@ -136,6 +143,28 @@ describe('verifyWidgetTransaction golden fixtures', () => {
     assert.deepEqual(verified.attribution, {
       status: 'unavailable',
       reason: 'builder-code-unrecognized',
+    })
+  })
+
+  test('accepts an unavailable-attribution retry in builderAddress mode', async () => {
+    const wireTransaction = await createDepositFixture({ amount: DEPOSIT_AMOUNT })
+    const verified = await verify(
+      wireTransaction,
+      createDepositRequest(wireTransaction, {
+        attribution: {
+          status: 'unavailable',
+          reason: 'user-already-attributed',
+        },
+      }),
+      true,
+      FIXTURE_ADDRESSES.referrer,
+    )
+
+    if (verified.operation !== 'deposit')
+      assert.fail('Expected a verified deposit')
+    assert.deepEqual(verified.attribution, {
+      status: 'unavailable',
+      reason: 'user-already-attributed',
     })
   })
 
@@ -266,6 +295,28 @@ describe('verifyWidgetTransaction adversarial mutants', () => {
     })
     await assertRejectedWithCode(
       verify(wireTransaction, request),
+      'invalid-referrer',
+    )
+  })
+
+  test('rejects a request referrer that differs from the configured builderAddress', async () => {
+    const wireTransaction = await createDepositFixture({
+      includeAttribution: true,
+      referrer: FIXTURE_ADDRESSES.secondReferrer,
+    })
+    const request = createDepositRequest(wireTransaction, {
+      attribution: {
+        status: 'applied',
+        referrer: FIXTURE_ADDRESSES.secondReferrer,
+      },
+    })
+    await assertRejectedWithCode(
+      verify(
+        wireTransaction,
+        request,
+        true,
+        FIXTURE_ADDRESSES.referrer,
+      ),
       'invalid-referrer',
     )
   })

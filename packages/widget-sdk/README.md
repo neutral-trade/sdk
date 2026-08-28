@@ -2,7 +2,7 @@
 
 Host-side SDK for embedding the Neutral Trade widget in a partner site. The package mounts the hosted interface from `https://widget.neutral.trade`, bridges typed deposit and withdrawal requests to a Wallet Standard wallet, verifies the exact transaction bytes, submits the signed transaction, and tracks confirmation.
 
-The iframe never receives wallet keys or an API key. Partners provide a public **builder code**, and attribution uses the ntbundle `setUserReferrer` instruction.
+The iframe never receives wallet keys or an API key. Partners provide either a public **builder code** or a raw **builder address**, and attribution uses the ntbundle `setUserReferrer` instruction.
 
 ## Installation
 
@@ -33,6 +33,16 @@ const signer = createWalletStandardSigner(wallet, wallet.accounts[0])
 
 Wallet connection remains the partner application's responsibility. See the [vanilla example](../../examples/widget-vanilla/src/main.ts) and [React example](../../examples/widget-react/src/main.tsx) for discovery and `standard:connect` handling.
 
+## Choose an attribution mode
+
+Every mount must provide exactly one of `builderCode` or `builderAddress`.
+
+A `builderCode` is managed through the Neutral Trade portal. It gives the embed owner a human-readable value for links, the ability to disable attribution, and the ability to rotate the underlying referrer wallet without changing deployed embeds.
+
+A `builderAddress` is the raw base58 referrer wallet. It requires no portal or code record, but the wallet must already be registered and eligible onchain. Rotating the wallet requires redeploying every embed with the new address. The SDK validates the address before creating the iframe and pins applied address-mode attribution to that exact wallet.
+
+The vanilla and React devnet examples default to `builderCode: "ACME"`. Load either example with `?builderAddress=<registered-wallet>` to exercise the address-mode variant.
+
 ## Vanilla usage
 
 `mount` accepts an element or selector. Inline mode fills the host container. Floating mode renders a launcher and a dismissible panel.
@@ -57,6 +67,8 @@ widget.open()
 widget.destroy()
 ```
 
+For direct address attribution, replace `builderCode` with `builderAddress: referrerWalletAddress`. Supplying both options or neither option throws `WidgetConfigurationError` during mounting.
+
 The default RPC endpoints are the public Solana mainnet and devnet endpoints. Pass `rpcUrl` for a dedicated endpoint, or pass a `WidgetTransactionTransport` implementation to control blockhash checks, submission, and confirmation tracking. `rpcUrl` and `transport` are mutually exclusive.
 
 ## React usage
@@ -75,6 +87,8 @@ import { NeutralTradeWidget } from '@neutral-trade/widget-sdk/react'
   onEvent={handleWidgetEvent}
 />
 ```
+
+React address mode uses `builderAddress={referrerWalletAddress}` in place of `builderCode`. Changing either attribution value remounts the iframe.
 
 Changing the signer or semantic configuration remounts the iframe. Equivalent `vaults` arrays and `verifierLimits` objects preserve the existing mount. A forwarded ref exposes the same `open`, `close`, and `destroy` controls as `mount`.
 
@@ -106,6 +120,7 @@ Changing the signer or semantic configuration remounts the iframe. Equivalent `v
 - ntbundle instructions must target `getDefaultBundleProgramIdByCluster` for the configured cluster.
 - Only `initializeBundleDepositor`, `setUserReferrer`, `requestDeposit`, and `requestWithdrawal` are accepted.
 - The user, vault, operation, deposit amount, withdrawal shares amount, and referrer PDAs are re-derived from instruction accounts and instruction data.
+- When address mode applies attribution, it verifies the `setUserReferrer` accounts against the configured `builderAddress` rather than trusting a resolved address from the iframe.
 - The configured transport must report the blockhash as valid.
 
 The postMessage protocol has no generic transaction-signing request. A wallet-returned transaction is decoded again, and its message bytes must exactly match the verified message before submission.
@@ -122,12 +137,13 @@ import {
 } from '@neutral-trade/widget-sdk/protocol'
 ```
 
-Every message includes `protocol: "neutral-trade-widget"` and `version: 1`. Initialization follows this sequence:
+Every message includes `protocol: "neutral-trade-widget"` and a selected protocol version. Protocol v1 remains available for code-mode compatibility. Protocol v2 adds the strict `builderCode` XOR `builderAddress` hello configuration.
 
 Deposit amounts and withdrawal share amounts are unsigned decimal strings capped at 39 digits, the maximum decimal width needed for u128 fields.
 
-- The host posts `host:hello` after the pinned iframe loads. It includes the supported versions, public builder code, cluster, vault allowlist, display mode, and connected wallet address.
-- The iframe replies with `widget:ready` and its supported versions.
+- A code-mode host posts the existing v1 `host:hello` after the pinned iframe loads. Its config includes `builderCode`, cluster, vault allowlist, display mode, and connected wallet address.
+- An address-mode host posts a v2 `host:hello`. Its config includes `builderAddress` in place of `builderCode` and advertises versions 1 and 2.
+- The iframe replies with `widget:ready` using the selected version and includes its supported versions. A v1-only widget in address mode produces an `unsupported-version` event with the message `hosted widget does not support builderAddress yet`.
 - Deposit and withdrawal requests are accepted only after the handshake.
 
 The host processes a message only when `event.origin` equals `https://widget.neutral.trade` and `event.source` is the mounted iframe's `contentWindow`. Unknown versions and invalid envelopes receive `host:protocol-error` responses.

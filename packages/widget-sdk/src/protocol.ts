@@ -2,10 +2,14 @@ import { address } from '@solana/kit'
 import { z } from 'zod'
 
 export const NEUTRAL_TRADE_WIDGET_PROTOCOL = 'neutral-trade-widget' as const
-export const NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION = 1 as const
+export const NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION = 2 as const
 export const NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS = [
+  1,
   NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
 ] as const
+
+export type WidgetProtocolVersion
+  = (typeof NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS)[number]
 
 const requestIdSchema = z.string().min(1).max(128).regex(/^[\w.:-]+$/)
 const MAX_U128_DECIMAL_DIGITS = 39
@@ -47,27 +51,60 @@ export const widgetAttributionSchema = z.discriminatedUnion('status', [
   }),
 ])
 
-const messageEnvelopeSchema = z.strictObject({
+const protocolVersion1 = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]
+const messageEnvelopeV1Schema = z.strictObject({
+  protocol: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL),
+  version: z.literal(protocolVersion1),
+})
+const messageEnvelopeV2Schema = z.strictObject({
   protocol: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL),
   version: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION),
 })
-
-export const hostHelloMessageSchema = messageEnvelopeSchema.extend({
-  type: z.literal('host:hello'),
-  supportedVersions: z.tuple([z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION)]),
-  config: z.strictObject({
-    builderCode: z.string().min(1).max(64).regex(/^[\w-]+$/),
-    cluster: widgetClusterSchema,
-    vaults: z.array(widgetAddressSchema).min(1).max(64),
-    mode: widgetModeSchema,
-  }),
-  wallet: z.strictObject({
-    address: widgetAddressSchema,
-    name: z.string().min(1).max(128),
-  }),
+const builderCodeSchema = z.string().min(1).max(64).regex(/^[\w-]+$/)
+const hostHelloConfigFields = {
+  cluster: widgetClusterSchema,
+  vaults: z.array(widgetAddressSchema).min(1).max(64),
+  mode: widgetModeSchema,
+}
+const hostHelloWalletSchema = z.strictObject({
+  address: widgetAddressSchema,
+  name: z.string().min(1).max(128),
 })
 
-export const hostOperationResultMessageSchema = messageEnvelopeSchema.extend({
+const hostHelloV1MessageSchema = messageEnvelopeV1Schema.extend({
+  type: z.literal('host:hello'),
+  supportedVersions: z.tuple([z.literal(protocolVersion1)]),
+  config: z.strictObject({
+    builderCode: builderCodeSchema,
+    ...hostHelloConfigFields,
+  }),
+  wallet: hostHelloWalletSchema,
+})
+const hostHelloV2MessageSchema = messageEnvelopeV2Schema.extend({
+  type: z.literal('host:hello'),
+  supportedVersions: z.tuple([
+    z.literal(protocolVersion1),
+    z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION),
+  ]),
+  config: z.union([
+    z.strictObject({
+      builderCode: builderCodeSchema,
+      ...hostHelloConfigFields,
+    }),
+    z.strictObject({
+      builderAddress: widgetAddressSchema,
+      ...hostHelloConfigFields,
+    }),
+  ]),
+  wallet: hostHelloWalletSchema,
+})
+
+export const hostHelloMessageSchema = z.discriminatedUnion('version', [
+  hostHelloV1MessageSchema,
+  hostHelloV2MessageSchema,
+])
+
+const hostOperationResultFields = {
   type: z.literal('host:operation-result'),
   requestId: requestIdSchema,
   operation: z.enum(['deposit', 'withdraw']),
@@ -83,44 +120,77 @@ export const hostOperationResultMessageSchema = messageEnvelopeSchema.extend({
       rebuildRequired: z.boolean(),
     }),
   ]),
-})
+}
 
-export const hostProtocolErrorMessageSchema = messageEnvelopeSchema.extend({
+export const hostOperationResultMessageSchema = z.discriminatedUnion('version', [
+  messageEnvelopeV1Schema.extend(hostOperationResultFields),
+  messageEnvelopeV2Schema.extend(hostOperationResultFields),
+])
+
+const hostProtocolErrorFields = {
   type: z.literal('host:protocol-error'),
   code: z.enum(['handshake-required', 'invalid-message', 'unsupported-version']),
   message: z.string().min(1).max(512),
   receivedVersion: z.number().int().nonnegative().optional(),
-})
+}
 
-export const widgetReadyMessageSchema = messageEnvelopeSchema.extend({
+export const hostProtocolErrorMessageSchema = z.discriminatedUnion('version', [
+  messageEnvelopeV1Schema.extend(hostProtocolErrorFields),
+  messageEnvelopeV2Schema.extend(hostProtocolErrorFields),
+])
+
+const widgetReadyFields = {
   type: z.literal('widget:ready'),
   supportedVersions: z.array(z.number().int().nonnegative()).min(1).max(16),
-})
+}
 
-const widgetOperationRequestBaseSchema = messageEnvelopeSchema.extend({
+export const widgetReadyMessageSchema = z.discriminatedUnion('version', [
+  messageEnvelopeV1Schema.extend(widgetReadyFields),
+  messageEnvelopeV2Schema.extend(widgetReadyFields),
+])
+
+const widgetOperationRequestBaseFields = {
   type: z.literal('widget:operation-request'),
   requestId: requestIdSchema,
   transaction: transactionBase64Schema,
   user: widgetAddressSchema,
   vault: widgetAddressSchema,
-})
-
-export const widgetDepositRequestMessageSchema = widgetOperationRequestBaseSchema.extend({
+}
+const widgetOperationRequestV1Schema = messageEnvelopeV1Schema.extend(
+  widgetOperationRequestBaseFields,
+)
+const widgetOperationRequestV2Schema = messageEnvelopeV2Schema.extend(
+  widgetOperationRequestBaseFields,
+)
+const widgetDepositRequestFields = {
   operation: z.literal('deposit'),
   amount: unsignedIntegerSchema,
   attribution: widgetAttributionSchema,
-})
+}
 
-export const widgetWithdrawRequestMessageSchema = widgetOperationRequestBaseSchema.extend({
+export const widgetDepositRequestMessageSchema = z.discriminatedUnion('version', [
+  widgetOperationRequestV1Schema.extend(widgetDepositRequestFields),
+  widgetOperationRequestV2Schema.extend(widgetDepositRequestFields),
+])
+
+const widgetWithdrawRequestFields = {
   operation: z.literal('withdraw'),
   sharesAmount: unsignedIntegerSchema,
-})
+}
 
-export const widgetCloseMessageSchema = messageEnvelopeSchema.extend({
-  type: z.literal('widget:close'),
-})
+export const widgetWithdrawRequestMessageSchema = z.discriminatedUnion('version', [
+  widgetOperationRequestV1Schema.extend(widgetWithdrawRequestFields),
+  widgetOperationRequestV2Schema.extend(widgetWithdrawRequestFields),
+])
 
-export const hostToWidgetMessageSchema = z.discriminatedUnion('type', [
+const widgetCloseFields = { type: z.literal('widget:close') }
+
+export const widgetCloseMessageSchema = z.discriminatedUnion('version', [
+  messageEnvelopeV1Schema.extend(widgetCloseFields),
+  messageEnvelopeV2Schema.extend(widgetCloseFields),
+])
+
+export const hostToWidgetMessageSchema = z.union([
   hostHelloMessageSchema,
   hostOperationResultMessageSchema,
   hostProtocolErrorMessageSchema,
@@ -179,7 +249,9 @@ export function parseWidgetToHostMessage(value: unknown): WidgetToHostMessage {
   const receivedVersion = getReceivedVersion(value)
   if (
     receivedVersion !== undefined
-    && receivedVersion !== NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION
+    && !NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS.includes(
+      receivedVersion as WidgetProtocolVersion,
+    )
   ) {
     throw new WidgetProtocolError(
       'unsupported-version',

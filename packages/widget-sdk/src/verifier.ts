@@ -118,6 +118,7 @@ export type VerifiedWidgetTransaction
 export interface VerifyWidgetTransactionInput {
   allowedVaults: ReadonlyArray<string>
   cluster: WidgetCluster
+  expectedReferrer?: string
   isBlockhashValid: (blockhash: string) => Promise<boolean>
   request: WidgetOperationRequestMessage
   verifierLimits?: WidgetVerifierLimits
@@ -347,6 +348,7 @@ function getWritableStaticAccounts(
 export async function verifyWidgetTransaction({
   allowedVaults,
   cluster,
+  expectedReferrer,
   isBlockhashValid,
   request,
   verifierLimits,
@@ -356,6 +358,9 @@ export async function verifyWidgetTransaction({
   const user = address(request.user)
   const connectedWallet = address(walletAddress)
   const vault = address(request.vault)
+  const configuredReferrer = expectedReferrer === undefined
+    ? undefined
+    : address(expectedReferrer)
   if (user !== connectedWallet) {
     fail(
       'wallet-mismatch',
@@ -364,6 +369,19 @@ export async function verifyWidgetTransaction({
   }
   if (!allowedVaults.includes(vault))
     fail('vault-not-allowed', `Vault ${vault} is not enabled for this widget`)
+  if (
+    request.operation === 'deposit'
+    && request.attribution.status === 'applied'
+    && configuredReferrer !== undefined
+  ) {
+    const requestedReferrer = address(request.attribution.referrer)
+    if (requestedReferrer !== configuredReferrer) {
+      fail(
+        'invalid-referrer',
+        `Deposit referrer ${requestedReferrer} does not match configured builderAddress ${configuredReferrer}`,
+      )
+    }
+  }
 
   const { message, transaction } = decodeTransactionOrThrow(wireTransaction)
   if (message.version !== 'legacy' && message.version !== 0) {
@@ -486,7 +504,7 @@ export async function verifyWidgetTransaction({
         'setUserReferrer',
       )
       getSetUserReferrerInstructionDataDecoder().decode(instruction.data)
-      const referrer = address(request.attribution.referrer)
+      const referrer = configuredReferrer ?? address(request.attribution.referrer)
       if (referrer === user)
         fail('invalid-referrer', 'A user cannot refer their own account')
       const [[referrerAccount], [referrerUserBundleAccount]] = await Promise.all([

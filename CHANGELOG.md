@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add protocol v2 raw `builderAddress` attribution to `@neutral-trade/widget-sdk` while preserving protocol v1 for existing `builderCode` embeds.
 - Add `@neutral-trade/widget-sdk` with inline and floating embeds, a shared versioned postMessage protocol, Wallet Standard signing, strict wire-byte transaction verification, lifecycle tracking, and devnet examples for vanilla JavaScript and React.
 
 ## 1.0.0

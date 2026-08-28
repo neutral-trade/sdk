@@ -23,6 +23,7 @@
   widgetAttributionSchema: object
   widgetCloseMessageSchema: object
   widgetClusterSchema: object
+  WidgetConfigurationError: function
   widgetDepositRequestMessageSchema: object
   widgetModeSchema: object
   WidgetProtocolError: function

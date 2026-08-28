@@ -1,4 +1,4 @@
-import type { AttributionUnavailableReason, WidgetToHostMessage } from '../src/protocol'
+import type { AttributionUnavailableReason, WidgetProtocolVersion, WidgetToHostMessage } from '../src/protocol'
 import assert from 'node:assert'
 import { describe, test } from 'node:test'
 import fc from 'fast-check'
@@ -7,11 +7,15 @@ import {
   NEUTRAL_TRADE_WIDGET_ORIGIN,
 } from '../src/mount'
 import {
+  hostHelloMessageSchema,
+  hostToWidgetMessageSchema,
   NEUTRAL_TRADE_WIDGET_PROTOCOL,
   NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+  NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS,
   parseWidgetToHostMessage,
   widgetDepositRequestMessageSchema,
   WidgetProtocolError,
+  widgetToHostMessageSchema,
 } from '../src/protocol'
 import { FIXTURE_ADDRESSES } from './fixtures/transactions'
 
@@ -28,14 +32,18 @@ const attributionReasonArbitrary = fc.constantFrom<AttributionUnavailableReason>
   'referrer-ineligible',
   'user-already-attributed',
 )
+const protocolVersionArbitrary = fc.constantFrom<WidgetProtocolVersion>(
+  ...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS,
+)
 
 const depositMessageArbitrary = fc.record({
   amount: amountArbitrary,
   reason: attributionReasonArbitrary,
   requestId: requestIdArbitrary,
-}).map(({ amount, reason, requestId }): WidgetToHostMessage => ({
+  version: protocolVersionArbitrary,
+}).map(({ amount, reason, requestId, version }): WidgetToHostMessage => ({
   protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
-  version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+  version,
   type: 'widget:operation-request',
   operation: 'deposit',
   requestId,
@@ -49,9 +57,10 @@ const depositMessageArbitrary = fc.record({
 const withdrawalMessageArbitrary = fc.record({
   requestId: requestIdArbitrary,
   sharesAmount: amountArbitrary,
-}).map(({ requestId, sharesAmount }): WidgetToHostMessage => ({
+  version: protocolVersionArbitrary,
+}).map(({ requestId, sharesAmount, version }): WidgetToHostMessage => ({
   protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
-  version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+  version,
   type: 'widget:operation-request',
   operation: 'withdraw',
   requestId,
@@ -62,7 +71,105 @@ const withdrawalMessageArbitrary = fc.record({
 }))
 
 describe('widget protocol schemas', () => {
-  test('preserve every generated valid operation message', () => {
+  test('round-trips host hello messages on both protocol versions', () => {
+    const commonHello = {
+      protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
+      type: 'host:hello' as const,
+      wallet: {
+        address: FIXTURE_ADDRESSES.user,
+        name: 'Fixture Wallet',
+      },
+    }
+    const commonConfig = {
+      cluster: 'devnet' as const,
+      mode: 'inline' as const,
+      vaults: [FIXTURE_ADDRESSES.vault],
+    }
+    const messages = [
+      {
+        ...commonHello,
+        version: NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0],
+        supportedVersions: [NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]],
+        config: { ...commonConfig, builderCode: 'ACME' },
+      },
+      {
+        ...commonHello,
+        version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+        supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
+        config: { ...commonConfig, builderCode: 'ACME' },
+      },
+      {
+        ...commonHello,
+        version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+        supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
+        config: {
+          ...commonConfig,
+          builderAddress: FIXTURE_ADDRESSES.referrer,
+        },
+      },
+    ]
+
+    for (const message of messages) {
+      assert.deepEqual(hostHelloMessageSchema.parse(message), message)
+      assert.deepEqual(hostToWidgetMessageSchema.parse(message), message)
+    }
+  })
+
+  test('keeps builderAddress out of v1 and enforces attribution XOR in v2', () => {
+    const commonMessage = {
+      protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
+      type: 'host:hello' as const,
+      wallet: {
+        address: FIXTURE_ADDRESSES.user,
+        name: 'Fixture Wallet',
+      },
+    }
+    const commonConfig = {
+      cluster: 'devnet' as const,
+      mode: 'inline' as const,
+      vaults: [FIXTURE_ADDRESSES.vault],
+    }
+
+    assert.throws(() => hostHelloMessageSchema.parse({
+      ...commonMessage,
+      version: NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0],
+      supportedVersions: [NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]],
+      config: {
+        ...commonConfig,
+        builderAddress: FIXTURE_ADDRESSES.referrer,
+      },
+    }))
+    for (const config of [
+      commonConfig,
+      {
+        ...commonConfig,
+        builderAddress: FIXTURE_ADDRESSES.referrer,
+        builderCode: 'ACME',
+      },
+    ]) {
+      assert.throws(() => hostHelloMessageSchema.parse({
+        ...commonMessage,
+        version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+        supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
+        config,
+      }))
+    }
+  })
+
+  test('round-trips widget ready messages on both protocol versions', () => {
+    for (const version of NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS) {
+      const message = {
+        protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
+        version,
+        type: 'widget:ready' as const,
+        supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
+      }
+      assert.deepEqual(widgetToHostMessageSchema.parse(message), message)
+      assert.deepEqual(parseWidgetToHostMessage(message), message)
+    }
+  })
+
+  test('preserves every generated valid operation message', () => {
     fc.assert(
       fc.property(
         fc.oneof(depositMessageArbitrary, withdrawalMessageArbitrary),
@@ -168,10 +275,10 @@ describe('widget protocol schemas', () => {
       assert.deepEqual(result.error.issues.map(issue => issue.code), ['too_big'])
   })
 
-  test('reject every generated unsupported protocol version loudly', () => {
+  test('rejects every generated unsupported protocol version loudly', () => {
     const unsupportedVersionArbitrary = fc.oneof(
       fc.constant(0),
-      fc.integer({ min: 2, max: 65_535 }),
+      fc.integer({ min: 3, max: 65_535 }),
     )
     fc.assert(
       fc.property(unsupportedVersionArbitrary, (version) => {
