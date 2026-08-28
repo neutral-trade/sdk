@@ -19,5 +19,11 @@
     "skipLibCheck": true
 
   },
-  "exclude": ["node_modules", "packages"]
+  "exclude": [
+    "node_modules",
+    "packages",
+    // These browser examples have standalone configs with DOM and JSX libraries.
+    "examples/widget-react",
+    "examples/widget-vanilla"
+  ]
 }

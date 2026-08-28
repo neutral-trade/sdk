@@ -9,6 +9,8 @@ jobs:
   release:
     uses: sxzz/workflows/.github/workflows/release.yml@v1
     with:
+      # Build every public workspace package before the recursive npm publish.
+      build: pnpm -r --include-workspace-root --if-present build
       publish: true
     permissions:
       contents: write

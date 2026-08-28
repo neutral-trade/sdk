@@ -1,0 +1,67 @@
+{
+  "name": "@neutral-trade/widget-sdk",
+  "type": "module",
+  "version": "1.0.7",
+  "description": "Embeddable Neutral Trade widget host with Wallet Standard signing and strict transaction verification",
+  "license": "MIT",
+  "homepage": "https://github.com/neutral-trade/sdk/tree/main/packages/widget-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neutral-trade/sdk.git",
+    "directory": "packages/widget-sdk"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./protocol": "./dist/protocol.mjs",
+    "./react": "./dist/react.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "CHANGELOG.md",
+    "README.md",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "lint": "eslint .",
+    "prepublishOnly": "pnpm build",
+    "test": "tsx --test test/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@solana/kit": "^6.10.0",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@neutral-trade/sdk": "workspace:*",
+    "@solana/wallet-standard-features": "^1.4.0",
+    "@wallet-standard/base": "^1.1.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@solana/kit": "^6.10.0",
+    "@types/jsdom": "~27.0.0",
+    "@types/node": "catalog:types",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "fast-check": "^4.9.0",
+    "jsdom": "~27.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tsdown": "catalog:cli",
+    "tsx": "catalog:cli",
+    "typescript": "catalog:cli"
+  }
+}

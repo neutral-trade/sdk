@@ -1,0 +1,24 @@
+{
+  "name": "@neutral-trade/example-widget-react",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@neutral-trade/widget-sdk": "workspace:*",
+    "@wallet-standard/app": "^1.1.1",
+    "@wallet-standard/base": "^1.1.1",
+    "@wallet-standard/features": "^1.1.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "catalog:cli",
+    "vite": "catalog:cli"
+  }
+}

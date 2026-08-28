@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `@neutral-trade/widget-sdk` with inline and floating embeds, a shared versioned postMessage protocol, Wallet Standard signing, strict wire-byte transaction verification, lifecycle tracking, and devnet examples for vanilla JavaScript and React.
+
 ## 1.0.0
 
 Full rewrite. `@neutral-trade/sdk` is now the vault registry plus the Codama-generated client for the ntbundle program, built on `@solana/kit` v6. The client (`src/generated`, `src/extensions`, `test/client`) is vendored from the program monorepo via automated client drops.
