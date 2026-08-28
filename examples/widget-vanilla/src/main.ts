@@ -11,6 +11,10 @@ import {
 } from '@wallet-standard/features'
 
 const DEVNET_VAULT = 'HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB'
+const builderAddress = new URL(window.location.href).searchParams.get('builderAddress')
+const builderAttribution = builderAddress
+  ? { builderAddress }
+  : { builderCode: 'ACME' }
 const walletRegistry = getWallets()
 const walletSelect = document.querySelector<HTMLSelectElement>('#wallet')!
 const connectButton = document.querySelector<HTMLButtonElement>('#connect')!
@@ -72,7 +76,7 @@ connectButton.addEventListener('click', async () => {
     const account = await getConnectedAccount(wallet)
     controller?.destroy()
     controller = mount({
-      builderCode: 'ACME',
+      ...builderAttribution,
       cluster: 'devnet',
       element: '#widget',
       mode: 'inline',

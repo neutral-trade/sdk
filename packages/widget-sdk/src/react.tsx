@@ -31,6 +31,7 @@ export const NeutralTradeWidget = forwardRef<
   NeutralTradeWidgetProps
 >((
   {
+    builderAddress,
     builderCode,
     className,
     cluster,
@@ -75,6 +76,7 @@ export const NeutralTradeWidget = forwardRef<
     if (!container)
       return
     const mountedController = mountNeutralTradeWidget({
+      builderAddress,
       builderCode,
       cluster,
       element: container,
@@ -93,6 +95,7 @@ export const NeutralTradeWidget = forwardRef<
       mountedController.destroy()
     }
   }, [
+    builderAddress,
     builderCode,
     cluster,
     height,

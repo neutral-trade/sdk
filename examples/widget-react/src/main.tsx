@@ -14,6 +14,10 @@ import { StrictMode, useCallback, useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 const DEVNET_VAULT = 'HXvKAH4QyYMe7MsxC88pb19MhhYCEDHai87E8tZkmXmB'
+const builderAddress = new URL(window.location.href).searchParams.get('builderAddress')
+const builderAttribution = builderAddress
+  ? { builderAddress }
+  : { builderCode: 'ACME' }
 const walletRegistry = getWallets()
 
 function isConnectFeature(
@@ -90,6 +94,11 @@ function App(): ReactElement {
   return (
     <main>
       <h1>Neutral Trade widget</h1>
+      <p>
+        Attribution:
+        {' '}
+        {builderAddress ? `builderAddress ${builderAddress}` : 'builderCode ACME'}
+      </p>
       <div className="controls">
         <select
           aria-label="Wallet"
@@ -106,7 +115,7 @@ function App(): ReactElement {
       </div>
       {signer && (
         <NeutralTradeWidget
-          builderCode="ACME"
+          {...builderAttribution}
           cluster="devnet"
           launcherLabel="Open Neutral Trade"
           mode="floating"

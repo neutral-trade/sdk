@@ -3,11 +3,13 @@ export {
   mount,
   mountNeutralTradeWidget,
   NEUTRAL_TRADE_WIDGET_ORIGIN,
+  WidgetConfigurationError,
 } from './mount'
 export type {
   MountNeutralTradeWidgetOptions,
   NeutralTradeWidgetController,
   NeutralTradeWidgetEvent,
+  WidgetConfigurationErrorCode,
 } from './mount'
 export * from './protocol'
 export {

@@ -39,11 +39,12 @@ const transport: WidgetTransactionTransport = Object.freeze({
 })
 
 interface HarnessProps {
+  builderAddress: string
   maxComputeUnitLimit: number
   vault: string
 }
 
-function Harness({ maxComputeUnitLimit, vault }: HarnessProps) {
+function Harness({ builderAddress, maxComputeUnitLimit, vault }: HarnessProps) {
   const [readyEventCount, setReadyEventCount] = useState(0)
   const handleEvent = (event: NeutralTradeWidgetEvent): void => {
     if (event.type === 'ready')
@@ -56,7 +57,7 @@ function Harness({ maxComputeUnitLimit, vault }: HarnessProps) {
     createElement('output', { id: 'ready-event-count' }, readyEventCount),
     createElement(NeutralTradeWidget, {
       ref: () => {},
-      builderCode: 'ACME',
+      builderAddress,
       cluster: 'devnet',
       mode: 'inline',
       onEvent: handleEvent,
@@ -117,7 +118,7 @@ function installBrowserGlobals(dom: JSDOM): () => void {
   }
 }
 
-test('preserves the iframe across equivalent React prop identities', async () => {
+test('preserves equivalent React props and remounts for semantic changes', async () => {
   const dom = new JSDOM('<!doctype html><div id="root"></div>', {
     pretendToBeVisual: true,
     url: 'https://partner.example',
@@ -136,6 +137,7 @@ test('preserves the iframe across equivalent React prop identities', async () =>
         StrictMode,
         null,
         createElement(Harness, {
+          builderAddress: FIXTURE_ADDRESSES.referrer,
           maxComputeUnitLimit: 300_000,
           vault: FIXTURE_ADDRESSES.vault,
         }),
@@ -169,6 +171,7 @@ test('preserves the iframe across equivalent React prop identities', async () =>
         StrictMode,
         null,
         createElement(Harness, {
+          builderAddress: FIXTURE_ADDRESSES.referrer,
           maxComputeUnitLimit: 300_000,
           vault: FIXTURE_ADDRESSES.alternateVault,
         }),
@@ -183,12 +186,28 @@ test('preserves the iframe across equivalent React prop identities', async () =>
         StrictMode,
         null,
         createElement(Harness, {
+          builderAddress: FIXTURE_ADDRESSES.referrer,
           maxComputeUnitLimit: 400_000,
           vault: FIXTURE_ADDRESSES.alternateVault,
         }),
       ))
     })
-    assert.notEqual(container.querySelector('iframe'), vaultChangedIframe)
+    const verifierLimitsChangedIframe = container.querySelector('iframe')
+    assert(verifierLimitsChangedIframe)
+    assert.notEqual(verifierLimitsChangedIframe, vaultChangedIframe)
+
+    await act(async () => {
+      reactRoot?.render(createElement(
+        StrictMode,
+        null,
+        createElement(Harness, {
+          builderAddress: FIXTURE_ADDRESSES.secondReferrer,
+          maxComputeUnitLimit: 400_000,
+          vault: FIXTURE_ADDRESSES.alternateVault,
+        }),
+      ))
+    })
+    assert.notEqual(container.querySelector('iframe'), verifierLimitsChangedIframe)
   }
   finally {
     if (reactRoot) {
