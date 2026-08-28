@@ -31,6 +31,11 @@ jobs:
       # `pnpm -r` skips the workspace-root SDK, so target the CLI explicitly).
       - run: nr build
       - run: pnpm --filter @neutral-trade/cli typecheck
+      # The widget package has browser and React entry points outside the root
+      # tsconfig, and each example checks its integration surface independently.
+      - run: pnpm --filter @neutral-trade/widget-sdk typecheck
+      - run: pnpm --filter @neutral-trade/example-widget-vanilla typecheck
+      - run: pnpm --filter @neutral-trade/example-widget-react typecheck
 
   test:
     runs-on: ${{ matrix.os }}
@@ -58,4 +63,10 @@ jobs:
       # Build the CLI too (after the SDK) so a CLI that no longer builds
       # against the SDK fails CI.
       - run: pnpm --filter @neutral-trade/cli build
+      # Exercise the separately published widget artefacts and both framework
+      # integrations on every supported CI operating system.
+      - run: pnpm --filter @neutral-trade/widget-sdk test
+      - run: pnpm --filter @neutral-trade/widget-sdk build
+      - run: pnpm --filter @neutral-trade/example-widget-vanilla build
+      - run: pnpm --filter @neutral-trade/example-widget-react build
       - run: nr test

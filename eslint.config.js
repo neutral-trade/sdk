@@ -6,6 +6,8 @@ export default antfu(
     type: 'lib',
     pnpm: true,
     ignores: [
+      // Conductor stores ticket attachments and other non-source workspace context here.
+      '.context/**',
       // The migration README is maintained as release copy, including its examples.
       'README.md',
       'src/generated/**',
@@ -25,6 +27,13 @@ export default antfu(
     rules: {
       // Keep the explicit registry surface before the generated and extension barrels.
       'perfectionist/sort-exports': 'off',
+    },
+  },
+  {
+    files: ['packages/widget-sdk/test/**/*.test.ts'],
+    rules: {
+      // The widget package runs TypeScript tests directly with Node's built-in test runner.
+      'test/no-import-node-test': 'off',
     },
   },
 )

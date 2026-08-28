@@ -44,6 +44,8 @@ Low-level generated bindings are also available from the `./generated` subpath.
 
 - `src/registry/**`, `src/constants/**`, `src/types/**` — the vault registry. **PRs welcome** (new vault listings land here).
 - `src/generated/**`, `src/extensions/**`, `test/client/**` — **bot-owned**: replaced wholesale by automated client drops from the (private) program monorepo, verified by `client-drop.manifest` + CI. Don't edit by hand — changes there belong upstream.
+- `packages/widget-sdk/**` - embeddable host SDK with Wallet Standard signing, strict transaction verification, vanilla mounting, and a React entry point.
+- `examples/widget-vanilla/**`, `examples/widget-react/**` - devnet widget integrations using Wallet Standard discovery.
 
 ## License
 

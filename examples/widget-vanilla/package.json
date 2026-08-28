@@ -1,0 +1,20 @@
+{
+  "name": "@neutral-trade/example-widget-vanilla",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@neutral-trade/widget-sdk": "workspace:*",
+    "@wallet-standard/app": "^1.1.1",
+    "@wallet-standard/base": "^1.1.1",
+    "@wallet-standard/features": "^1.1.0"
+  },
+  "devDependencies": {
+    "typescript": "catalog:cli",
+    "vite": "catalog:cli"
+  }
+}
