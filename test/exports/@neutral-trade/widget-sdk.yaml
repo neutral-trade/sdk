@@ -28,6 +28,7 @@
   widgetModeSchema: object
   WidgetProtocolError: function
   widgetReadyMessageSchema: object
+  widgetThemeSchema: object
   widgetToHostMessageSchema: object
   WidgetTransactionVerificationError: function
   widgetWithdrawRequestMessageSchema: object
@@ -49,6 +50,7 @@
   widgetModeSchema: object
   WidgetProtocolError: function
   widgetReadyMessageSchema: object
+  widgetThemeSchema: object
   widgetToHostMessageSchema: object
   widgetWithdrawRequestMessageSchema: object
 ./react:

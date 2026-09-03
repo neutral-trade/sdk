@@ -1,3 +1,4 @@
+import type { WidgetTheme } from '../src/index'
 import type { AttributionUnavailableReason, WidgetProtocolVersion, WidgetToHostMessage } from '../src/protocol'
 import assert from 'node:assert'
 import { describe, test } from 'node:test'
@@ -15,6 +16,7 @@ import {
   parseWidgetToHostMessage,
   widgetDepositRequestMessageSchema,
   WidgetProtocolError,
+  widgetThemeSchema,
   widgetToHostMessageSchema,
 } from '../src/protocol'
 import { FIXTURE_ADDRESSES } from './fixtures/transactions'
@@ -35,6 +37,63 @@ const attributionReasonArbitrary = fc.constantFrom<AttributionUnavailableReason>
 const protocolVersionArbitrary = fc.constantFrom<WidgetProtocolVersion>(
   ...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS,
 )
+const protocolVersion1 = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]
+const protocolVersion2 = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[1]
+
+const colorArbitrary = fc.oneof(
+  fc.integer({ min: 0, max: 0xFFF })
+    .map(value => `#${value.toString(16).padStart(3, '0')}`),
+  fc.integer({ min: 0, max: 0xFFFFFF })
+    .map(value => `#${value.toString(16).padStart(6, '0')}`),
+  fc.integer({ min: 0, max: 0xFFFFFFFF })
+    .map(value => `#${value.toString(16).padStart(8, '0')}`),
+  fc.tuple(
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+  ).map(components => `rgb(${components.join(', ')})`),
+  fc.tuple(
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 100 }).map(value => value / 100),
+  ).map(([red, green, blue, alpha]) => (
+    `rgba(${red}, ${green}, ${blue}, ${alpha})`
+  )),
+)
+const widgetThemeArbitrary = fc.record({
+  colorScheme: fc.constantFrom('dark' as const, 'light' as const),
+  accent: colorArbitrary,
+  accentStrong: colorArbitrary,
+  background: colorArbitrary,
+  surface: colorArbitrary,
+  surfaceRaised: colorArbitrary,
+  surfaceSoft: colorArbitrary,
+  border: colorArbitrary,
+  borderStrong: colorArbitrary,
+  text: colorArbitrary,
+  muted: colorArbitrary,
+  danger: colorArbitrary,
+  warning: colorArbitrary,
+  success: colorArbitrary,
+  radius: fc.integer({ min: 0, max: 32 }),
+  fontFamily: fc.constantFrom('brand' as const, 'system' as const),
+}, { requiredKeys: [] })
+const themeColorFields = [
+  'accent',
+  'accentStrong',
+  'background',
+  'surface',
+  'surfaceRaised',
+  'surfaceSoft',
+  'border',
+  'borderStrong',
+  'text',
+  'muted',
+  'danger',
+  'warning',
+  'success',
+] as const
 
 const depositMessageArbitrary = fc.record({
   amount: amountArbitrary,
@@ -71,7 +130,7 @@ const withdrawalMessageArbitrary = fc.record({
 }))
 
 describe('widget protocol schemas', () => {
-  test('round-trips host hello messages on both protocol versions', () => {
+  test('round-trips host hello messages on every protocol version', () => {
     const commonHello = {
       protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
       type: 'host:hello' as const,
@@ -88,15 +147,34 @@ describe('widget protocol schemas', () => {
     const messages = [
       {
         ...commonHello,
-        version: NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0],
-        supportedVersions: [NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]],
+        version: protocolVersion1,
+        supportedVersions: [protocolVersion1],
         config: { ...commonConfig, builderCode: 'ACME' },
+      },
+      {
+        ...commonHello,
+        version: protocolVersion2,
+        supportedVersions: [protocolVersion1, protocolVersion2],
+        config: { ...commonConfig, builderCode: 'ACME' },
+      },
+      {
+        ...commonHello,
+        version: protocolVersion2,
+        supportedVersions: [protocolVersion1, protocolVersion2],
+        config: {
+          ...commonConfig,
+          builderAddress: FIXTURE_ADDRESSES.referrer,
+        },
       },
       {
         ...commonHello,
         version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
         supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
-        config: { ...commonConfig, builderCode: 'ACME' },
+        config: {
+          ...commonConfig,
+          builderCode: 'ACME',
+          theme: { accent: '#f5a' },
+        },
       },
       {
         ...commonHello,
@@ -105,6 +183,7 @@ describe('widget protocol schemas', () => {
         config: {
           ...commonConfig,
           builderAddress: FIXTURE_ADDRESSES.referrer,
+          theme: { fontFamily: 'system', radius: 12 },
         },
       },
     ]
@@ -115,7 +194,7 @@ describe('widget protocol schemas', () => {
     }
   })
 
-  test('keeps builderAddress out of v1 and enforces attribution XOR in v2', () => {
+  test('keeps the v1 and v2 hello configuration strict and unchanged', () => {
     const commonMessage = {
       protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
       type: 'host:hello' as const,
@@ -132,8 +211,8 @@ describe('widget protocol schemas', () => {
 
     assert.throws(() => hostHelloMessageSchema.parse({
       ...commonMessage,
-      version: NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0],
-      supportedVersions: [NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]],
+      version: protocolVersion1,
+      supportedVersions: [protocolVersion1],
       config: {
         ...commonConfig,
         builderAddress: FIXTURE_ADDRESSES.referrer,
@@ -149,14 +228,102 @@ describe('widget protocol schemas', () => {
     ]) {
       assert.throws(() => hostHelloMessageSchema.parse({
         ...commonMessage,
-        version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
-        supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
+        version: protocolVersion2,
+        supportedVersions: [protocolVersion1, protocolVersion2],
         config,
+      }))
+    }
+
+    for (const versionConfig of [
+      {
+        version: protocolVersion1,
+        supportedVersions: [protocolVersion1],
+      },
+      {
+        version: protocolVersion2,
+        supportedVersions: [protocolVersion1, protocolVersion2],
+      },
+    ]) {
+      assert.throws(() => hostHelloMessageSchema.parse({
+        ...commonMessage,
+        ...versionConfig,
+        config: {
+          ...commonConfig,
+          builderCode: 'ACME',
+          theme: { accent: '#ff0000' },
+        },
       }))
     }
   })
 
-  test('round-trips widget ready messages on both protocol versions', () => {
+  test('round-trips every generated valid theme through a v3 hello', () => {
+    fc.assert(
+      fc.property(widgetThemeArbitrary, (theme: WidgetTheme) => {
+        const message = {
+          protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
+          version: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
+          type: 'host:hello' as const,
+          supportedVersions: [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS],
+          config: {
+            builderCode: 'ACME',
+            cluster: 'devnet' as const,
+            mode: 'inline' as const,
+            vaults: [FIXTURE_ADDRESSES.vault],
+            theme,
+          },
+          wallet: {
+            address: FIXTURE_ADDRESSES.user,
+            name: 'Fixture Wallet',
+          },
+        }
+
+        assert.deepEqual(widgetThemeSchema.parse(theme), theme)
+        assert.deepEqual(hostHelloMessageSchema.parse(message), message)
+      }),
+      { numRuns: 250 },
+    )
+  })
+
+  test('rejects unsafe, overlong, and out-of-range theme values', () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...themeColorFields),
+        fc.constantFrom('url(', 'var(', ';', '}', 'expression('),
+        (field, forbiddenValue) => {
+          assert.throws(() => widgetThemeSchema.parse({
+            [field]: `#fff${forbiddenValue}`,
+          }))
+        },
+      ),
+      { numRuns: 100 },
+    )
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...themeColorFields),
+        fc.integer({ min: 41, max: 256 }),
+        (field, length) => {
+          assert.throws(() => widgetThemeSchema.parse({
+            [field]: '#'.padEnd(length, '0'),
+          }))
+        },
+      ),
+      { numRuns: 100 },
+    )
+    fc.assert(
+      fc.property(
+        fc.oneof(
+          fc.integer({ min: -1_000, max: -1 }),
+          fc.integer({ min: 33, max: 1_000 }),
+        ),
+        (radius) => {
+          assert.throws(() => widgetThemeSchema.parse({ radius }))
+        },
+      ),
+      { numRuns: 100 },
+    )
+  })
+
+  test('round-trips widget ready messages on every protocol version', () => {
     for (const version of NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS) {
       const message = {
         protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
@@ -278,7 +445,10 @@ describe('widget protocol schemas', () => {
   test('rejects every generated unsupported protocol version loudly', () => {
     const unsupportedVersionArbitrary = fc.oneof(
       fc.constant(0),
-      fc.integer({ min: 3, max: 65_535 }),
+      fc.integer({
+        min: NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION + 1,
+        max: 65_535,
+      }),
     )
     fc.assert(
       fc.property(unsupportedVersionArbitrary, (version) => {

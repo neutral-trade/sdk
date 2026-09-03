@@ -26,6 +26,20 @@ function setForwardedRef(
     forwardedRef.current = value
 }
 
+function getThemeFingerprint(
+  theme: MountNeutralTradeWidgetOptions['theme'],
+): string | undefined {
+  if (theme === undefined)
+    return undefined
+  return JSON.stringify(
+    Object.fromEntries(
+      Object.entries(theme).sort(([firstKey], [secondKey]) => (
+        firstKey.localeCompare(secondKey)
+      )),
+    ),
+  )
+}
+
 export const NeutralTradeWidget = forwardRef<
   NeutralTradeWidgetController,
   NeutralTradeWidgetProps
@@ -42,6 +56,7 @@ export const NeutralTradeWidget = forwardRef<
     rpcUrl,
     signer,
     style,
+    theme,
     transport,
     vaults,
     verifierLimits,
@@ -55,6 +70,13 @@ export const NeutralTradeWidget = forwardRef<
   const vaultsSnapshot = useMemo(
     () => JSON.parse(vaultsFingerprint) as Array<string>,
     [vaultsFingerprint],
+  )
+  const themeFingerprint = getThemeFingerprint(theme)
+  const themeSnapshot = useMemo<MountNeutralTradeWidgetOptions['theme']>(
+    () => themeFingerprint === undefined
+      ? undefined
+      : JSON.parse(themeFingerprint) as MountNeutralTradeWidgetOptions['theme'],
+    [themeFingerprint],
   )
   const maxComputeUnitLimit = verifierLimits?.maxComputeUnitLimit
   const maxComputeUnitPriceMicroLamports
@@ -86,6 +108,7 @@ export const NeutralTradeWidget = forwardRef<
       onEvent: event => onEventRef.current?.(event),
       rpcUrl,
       signer,
+      theme: themeSnapshot,
       transport,
       vaults: vaultsSnapshot,
       verifierLimits: verifierLimitsSnapshot,
@@ -103,6 +126,7 @@ export const NeutralTradeWidget = forwardRef<
     mode,
     rpcUrl,
     signer,
+    themeSnapshot,
     transport,
     vaultsSnapshot,
     verifierLimitsSnapshot,
