@@ -1,5 +1,5 @@
 import type { Address, ReadonlyUint8Array } from '@solana/kit'
-import type { AttributionUnavailableReason, HostProtocolErrorMessage, WidgetCluster, WidgetMode, WidgetOperationRequestMessage, WidgetProtocolVersion } from './protocol'
+import type { AttributionUnavailableReason, HostHelloMessage, HostProtocolErrorMessage, WidgetCluster, WidgetMode, WidgetOperationRequestMessage, WidgetProtocolVersion, WidgetTheme } from './protocol'
 import type { WidgetTransactionTransport } from './transport'
 import type { VerifiedWidgetTransaction, WidgetVerifierLimits } from './verifier'
 import type { WalletStandardSigner } from './wallet'
@@ -19,6 +19,7 @@ import {
   NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS,
   parseWidgetToHostMessage,
   WidgetProtocolError,
+  widgetThemeSchema,
 } from './protocol'
 import { createRpcTransactionTransport } from './transport'
 import {
@@ -32,9 +33,13 @@ import {
 
 export const NEUTRAL_TRADE_WIDGET_ORIGIN = 'https://widget.neutral.trade' as const
 const MAX_PROTOCOL_MESSAGE_LENGTH = 512
-const ADDRESS_MODE_HANDSHAKE_TIMEOUT_MS = 10_000
+const HANDSHAKE_TIMEOUT_MS = 10_000
 const BUILDER_ADDRESS_UNSUPPORTED_MESSAGE
   = 'hosted widget does not support builderAddress yet'
+const HANDSHAKE_TIMEOUT_MESSAGE
+  = 'hosted widget did not complete the version handshake'
+const THEME_UNSUPPORTED_MESSAGE
+  = 'hosted widget does not support theme customization yet'
 
 export type NeutralTradeWidgetEvent
   = | {
@@ -100,6 +105,7 @@ export interface MountNeutralTradeWidgetOptions {
   onEvent?: (event: NeutralTradeWidgetEvent) => void
   rpcUrl?: string
   signer: WalletStandardSigner
+  theme?: WidgetTheme
   transport?: WidgetTransactionTransport
   vaults: ReadonlyArray<string>
   verifierLimits?: WidgetVerifierLimits
@@ -108,6 +114,7 @@ export interface MountNeutralTradeWidgetOptions {
 export type WidgetConfigurationErrorCode
   = | 'invalid-attribution-config'
     | 'invalid-builder-address'
+    | 'invalid-theme'
 
 export class WidgetConfigurationError extends Error {
   readonly code: WidgetConfigurationErrorCode
@@ -173,6 +180,19 @@ function resolveAttributionConfig(
       'builderAddress must be a valid Solana address',
     )
   }
+}
+
+function resolveTheme(theme: WidgetTheme | undefined): WidgetTheme | undefined {
+  if (theme === undefined)
+    return undefined
+  const parsedTheme = widgetThemeSchema.safeParse(theme)
+  if (!parsedTheme.success) {
+    throw new WidgetConfigurationError(
+      'invalid-theme',
+      'theme must contain only supported, valid Neutral Trade widget tokens',
+    )
+  }
+  return parsedTheme.data
 }
 
 function ensureError(thrownObject: unknown): Error {
@@ -280,6 +300,7 @@ export function mountNeutralTradeWidget(
   options: MountNeutralTradeWidgetOptions,
 ): NeutralTradeWidgetController {
   const attributionConfig = resolveAttributionConfig(options)
+  const theme = resolveTheme(options.theme)
   if (typeof window === 'undefined' || typeof document === 'undefined')
     throw new Error('Neutral Trade widget mounting requires a browser environment')
   if (options.rpcUrl && options.transport)
@@ -289,27 +310,42 @@ export function mountNeutralTradeWidget(
   const mode = options.mode ?? 'inline'
   const vaults = [...new Set(options.vaults)]
   const isBuilderAddressMode = 'builderAddress' in attributionConfig
-  const protocolVersion: WidgetProtocolVersion = isBuilderAddressMode
+  const builderCodeProtocolVersion
+    = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]
+  const builderAddressProtocolVersion
+    = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[1]
+  const helloProtocolVersion: WidgetProtocolVersion = theme !== undefined
     ? NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION
-    : NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]
-  const helloMessage = hostHelloMessageSchema.parse({
+    : isBuilderAddressMode
+      ? builderAddressProtocolVersion
+      : builderCodeProtocolVersion
+  const createHelloMessage = (
+    version: WidgetProtocolVersion,
+  ): HostHelloMessage => hostHelloMessageSchema.parse({
     protocol: NEUTRAL_TRADE_WIDGET_PROTOCOL,
-    version: protocolVersion,
+    version,
     type: 'host:hello',
-    supportedVersions: isBuilderAddressMode
+    supportedVersions: version === NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION
       ? [...NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS]
-      : [protocolVersion],
+      : version === builderAddressProtocolVersion
+        ? [builderCodeProtocolVersion, builderAddressProtocolVersion]
+        : [builderCodeProtocolVersion],
     config: {
       ...attributionConfig,
       cluster,
       mode,
       vaults,
+      ...(version === NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION
+        && theme !== undefined
+        ? { theme }
+        : {}),
     },
     wallet: {
       address: options.signer.account.address,
       name: options.signer.wallet.name,
     },
   })
+  const initialHelloMessage = createHelloMessage(helloProtocolVersion)
   const mountElement = resolveMountElement(options.element)
   const transport = options.transport ?? createRpcTransactionTransport(cluster, {
     rpcUrl: options.rpcUrl,
@@ -330,9 +366,11 @@ export function mountNeutralTradeWidget(
   }
 
   const frameContainer = document.createElement('div')
-  frameContainer.style.background = '#fff'
+  frameContainer.style.background = theme?.background ?? '#0c0c0c'
   frameContainer.style.border = mode === 'floating' ? '1px solid rgba(0, 0, 0, 0.12)' : '0'
-  frameContainer.style.borderRadius = mode === 'floating' ? '16px' : '0'
+  frameContainer.style.borderRadius = mode === 'floating'
+    ? `${theme?.radius ?? 16}px`
+    : '0'
   frameContainer.style.boxShadow = mode === 'floating' ? '0 20px 60px rgba(0, 0, 0, 0.24)' : 'none'
   frameContainer.style.height = mode === 'floating'
     ? 'min(720px, calc(100vh - 112px))'
@@ -364,12 +402,14 @@ export function mountNeutralTradeWidget(
     launcher.type = 'button'
     launcher.textContent = options.launcherLabel ?? 'Trade with Neutral'
     launcher.setAttribute('aria-expanded', 'false')
-    launcher.style.background = '#111827'
+    launcher.style.background = theme?.accent ?? '#111827'
     launcher.style.border = '0'
     launcher.style.borderRadius = '999px'
-    launcher.style.color = '#fff'
+    launcher.style.color = theme?.text ?? '#fff'
     launcher.style.cursor = 'pointer'
     launcher.style.font = '600 14px/1 system-ui, sans-serif'
+    if (theme?.fontFamily === 'system')
+      launcher.style.fontFamily = 'system-ui'
     launcher.style.padding = '14px 18px'
     launcher.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)'
     frameContainer.hidden = true
@@ -381,6 +421,9 @@ export function mountNeutralTradeWidget(
 
   let destroyed = false
   let handshakeComplete = false
+  let activeHelloMessage = initialHelloMessage
+  let protocolVersion = helloProtocolVersion
+  let themeUnsupportedEmitted = false
   let handshakeTimeout: number | undefined
   let activeRequestId: string | undefined
   const confirmationControllers = new Set<AbortController>()
@@ -616,26 +659,68 @@ export function mountNeutralTradeWidget(
       root.hidden = true
   }
 
+  const clearHandshakeTimeout = (): void => {
+    if (handshakeTimeout === undefined)
+      return
+    window.clearTimeout(handshakeTimeout)
+    handshakeTimeout = undefined
+  }
+  const reportHandshakeFailure = (message: string): void => {
+    sendProtocolError('unsupported-version', message)
+    emit({
+      type: 'error',
+      code: 'unsupported-version',
+      message,
+    })
+  }
+  const scheduleHandshakeTimeout = (onTimeout: () => void): void => {
+    clearHandshakeTimeout()
+    handshakeTimeout = window.setTimeout(() => {
+      handshakeTimeout = undefined
+      if (destroyed || handshakeComplete)
+        return
+      onTimeout()
+    }, HANDSHAKE_TIMEOUT_MS)
+  }
+  const sendFallbackHello = (
+    version: WidgetProtocolVersion,
+    timeoutMessage = HANDSHAKE_TIMEOUT_MESSAGE,
+  ): void => {
+    handshakeComplete = false
+    activeHelloMessage = createHelloMessage(version)
+    protocolVersion = version
+    postMessage(activeHelloMessage)
+    scheduleHandshakeTimeout(() => reportHandshakeFailure(timeoutMessage))
+  }
+
   const handleMessage = (event: MessageEvent): void => {
     if (!isTrustedWidgetMessageEvent(event, iframe))
       return
     try {
       const message = parseWidgetToHostMessage(event.data)
       if (message.type === 'widget:ready') {
-        if (handshakeTimeout !== undefined) {
-          window.clearTimeout(handshakeTimeout)
-          handshakeTimeout = undefined
+        if (handshakeComplete) {
+          if (message.version === protocolVersion)
+            return
+          throw new WidgetProtocolError(
+            'unsupported-version',
+            `Widget changed protocol version from ${protocolVersion} to ${message.version}`,
+            message.version,
+          )
         }
-        if (
-          message.version !== protocolVersion
-          || !message.supportedVersions.includes(protocolVersion)
-        ) {
+        clearHandshakeTimeout()
+        const advertisedVersions: ReadonlyArray<number>
+          = initialHelloMessage.supportedVersions
+        const canUseSelectedVersion
+          = advertisedVersions.includes(message.version)
+            && message.supportedVersions.includes(message.version)
+            && (!isBuilderAddressMode
+              || message.version >= builderAddressProtocolVersion)
+        if (!canUseSelectedVersion) {
           const unsupportedMessage = isBuilderAddressMode
-            && !message.supportedVersions.includes(
-              NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
-            )
+            && !message.supportedVersions.includes(builderAddressProtocolVersion)
             ? BUILDER_ADDRESS_UNSUPPORTED_MESSAGE
-            : `Widget does not support protocol version ${protocolVersion}`
+            : `Widget does not support protocol version ${helloProtocolVersion}`
           sendProtocolError(
             'unsupported-version',
             unsupportedMessage,
@@ -647,11 +732,28 @@ export function mountNeutralTradeWidget(
           })
           return
         }
+        protocolVersion = message.version
+        if (activeHelloMessage.version !== message.version) {
+          sendFallbackHello(message.version)
+          return
+        }
         handshakeComplete = true
         emit({
           type: 'ready',
           protocolVersion,
         })
+        if (
+          theme !== undefined
+          && protocolVersion < NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION
+          && !themeUnsupportedEmitted
+        ) {
+          themeUnsupportedEmitted = true
+          emit({
+            type: 'error',
+            code: 'theme-unsupported',
+            message: THEME_UNSUPPORTED_MESSAGE,
+          })
+        }
         return
       }
       if (message.version !== protocolVersion) {
@@ -698,25 +800,27 @@ export function mountNeutralTradeWidget(
   }
   const sendHello = (): void => {
     handshakeComplete = false
-    if (handshakeTimeout !== undefined)
-      window.clearTimeout(handshakeTimeout)
-    postMessage(helloMessage)
-    handshakeTimeout = isBuilderAddressMode
-      ? window.setTimeout(() => {
-          handshakeTimeout = undefined
-          if (destroyed || handshakeComplete)
-            return
-          sendProtocolError(
-            'unsupported-version',
-            BUILDER_ADDRESS_UNSUPPORTED_MESSAGE,
-          )
-          emit({
-            type: 'error',
-            code: 'unsupported-version',
-            message: BUILDER_ADDRESS_UNSUPPORTED_MESSAGE,
-          })
-        }, ADDRESS_MODE_HANDSHAKE_TIMEOUT_MS)
-      : undefined
+    activeHelloMessage = initialHelloMessage
+    protocolVersion = helloProtocolVersion
+    clearHandshakeTimeout()
+    postMessage(initialHelloMessage)
+    if (helloProtocolVersion === builderCodeProtocolVersion)
+      return
+    scheduleHandshakeTimeout(() => {
+      if (theme === undefined) {
+        reportHandshakeFailure(BUILDER_ADDRESS_UNSUPPORTED_MESSAGE)
+        return
+      }
+      const fallbackProtocolVersion = isBuilderAddressMode
+        ? builderAddressProtocolVersion
+        : builderCodeProtocolVersion
+      sendFallbackHello(
+        fallbackProtocolVersion,
+        isBuilderAddressMode
+          ? BUILDER_ADDRESS_UNSUPPORTED_MESSAGE
+          : HANDSHAKE_TIMEOUT_MESSAGE,
+      )
+    })
   }
 
   const controller: NeutralTradeWidgetController = Object.freeze({

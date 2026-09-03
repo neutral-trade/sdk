@@ -2,9 +2,10 @@ import { address } from '@solana/kit'
 import { z } from 'zod'
 
 export const NEUTRAL_TRADE_WIDGET_PROTOCOL = 'neutral-trade-widget' as const
-export const NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION = 2 as const
+export const NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION = 3 as const
 export const NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS = [
   1,
+  2,
   NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
 ] as const
 
@@ -33,6 +34,37 @@ export const widgetAddressSchema = z.string().refine((value) => {
 
 export const widgetClusterSchema = z.enum(['mainnet', 'devnet'])
 export const widgetModeSchema = z.enum(['inline', 'floating'])
+const colorNumberPattern = String.raw`(?:\d+(?:\.\d+)?|\.\d+)`
+const widgetColorPattern = new RegExp(
+  `^(?:#(?:[\\da-f]{3}|[\\da-f]{6}|[\\da-f]{8})|rgb\\([ \\t]*${colorNumberPattern}[ \\t]*,[ \\t]*${colorNumberPattern}[ \\t]*,[ \\t]*${colorNumberPattern}[ \\t]*\\)|rgba\\([ \\t]*${colorNumberPattern}[ \\t]*,[ \\t]*${colorNumberPattern}[ \\t]*,[ \\t]*${colorNumberPattern}[ \\t]*,[ \\t]*${colorNumberPattern}[ \\t]*\\))$`,
+  'i',
+)
+const widgetColorSchema = z
+  .string()
+  .max(40, { abort: true })
+  .regex(
+    widgetColorPattern,
+    'Expected #rgb, #rrggbb, #rrggbbaa, rgb(), or rgba()',
+  )
+
+export const widgetThemeSchema = z.strictObject({
+  colorScheme: z.enum(['dark', 'light']).optional(),
+  accent: widgetColorSchema.optional(),
+  accentStrong: widgetColorSchema.optional(),
+  background: widgetColorSchema.optional(),
+  surface: widgetColorSchema.optional(),
+  surfaceRaised: widgetColorSchema.optional(),
+  surfaceSoft: widgetColorSchema.optional(),
+  border: widgetColorSchema.optional(),
+  borderStrong: widgetColorSchema.optional(),
+  text: widgetColorSchema.optional(),
+  muted: widgetColorSchema.optional(),
+  danger: widgetColorSchema.optional(),
+  warning: widgetColorSchema.optional(),
+  success: widgetColorSchema.optional(),
+  radius: z.number().int().min(0).max(32).optional(),
+  fontFamily: z.enum(['brand', 'system']).optional(),
+})
 export const attributionUnavailableReasonSchema = z.enum([
   'builder-code-unrecognized',
   'referrer-not-registered',
@@ -52,11 +84,16 @@ export const widgetAttributionSchema = z.discriminatedUnion('status', [
 ])
 
 const protocolVersion1 = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[0]
+const protocolVersion2 = NEUTRAL_TRADE_WIDGET_SUPPORTED_VERSIONS[1]
 const messageEnvelopeV1Schema = z.strictObject({
   protocol: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL),
   version: z.literal(protocolVersion1),
 })
 const messageEnvelopeV2Schema = z.strictObject({
+  protocol: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL),
+  version: z.literal(protocolVersion2),
+})
+const messageEnvelopeV3Schema = z.strictObject({
   protocol: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL),
   version: z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION),
 })
@@ -84,7 +121,7 @@ const hostHelloV2MessageSchema = messageEnvelopeV2Schema.extend({
   type: z.literal('host:hello'),
   supportedVersions: z.tuple([
     z.literal(protocolVersion1),
-    z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION),
+    z.literal(protocolVersion2),
   ]),
   config: z.union([
     z.strictObject({
@@ -98,10 +135,32 @@ const hostHelloV2MessageSchema = messageEnvelopeV2Schema.extend({
   ]),
   wallet: hostHelloWalletSchema,
 })
+const hostHelloV3MessageSchema = messageEnvelopeV3Schema.extend({
+  type: z.literal('host:hello'),
+  supportedVersions: z.tuple([
+    z.literal(protocolVersion1),
+    z.literal(protocolVersion2),
+    z.literal(NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION),
+  ]),
+  config: z.union([
+    z.strictObject({
+      builderCode: builderCodeSchema,
+      ...hostHelloConfigFields,
+      theme: widgetThemeSchema.optional(),
+    }),
+    z.strictObject({
+      builderAddress: widgetAddressSchema,
+      ...hostHelloConfigFields,
+      theme: widgetThemeSchema.optional(),
+    }),
+  ]),
+  wallet: hostHelloWalletSchema,
+})
 
 export const hostHelloMessageSchema = z.discriminatedUnion('version', [
   hostHelloV1MessageSchema,
   hostHelloV2MessageSchema,
+  hostHelloV3MessageSchema,
 ])
 
 const hostOperationResultFields = {
@@ -125,6 +184,7 @@ const hostOperationResultFields = {
 export const hostOperationResultMessageSchema = z.discriminatedUnion('version', [
   messageEnvelopeV1Schema.extend(hostOperationResultFields),
   messageEnvelopeV2Schema.extend(hostOperationResultFields),
+  messageEnvelopeV3Schema.extend(hostOperationResultFields),
 ])
 
 const hostProtocolErrorFields = {
@@ -137,6 +197,7 @@ const hostProtocolErrorFields = {
 export const hostProtocolErrorMessageSchema = z.discriminatedUnion('version', [
   messageEnvelopeV1Schema.extend(hostProtocolErrorFields),
   messageEnvelopeV2Schema.extend(hostProtocolErrorFields),
+  messageEnvelopeV3Schema.extend(hostProtocolErrorFields),
 ])
 
 const widgetReadyFields = {
@@ -147,6 +208,7 @@ const widgetReadyFields = {
 export const widgetReadyMessageSchema = z.discriminatedUnion('version', [
   messageEnvelopeV1Schema.extend(widgetReadyFields),
   messageEnvelopeV2Schema.extend(widgetReadyFields),
+  messageEnvelopeV3Schema.extend(widgetReadyFields),
 ])
 
 const widgetOperationRequestBaseFields = {
@@ -162,6 +224,9 @@ const widgetOperationRequestV1Schema = messageEnvelopeV1Schema.extend(
 const widgetOperationRequestV2Schema = messageEnvelopeV2Schema.extend(
   widgetOperationRequestBaseFields,
 )
+const widgetOperationRequestV3Schema = messageEnvelopeV3Schema.extend(
+  widgetOperationRequestBaseFields,
+)
 const widgetDepositRequestFields = {
   operation: z.literal('deposit'),
   amount: unsignedIntegerSchema,
@@ -171,6 +236,7 @@ const widgetDepositRequestFields = {
 export const widgetDepositRequestMessageSchema = z.discriminatedUnion('version', [
   widgetOperationRequestV1Schema.extend(widgetDepositRequestFields),
   widgetOperationRequestV2Schema.extend(widgetDepositRequestFields),
+  widgetOperationRequestV3Schema.extend(widgetDepositRequestFields),
 ])
 
 const widgetWithdrawRequestFields = {
@@ -181,6 +247,7 @@ const widgetWithdrawRequestFields = {
 export const widgetWithdrawRequestMessageSchema = z.discriminatedUnion('version', [
   widgetOperationRequestV1Schema.extend(widgetWithdrawRequestFields),
   widgetOperationRequestV2Schema.extend(widgetWithdrawRequestFields),
+  widgetOperationRequestV3Schema.extend(widgetWithdrawRequestFields),
 ])
 
 const widgetCloseFields = { type: z.literal('widget:close') }
@@ -188,6 +255,7 @@ const widgetCloseFields = { type: z.literal('widget:close') }
 export const widgetCloseMessageSchema = z.discriminatedUnion('version', [
   messageEnvelopeV1Schema.extend(widgetCloseFields),
   messageEnvelopeV2Schema.extend(widgetCloseFields),
+  messageEnvelopeV3Schema.extend(widgetCloseFields),
 ])
 
 export const hostToWidgetMessageSchema = z.union([
@@ -216,6 +284,15 @@ export type WidgetOperationRequestMessage
   = | WidgetDepositRequestMessage
     | WidgetWithdrawRequestMessage
 export type WidgetReadyMessage = z.infer<typeof widgetReadyMessageSchema>
+/**
+ * Visual tokens accepted by the hosted widget.
+ *
+ * Colors are limited to hex, `rgb()`, and `rgba()` values; `radius` is measured
+ * in pixels. Fonts are intentionally limited to the Neutral brand face or the
+ * system font. Arbitrary CSS, URLs, font names, and brand replacement are not
+ * supported.
+ */
+export type WidgetTheme = z.infer<typeof widgetThemeSchema>
 export type WidgetToHostMessage = z.infer<typeof widgetToHostMessageSchema>
 export type WidgetWithdrawRequestMessage = z.infer<typeof widgetWithdrawRequestMessageSchema>
 

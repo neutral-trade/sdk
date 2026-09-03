@@ -41,10 +41,16 @@ const transport: WidgetTransactionTransport = Object.freeze({
 interface HarnessProps {
   builderAddress: string
   maxComputeUnitLimit: number
+  themeAccent: string
   vault: string
 }
 
-function Harness({ builderAddress, maxComputeUnitLimit, vault }: HarnessProps) {
+function Harness({
+  builderAddress,
+  maxComputeUnitLimit,
+  themeAccent,
+  vault,
+}: HarnessProps) {
   const [readyEventCount, setReadyEventCount] = useState(0)
   const handleEvent = (event: NeutralTradeWidgetEvent): void => {
     if (event.type === 'ready')
@@ -62,6 +68,7 @@ function Harness({ builderAddress, maxComputeUnitLimit, vault }: HarnessProps) {
       mode: 'inline',
       onEvent: handleEvent,
       signer,
+      theme: { accent: themeAccent },
       transport,
       vaults: [vault],
       verifierLimits: { maxComputeUnitLimit },
@@ -130,6 +137,18 @@ test('preserves equivalent React props and remounts for semantic changes', async
     const { createRoot } = await import('react-dom/client')
     const container = dom.window.document.querySelector<HTMLElement>('#root')
     assert(container)
+    const originalCreateElement = dom.window.document.createElement.bind(
+      dom.window.document,
+    )
+    let iframeCreationCount = 0
+    dom.window.document.createElement = ((
+      tagName: string,
+      options?: ElementCreationOptions,
+    ) => {
+      if (tagName.toLowerCase() === 'iframe')
+        iframeCreationCount += 1
+      return originalCreateElement(tagName, options)
+    }) as typeof dom.window.document.createElement
     reactRoot = createRoot(container)
 
     await act(async () => {
@@ -139,6 +158,7 @@ test('preserves equivalent React props and remounts for semantic changes', async
         createElement(Harness, {
           builderAddress: FIXTURE_ADDRESSES.referrer,
           maxComputeUnitLimit: 300_000,
+          themeAccent: '#ff0000',
           vault: FIXTURE_ADDRESSES.vault,
         }),
       ))
@@ -165,6 +185,7 @@ test('preserves equivalent React props and remounts for semantic changes', async
       '1',
     )
     assert.equal(container.querySelector('iframe'), initialIframe)
+    const initialIframeCreationCount = iframeCreationCount
 
     await act(async () => {
       reactRoot?.render(createElement(
@@ -173,13 +194,46 @@ test('preserves equivalent React props and remounts for semantic changes', async
         createElement(Harness, {
           builderAddress: FIXTURE_ADDRESSES.referrer,
           maxComputeUnitLimit: 300_000,
+          themeAccent: '#ff0000',
+          vault: FIXTURE_ADDRESSES.vault,
+        }),
+      ))
+    })
+    assert.equal(container.querySelector('iframe'), initialIframe)
+    assert.equal(iframeCreationCount, initialIframeCreationCount)
+
+    await act(async () => {
+      reactRoot?.render(createElement(
+        StrictMode,
+        null,
+        createElement(Harness, {
+          builderAddress: FIXTURE_ADDRESSES.referrer,
+          maxComputeUnitLimit: 300_000,
+          themeAccent: '#00ff00',
+          vault: FIXTURE_ADDRESSES.vault,
+        }),
+      ))
+    })
+    const themeChangedIframe = container.querySelector('iframe')
+    assert(themeChangedIframe)
+    assert.notEqual(themeChangedIframe, initialIframe)
+    assert(iframeCreationCount > initialIframeCreationCount)
+
+    await act(async () => {
+      reactRoot?.render(createElement(
+        StrictMode,
+        null,
+        createElement(Harness, {
+          builderAddress: FIXTURE_ADDRESSES.referrer,
+          maxComputeUnitLimit: 300_000,
+          themeAccent: '#00ff00',
           vault: FIXTURE_ADDRESSES.alternateVault,
         }),
       ))
     })
     const vaultChangedIframe = container.querySelector('iframe')
     assert(vaultChangedIframe)
-    assert.notEqual(vaultChangedIframe, initialIframe)
+    assert.notEqual(vaultChangedIframe, themeChangedIframe)
 
     await act(async () => {
       reactRoot?.render(createElement(
@@ -188,6 +242,7 @@ test('preserves equivalent React props and remounts for semantic changes', async
         createElement(Harness, {
           builderAddress: FIXTURE_ADDRESSES.referrer,
           maxComputeUnitLimit: 400_000,
+          themeAccent: '#00ff00',
           vault: FIXTURE_ADDRESSES.alternateVault,
         }),
       ))
@@ -203,6 +258,7 @@ test('preserves equivalent React props and remounts for semantic changes', async
         createElement(Harness, {
           builderAddress: FIXTURE_ADDRESSES.secondReferrer,
           maxComputeUnitLimit: 400_000,
+          themeAccent: '#00ff00',
           vault: FIXTURE_ADDRESSES.alternateVault,
         }),
       ))
