@@ -50,22 +50,6 @@ import type { ExtensionsRpc } from "./rpc";
 const DEFAULT_PUBLIC_KEY =
   "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
 
-const MEMO_PROGRAM_ADDRESS =
-  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr" as Address<"MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr">;
-
-/**
- * Points attribution rides the same transaction as the on-chain referral
- * binding, so a builder wires one call and gets both. The memo carries the
- * referrer address because an instruction builder has no code to carry and no
- * business making an HTTP call to look one up.
- */
-function buildPointsAttributionMemoInstruction(referrer: Address): Instruction {
-  return {
-    programAddress: MEMO_PROGRAM_ADDRESS,
-    data: new TextEncoder().encode(`NT_REF=v1|op=register|ref=${referrer}`),
-  };
-}
-
 export type BundleVaultInput =
   | Address
   | {
@@ -576,10 +560,6 @@ export async function fetchReferrerStatus(
  * to verify active status and the net-deposit threshold.
  * Deterministic eligibility failures use stable error messages; deposits below
  * the vault minimum throw `BuilderDepositAmountTooLowError`.
- *
- * One transaction: bind the on-chain referrer for fee split, request the
- * deposit, and emit the points attribution memo. Atomic — a partial link is
- * not possible.
  */
 export async function buildAttributedDepositTx(
   rpc: ExtensionsRpc,
@@ -643,7 +623,6 @@ export async function buildAttributedDepositTx(
   instructions.push(
     setUserReferrerInstruction,
     depositContext.requestInstruction,
-    buildPointsAttributionMemoInstruction(referrer),
   );
   return instructions;
 }
