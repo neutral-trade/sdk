@@ -1,7 +1,7 @@
 {
   "name": "@neutral-trade/widget-sdk",
   "type": "module",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Embeddable Neutral Trade widget host with Wallet Standard signing and strict transaction verification",
   "license": "MIT",
   "homepage": "https://github.com/neutral-trade/sdk/tree/main/packages/widget-sdk#readme",
