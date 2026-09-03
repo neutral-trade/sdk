@@ -9,6 +9,7 @@
   buildAttributedDepositTx: function
   buildBuilderRegistrationTx: function
   buildDepositInstructions: function
+  buildEnsureAssociatedTokenAccountInstruction: function
   BuilderDepositAmountTooLowError: function
   buildReferrerWithdrawRequestTx: function
   buildRequestSwitchInstructions: function
@@ -30,6 +31,7 @@
   CLOSE_USER_BUNDLE_ACCOUNT_DISCRIMINATOR: object
   computeUserBundleBalance: function
   computeWithdrawalShares: function
+  createAssociatedTokenAccountIdempotentInstruction: function
   decodeBundle: function
   decodeBundleCreatorAccount: function
   decodeBundleMasterAccount: function

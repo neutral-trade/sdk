@@ -50,7 +50,10 @@ export type BuildRequestWithdrawInstructionParams = {
 /**
  * Mirrors the legacy `buildBundleRequestWithdrawInstructionWithVault` flow.
  * This helper rejects a zero-share result instead of forwarding it to the
- * program as the legacy helper did.
+ * program as the legacy helper did. Prepend an idempotent associated token
+ * account create, using `buildEnsureAssociatedTokenAccountInstruction` or
+ * `createAssociatedTokenAccountIdempotentInstruction`, so the user's asset
+ * token account exists when the withdrawal is processed after its cooldown.
  */
 export async function buildRequestWithdrawInstruction(
   rpc: ExtensionsRpc,
@@ -130,7 +133,12 @@ export type BuildRequestSwitchInstructionsParams = {
 /**
  * Mirrors the legacy `buildBundleRequestSwitchInstructionsWithVaults` flow.
  * This version-locked client does not perform the legacy runtime IDL capability
- * probe for `request_bundle_switch`.
+ * probe for `request_bundle_switch`. Before these instructions, add an
+ * idempotent associated token account create using
+ * `buildEnsureAssociatedTokenAccountInstruction` or
+ * `createAssociatedTokenAccountIdempotentInstruction`. `processSwitch`
+ * validates the user's asset token account and transfers the redemption there
+ * if the target bundle cannot accept the switch.
  */
 export async function buildRequestSwitchInstructions(
   rpc: ExtensionsRpc,

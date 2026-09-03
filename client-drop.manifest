@@ -1,10 +1,10 @@
-# source: neutral-trade/bundle-sc@3481a2b
+# source: neutral-trade/bundle-sc@ab435e4
 # bot-owned paths; verified by client-guard.yml — do not edit by hand
-3c9eb33417336817effacb78b8f54059db932861520305a5c9605beff6443769  src/extensions/ata.ts
+4b5937745e2750df8589627e92f1492ac7daab584b4499cbea4134155cc18da1  src/extensions/ata.ts
 c2db07270ae46ab280fa17406098d317d29c4c8859489bbaffde17d5352c2a9a  src/extensions/balances.ts
 572014bb479ad4b12ccdd3f58e61ecc975ff21cbdac65cb5350177539f6a6a0f  src/extensions/deposit.ts
 d515c39437ad699303db6ad8ecef31c5a958104c43cbc0db07b47a616f1447c9  src/extensions/fees.ts
-1974491abfbbb4e847009e0b81cf8758d1519e512159b6184c19f3519adfb6c0  src/extensions/flows.ts
+93b98a1085250598cc643793d6061e924266d98fd7321e014dd0f7dabcbfd10d  src/extensions/flows.ts
 6b5bf1ac6e65e595a253798e498984e1e3a43db3ad3eaad385b67597c40ac95d  src/extensions/index.ts
 cba2c259cf4b2885d7acbb48b2c23ffa70bc8cb67bcd7256f758280730196aba  src/extensions/math.ts
 4244275e5aa0d32dcc405c43f29f030de1c89c9d1c621f0986fa5ea5f97d43e1  src/extensions/referrals.ts
@@ -100,6 +100,7 @@ f29079f37da0339918afb402c6b402cb8369b644224bfd6281b41222e9ea98cd  src/generated/
 d6f95d20a10584164270e26fbfb9b0826be2eae64904d68a2316ffb0c2b4894f  src/generated/types/referralTier.ts
 981d930ac096d897917e87e51c510945c47c35c297b2ab7d40cbcfd3778c051b  src/idl/index.ts
 dcd89c9bf1fa3fb600ab4cf517e4730e8cbe0fe13b073582c1db0a519d074eac  src/idl/ntbundle.json
+34cfa85f9620a41d22e9af91bd8ddd6508a2978a2d2bf09d106fafb885fd8c43  test/client/ata.test.ts
 87eaa7f79aec36024cbdc680409f2bcebab955241e71a1489dfdfd3262076331  test/client/balances.test.ts
 aadfbcd2086973e49d47b5f43a780cab8e2f96416bec7c28bd76aa62e1c6cb21  test/client/fees.test.ts
 a2f6fed20d5af2a965fe6ca60c1fd1867325d30da1b3645a1057a10608ee95c3  test/client/flows.test.ts
