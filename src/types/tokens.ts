@@ -5,7 +5,11 @@ import type { BundleCluster } from '../constants/programs'
 export enum SupportedChain {
   Solana = 'Solana',
   Hyperliquid = 'Hyperliquid',
+  Robinhood = 'Robinhood',
 }
+
+/** Robinhood Chain (Arbitrum Orbit L2). Gas is paid in ETH. */
+export const ROBINHOOD_CHAIN_ID = 4663
 
 export enum SupportedToken {
   USDC = 'USDC',
@@ -38,6 +42,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 6,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
     },
   },
   [SupportedToken.USDT]: {
@@ -49,6 +54,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 6,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
     },
   },
   [SupportedToken.USDE]: {
@@ -60,6 +66,10 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 9,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: {
+        address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+        decimals: 18,
+      },
     },
   },
   [SupportedToken.SOL]: {
@@ -71,6 +81,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 9,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
     },
   },
   [SupportedToken.WBTC]: {
@@ -82,6 +93,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 8,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
     },
   },
   [SupportedToken.WETH]: {
@@ -93,6 +105,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 8,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
     },
   },
   [SupportedToken.JLP]: {
@@ -104,6 +117,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 6,
       },
       [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
     },
   },
 }

@@ -10,6 +10,8 @@ export enum VaultType {
   Bundle = 'Bundle',
   Hyperliquid = 'Hyperliquid',
   Kamino = 'Kamino',
+  /** Accountable ERC-4626 NAV vault (e.g. on Robinhood Chain) */
+  AccountableNav = 'AccountableNav',
 }
 
 export enum VaultCategory {
@@ -45,6 +47,17 @@ export interface VaultRegistryEntry {
   pointsMultiplier?: number
   /** Points: include in points calculation (default true) */
   pointsEnabled?: boolean
+  /**
+   * Accountable-only: numeric loan id used exclusively to query the
+   * Accountable API. Never a Neutral vaultId, never a contract address.
+   */
+  accountableLoanId?: number
+  /**
+   * Accountable-only: strategy/loan contract address (VOA message,
+   * `navGraceDeadline`). Distinct from `vaultAddress`, which stays the
+   * ERC-4626 transaction target.
+   */
+  strategyAddress?: string
 }
 
 /** Registry entry after cluster-specific program ids have been resolved. */
@@ -66,6 +79,8 @@ export const VaultRegistryEntrySchema = z.object({
   bundleProgramId: z.string().min(32).max(44).optional(),
   pointsMultiplier: z.number().min(0).optional(),
   pointsEnabled: z.boolean().optional(),
+  accountableLoanId: z.number().int().min(0).optional(),
+  strategyAddress: z.string().regex(/^0x[0-9a-f]{40}$/i).optional(),
 })
 
 /** Schema for validating array of registry entries */
