@@ -120,8 +120,10 @@ describe('types and Constants Validation', () => {
       ).toThrow()
     })
 
-    it('provider fields stay optional for existing entries', () => {
+    it('provider fields never appear on non-Accountable entries', () => {
       for (const config of Object.values(vaults)) {
+        if (config.type === VaultType.AccountableNav)
+          continue
         expect(config.accountableLoanId).toBeUndefined()
         expect(config.strategyAddress).toBeUndefined()
       }
@@ -190,7 +192,7 @@ describe('types and Constants Validation', () => {
           expect(typeof config.subname).toBe('string')
         }
 
-        expect([VaultType.Drift, VaultType.Bundle, VaultType.Hyperliquid, VaultType.Kamino]).toContain(config.type)
+        expect(Object.values(VaultType)).toContain(config.type)
         expect(config.vaultAddress).toBeTruthy()
         expect(config.depositToken).toBeDefined()
       }

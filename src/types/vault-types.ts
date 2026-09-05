@@ -79,7 +79,7 @@ export const VaultRegistryEntrySchema = z.object({
   bundleProgramId: z.string().min(32).max(44).optional(),
   pointsMultiplier: z.number().min(0).optional(),
   pointsEnabled: z.boolean().optional(),
-  accountableLoanId: z.number().int().min(0).optional(),
+  accountableLoanId: z.number().int().positive().optional(),
   strategyAddress: z.string().regex(/^0x[0-9a-f]{40}$/i).optional(),
 })
 
