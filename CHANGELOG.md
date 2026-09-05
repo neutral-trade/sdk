@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add Accountable NAV vault taxonomy: `VaultType.AccountableNav`, `SupportedChain.Robinhood` (`ROBINHOOD_CHAIN_ID = 4663`, gas in ETH), USDe metadata on Robinhood Chain (`0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34`, 18 decimals), and optional registry fields `accountableLoanId` (Accountable API id) and `strategyAddress` (strategy/loan contract). `vaultAddress` stays the ERC-4626 transaction target; Bundle/Drift helpers ignore Accountable entries.
+
 - Add protocol v2 raw `builderAddress` attribution to `@neutral-trade/widget-sdk` while preserving protocol v1 for existing `builderCode` embeds.
 - Add `@neutral-trade/widget-sdk` with inline and floating embeds, a shared versioned postMessage protocol, Wallet Standard signing, strict wire-byte transaction verification, lifecycle tracking, and devnet examples for vanilla JavaScript and React.
 

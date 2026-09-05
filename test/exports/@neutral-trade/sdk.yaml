@@ -634,6 +634,7 @@
   resolveBundleReferralRates: function
   resolveEffectiveFees: function
   resolveEffectiveReferralRates: function
+  ROBINHOOD_CHAIN_ID: number
   SECONDS_IN_YEAR: bigint
   SET_BUNDLE_CREATOR_DISCRIMINATOR: object
   SET_DELAYS_DISCRIMINATOR: object

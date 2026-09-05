@@ -23,9 +23,12 @@ import {
 import {
   getSolanaTokenDecimals,
   getSolanaTokenMint,
+  ROBINHOOD_CHAIN_ID,
   SupportedChain,
   SupportedToken,
   tokens,
+  VaultCategory,
+  VaultRegistryEntrySchema,
   VaultType,
 } from '../src/types'
 
@@ -71,6 +74,70 @@ describe('types and Constants Validation', () => {
       expect(VaultType.Bundle).toBe('Bundle')
       expect(VaultType.Hyperliquid).toBe('Hyperliquid')
       expect(VaultType.Kamino).toBe('Kamino')
+      expect(VaultType.AccountableNav).toBe('AccountableNav')
+    })
+  })
+
+  describe('robinhood chain', () => {
+    it('exposes chain enum member and chain id', () => {
+      expect(SupportedChain.Robinhood).toBe('Robinhood')
+      expect(ROBINHOOD_CHAIN_ID).toBe(4663)
+    })
+
+    it('uSDe has Robinhood metadata with 18 decimals', () => {
+      const usdeRobinhood = tokens[SupportedToken.USDE].onChain[SupportedChain.Robinhood]
+      expect(usdeRobinhood?.address).toBe('0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34')
+      expect(usdeRobinhood?.decimals).toBe(18)
+    })
+
+    it('other tokens have no Robinhood deployment', () => {
+      expect(tokens[SupportedToken.USDC].onChain[SupportedChain.Robinhood]).toBeNull()
+    })
+  })
+
+  describe('accountable NAV registry fields', () => {
+    const accountableEntry = {
+      vaultId: 81,
+      name: 'Meridian Liquidity Provider',
+      type: VaultType.AccountableNav,
+      category: VaultCategory.privateCredit,
+      vaultAddress: '0x1111111111111111111111111111111111111111',
+      depositToken: SupportedToken.USDE,
+      accountableLoanId: 607290214,
+      strategyAddress: '0x2222222222222222222222222222222222222222',
+    }
+
+    it('validates an AccountableNav entry with provider fields', () => {
+      expect(VaultRegistryEntrySchema.parse(accountableEntry)).toMatchObject({
+        accountableLoanId: 607290214,
+        strategyAddress: '0x2222222222222222222222222222222222222222',
+      })
+    })
+
+    it('rejects a non-EVM strategyAddress', () => {
+      expect(() =>
+        VaultRegistryEntrySchema.parse({ ...accountableEntry, strategyAddress: 'not-an-address' }),
+      ).toThrow()
+    })
+
+    it('provider fields never appear on non-Accountable entries', () => {
+      for (const config of Object.values(vaults)) {
+        if (config.type === VaultType.AccountableNav)
+          continue
+        expect(config.accountableLoanId).toBeUndefined()
+        expect(config.strategyAddress).toBeUndefined()
+      }
+    })
+
+    it('bundle/Drift helpers ignore AccountableNav entries', () => {
+      expect(getBundleProgramId(accountableEntry, 'mainnet')).toBeUndefined()
+      expect(getDriftProgramId(accountableEntry)).toBeUndefined()
+
+      const resolved = toVaultConfig(accountableEntry, 'mainnet')
+      expect(resolved.bundleProgramId).toBeUndefined()
+      expect(resolved.driftProgramId).toBeUndefined()
+      expect(resolved.accountableLoanId).toBe(607290214)
+      expect(resolved.strategyAddress).toBe('0x2222222222222222222222222222222222222222')
     })
   })
 
@@ -125,7 +192,7 @@ describe('types and Constants Validation', () => {
           expect(typeof config.subname).toBe('string')
         }
 
-        expect([VaultType.Drift, VaultType.Bundle, VaultType.Hyperliquid, VaultType.Kamino]).toContain(config.type)
+        expect(Object.values(VaultType)).toContain(config.type)
         expect(config.vaultAddress).toBeTruthy()
         expect(config.depositToken).toBeDefined()
       }
