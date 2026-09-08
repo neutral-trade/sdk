@@ -21,10 +21,13 @@
   },
   {
     "vaultId": 81,
-    "name": "Ethereal-USDE-Bundle",
-    "type": "Bundle",
-    "category": "Market Neutral",
-    "vaultAddress": "HuwbT5aUYkFf8oniumt7XXJ1Y6GQv7EJACv55dAhjt6e",
+    "name": "Meridian Liquidity Provider",
+    "type": "AccountableNav",
+    "category": "Private Credit",
+    "chain": "Robinhood",
+    "vaultAddress": "0x24b84023c8e4Da635be228C380C09bfE5271BF9d",
+    "strategyAddress": "0xF62c201e9A28F6A57C4262004dd2e8B8e95bB1eC",
+    "accountableLoanId": 607290214,
     "depositToken": "USDE",
     "pointsMultiplier": 1,
     "pointsEnabled": false

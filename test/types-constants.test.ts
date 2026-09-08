@@ -23,6 +23,7 @@ import {
 import {
   getSolanaTokenDecimals,
   getSolanaTokenMint,
+  MONAD_TESTNET_CHAIN_ID,
   ROBINHOOD_CHAIN_ID,
   SupportedChain,
   SupportedToken,
@@ -42,6 +43,7 @@ describe('types and Constants Validation', () => {
       expect(SupportedToken.WBTC).toBe('WBTC')
       expect(SupportedToken.WETH).toBe('WETH')
       expect(SupportedToken.JLP).toBe('JLP')
+      expect(SupportedToken.AUSD).toBe('AUSD')
     })
   })
 
@@ -95,6 +97,24 @@ describe('types and Constants Validation', () => {
     })
   })
 
+  describe('monad testnet chain', () => {
+    it('exposes chain enum member and chain id', () => {
+      expect(SupportedChain.MonadTestnet).toBe('MonadTestnet')
+      expect(MONAD_TESTNET_CHAIN_ID).toBe(10143)
+    })
+
+    it('aUSD is 6 decimals on Monad Testnet, not the 18 the guide claims', () => {
+      const ausd = tokens[SupportedToken.AUSD].onChain[SupportedChain.MonadTestnet]
+      expect(ausd?.address).toBe('0x333a12e2B519DA16EBE75012d54574C16ef4463f')
+      expect(ausd?.decimals).toBe(6)
+    })
+
+    it('aUSD has no Solana deployment', () => {
+      expect(tokens[SupportedToken.AUSD].onChain[SupportedChain.Solana]).toBeNull()
+      expect(() => getSolanaTokenMint(SupportedToken.AUSD)).toThrow()
+    })
+  })
+
   describe('accountable NAV registry fields', () => {
     const accountableEntry = {
       vaultId: 81,
@@ -138,6 +158,54 @@ describe('types and Constants Validation', () => {
       expect(resolved.driftProgramId).toBeUndefined()
       expect(resolved.accountableLoanId).toBe(607290214)
       expect(resolved.strategyAddress).toBe('0x2222222222222222222222222222222222222222')
+    })
+  })
+
+  describe('accountable NAV registry entries', () => {
+    it('mainnet 81 is the Robinhood MLP vault with all three identities', () => {
+      const mlp = getVaultById(81, 'mainnet')!
+      expect(mlp.type).toBe(VaultType.AccountableNav)
+      expect(mlp.chain).toBe(SupportedChain.Robinhood)
+      expect(mlp.name).toBe('Meridian Liquidity Provider')
+      expect(mlp.depositToken).toBe(SupportedToken.USDE)
+      // ERC-4626 transaction target
+      expect(mlp.vaultAddress).toBe('0x24b84023c8e4Da635be228C380C09bfE5271BF9d')
+      // loan contract (navGraceDeadline / VOA) -- NOT the ERC-4626 address
+      expect(mlp.strategyAddress).toBe('0xF62c201e9A28F6A57C4262004dd2e8B8e95bB1eC')
+      // API-only id -- never an address, never a Neutral vaultId
+      expect(mlp.accountableLoanId).toBe(607290214)
+    })
+
+    it('devnet staging vault lives on Monad Testnet and takes AUSD', () => {
+      const staging = getVaultById(DevnetVaultId.meridian_liquidity_provider_nt_100000010, 'devnet')!
+      expect(staging.type).toBe(VaultType.AccountableNav)
+      expect(staging.chain).toBe(SupportedChain.MonadTestnet)
+      expect(staging.name).toBe('Meridian Liquidity Provider(NT)')
+      expect(staging.depositToken).toBe(SupportedToken.AUSD)
+      expect(staging.vaultAddress).toBe('0x22767B5c9C5472A2784e31Acb95dF599338662d9')
+      expect(staging.strategyAddress).toBe('0xD327a1584d34Bc7381C16D056B6951fC7A9587d7')
+      expect(staging.accountableLoanId).toBe(609080863)
+    })
+
+    it('the three identities are all distinct on every Accountable entry', () => {
+      const entries = [...Object.values(vaults), ...Object.values(vaultsDevnet)]
+        .filter(v => v.type === VaultType.AccountableNav)
+      expect(entries.length).toBeGreaterThan(0)
+      for (const v of entries) {
+        expect(v.strategyAddress).toBeDefined()
+        expect(v.accountableLoanId).toBeDefined()
+        expect(v.vaultAddress.toLowerCase()).not.toBe(v.strategyAddress!.toLowerCase())
+        expect(v.accountableLoanId).not.toBe(v.vaultId)
+      }
+    })
+
+    it('bundle/Drift helpers skip the real Accountable entries too', () => {
+      for (const v of [getVaultById(81, 'mainnet')!, getVaultById(100000010, 'devnet')!]) {
+        expect(getBundleProgramId(v, 'mainnet')).toBeUndefined()
+        expect(getDriftProgramId(v)).toBeUndefined()
+        expect(v.bundleProgramId).toBeUndefined()
+        expect(v.driftProgramId).toBeUndefined()
+      }
     })
   })
 
@@ -200,6 +268,10 @@ describe('types and Constants Validation', () => {
 
     it('vault addresses should be valid Solana addresses', () => {
       for (const config of Object.values(vaults)) {
+        if (config.chain && config.chain !== SupportedChain.Solana) {
+          expect(config.vaultAddress).toMatch(/^0x[0-9a-f]{40}$/i)
+          continue
+        }
         // Base58 addresses are typically 32-44 characters
         expect(config.vaultAddress.length).toBeGreaterThanOrEqual(32)
         expect(config.vaultAddress.length).toBeLessThanOrEqual(44)

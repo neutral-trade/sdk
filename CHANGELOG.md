@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Registry: vault 81 is now the Accountable `Meridian Liquidity Provider` NAV vault on Robinhood Chain (was the `Ethereal-USDE-Bundle` Solana bundle), carrying all three identities -- `vaultAddress` (ERC-4626), `strategyAddress` (loan contract), `accountableLoanId` (Accountable API only). Consumers no longer need to hard-code the loan id.
+- Registry: add devnet vault `100000010` `Meridian Liquidity Provider(NT)`, the Accountable staging vault on Monad Testnet.
+- Add `SupportedChain.MonadTestnet` (`MONAD_TESTNET_CHAIN_ID = 10143`, gas in MON) and `SupportedToken.AUSD` (`Accountable USD`, `0x333a12e2B519DA16EBE75012d54574C16ef4463f`, **6 decimals** -- the Accountable integration guide's "everything is 18-decimal" does not hold on staging, so always read decimals from the token table).
+- Add optional `chain` field to registry entries. Omitted means Solana, so every existing entry is unchanged.
+
 - Add Accountable NAV vault taxonomy: `VaultType.AccountableNav`, `SupportedChain.Robinhood` (`ROBINHOOD_CHAIN_ID = 4663`, gas in ETH), USDe metadata on Robinhood Chain (`0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34`, 18 decimals), and optional registry fields `accountableLoanId` (Accountable API id) and `strategyAddress` (strategy/loan contract). `vaultAddress` stays the ERC-4626 transaction target; Bundle/Drift helpers ignore Accountable entries.
 
 - Add protocol v2 raw `builderAddress` attribution to `@neutral-trade/widget-sdk` while preserving protocol v1 for existing `builderCode` embeds.

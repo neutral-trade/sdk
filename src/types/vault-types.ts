@@ -37,6 +37,8 @@ export interface VaultRegistryEntry {
   subname?: string
   type: VaultType
   category: VaultCategory
+  /** Chain the vault lives on. Omitted means {@link SupportedChain.Solana}. */
+  chain?: SupportedChain
   vaultAddress: string
   depositToken: SupportedToken
   /** Optional Drift program ID (only for Drift vaults with non-default program) */
@@ -73,6 +75,7 @@ export const VaultRegistryEntrySchema = z.object({
   subname: z.string().max(100).optional(),
   type: z.nativeEnum(VaultType),
   category: z.nativeEnum(VaultCategory),
+  chain: z.nativeEnum(SupportedChain).optional(),
   vaultAddress: z.string().min(32).max(44),
   depositToken: z.nativeEnum(SupportedToken),
   driftProgramId: z.string().min(32).max(44).optional(),

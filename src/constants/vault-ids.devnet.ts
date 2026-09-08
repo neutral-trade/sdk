@@ -23,4 +23,6 @@ export enum DevnetVaultId {
   bundle_8_100000008 = 100000008,
   /** bundle-9 */
   bundle_9_100000009 = 100000009,
+  /** Meridian Liquidity Provider(NT) */
+  meridian_liquidity_provider_nt_100000010 = 100000010,
 }

@@ -27,6 +27,7 @@ export type { PointsVaultEntry } from './constants/points-vaults'
 export {
   getSolanaTokenDecimals,
   getSolanaTokenMint,
+  MONAD_TESTNET_CHAIN_ID,
   ROBINHOOD_CHAIN_ID,
   SupportedChain,
   SupportedToken,
