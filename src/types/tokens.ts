@@ -6,10 +6,17 @@ export enum SupportedChain {
   Solana = 'Solana',
   Hyperliquid = 'Hyperliquid',
   Robinhood = 'Robinhood',
+  MonadTestnet = 'MonadTestnet',
 }
 
 /** Robinhood Chain (Arbitrum Orbit L2). Gas is paid in ETH. */
 export const ROBINHOOD_CHAIN_ID = 4663
+
+/**
+ * Monad Testnet. Hosts the Accountable staging vault.
+ * Gas is believed to be paid in MON -- not yet confirmed against the chain.
+ */
+export const MONAD_TESTNET_CHAIN_ID = 10143
 
 export enum SupportedToken {
   USDC = 'USDC',
@@ -19,6 +26,7 @@ export enum SupportedToken {
   WBTC = 'WBTC',
   WETH = 'WETH',
   JLP = 'JLP',
+  AUSD = 'AUSD',
 }
 
 export interface Token {
@@ -43,6 +51,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
       },
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: null,
     },
   },
   [SupportedToken.USDT]: {
@@ -55,6 +64,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
       },
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: null,
     },
   },
   [SupportedToken.USDE]: {
@@ -70,6 +80,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
         address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
         decimals: 18,
       },
+      [SupportedChain.MonadTestnet]: null,
     },
   },
   [SupportedToken.SOL]: {
@@ -82,6 +93,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
       },
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: null,
     },
   },
   [SupportedToken.WBTC]: {
@@ -94,6 +106,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
       },
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: null,
     },
   },
   [SupportedToken.WETH]: {
@@ -106,6 +119,7 @@ export const tokens: { [name in SupportedToken]: Token } = {
       },
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: null,
     },
   },
   [SupportedToken.JLP]: {
@@ -118,6 +132,25 @@ export const tokens: { [name in SupportedToken]: Token } = {
       },
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: null,
+    },
+  },
+  /**
+   * Accountable staging asset. **6 decimals**, not the 18 the Accountable
+   * integration guide claims applies to everything -- always read decimals
+   * from this table rather than assuming 18.
+   */
+  [SupportedToken.AUSD]: {
+    name: 'Accountable USD',
+    symbol: 'AUSD',
+    onChain: {
+      [SupportedChain.Solana]: null,
+      [SupportedChain.Hyperliquid]: null,
+      [SupportedChain.Robinhood]: null,
+      [SupportedChain.MonadTestnet]: {
+        address: '0x333a12e2B519DA16EBE75012d54574C16ef4463f',
+        decimals: 6,
+      },
     },
   },
 }

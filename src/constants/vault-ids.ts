@@ -11,8 +11,8 @@ export enum VaultId {
   cta_c_usdc_bundle_83 = 83,
   /** Nexus-USDC-Bundle */
   nexus_usdc_bundle_82 = 82,
-  /** Ethereal-USDE-Bundle */
-  ethereal_usde_bundle_81 = 81,
+  /** Meridian Liquidity Provider */
+  meridian_liquidity_provider_81 = 81,
   /** Options-MM-Z */
   options_mm_z_80 = 80,
   /** Thirdeye-Flagship-USDC-Bundle */

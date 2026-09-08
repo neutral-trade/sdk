@@ -2,7 +2,7 @@ import type { VaultConfig, VaultRegistry, VaultRegistryEntry } from '../types'
 import type { BundleCluster } from './programs'
 import vaultsDevnetJson from '../registry/vaults.devnet.json'
 import vaultsMainnetJson from '../registry/vaults.json'
-import { VaultRegistryArraySchema, VaultType } from '../types'
+import { SupportedChain, VaultRegistryArraySchema, VaultType } from '../types'
 import { getDefaultBundleProgramIdByCluster } from './programs'
 
 /**
@@ -44,6 +44,7 @@ export function getDriftProgramId(vault: VaultRegistryEntry): string | undefined
  * Transform a registry entry to VaultConfig with program IDs
  * - Drift vaults get driftProgramId
  * - Bundle vaults get bundleProgramId (registry value or cluster default via {@link getBundleProgramId})
+ * - `chain` defaults to Solana, so consumers never branch on it being absent
  */
 export function toVaultConfig(
   entry: VaultRegistryEntry,
@@ -51,6 +52,7 @@ export function toVaultConfig(
 ): VaultConfig {
   return {
     ...entry,
+    chain: entry.chain ?? SupportedChain.Solana,
     driftProgramId: getDriftProgramId(entry),
     bundleProgramId: getBundleProgramId(entry, cluster),
   }
@@ -95,16 +97,25 @@ export function getVaultRegistry(cluster: BundleCluster): VaultRegistry {
 // UTILITY FUNCTIONS
 // =============================================================================
 
+/**
+ * Compare two vault addresses. EVM addresses are compared case-insensitively
+ * (the registry stores them checksummed), base58 Solana addresses exactly
+ * (case is significant there).
+ */
+function isSameVaultAddress(a: string, b: string): boolean {
+  return a.startsWith('0x') || b.startsWith('0x')
+    ? a.toLowerCase() === b.toLowerCase()
+    : a === b
+}
+
 export function isValidVaultAddress(address: string, cluster: BundleCluster = 'mainnet'): boolean {
-  return Object.values(getVaultRegistry(cluster))
-    .map(vault => vault.vaultAddress)
-    .includes(address)
+  return getVaultByAddress(address, cluster) !== undefined
 }
 
-export function getVaultByAddress(address: string, cluster: BundleCluster = 'mainnet'): VaultRegistryEntry | undefined {
-  return Object.values(getVaultRegistry(cluster)).find(v => v.vaultAddress === address)
+export function getVaultByAddress(address: string, cluster: BundleCluster = 'mainnet'): VaultConfig | undefined {
+  return Object.values(getVaultRegistry(cluster)).find(v => isSameVaultAddress(v.vaultAddress, address))
 }
 
-export function getVaultById(vaultId: number, cluster: BundleCluster = 'mainnet'): VaultRegistryEntry | undefined {
+export function getVaultById(vaultId: number, cluster: BundleCluster = 'mainnet'): VaultConfig | undefined {
   return getVaultRegistry(cluster)[vaultId]
 }

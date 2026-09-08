@@ -78,5 +78,18 @@
     "depositToken": "USDC",
     "pointsMultiplier": 1,
     "pointsEnabled": true
+  },
+  {
+    "vaultId": 100000010,
+    "name": "Meridian Liquidity Provider(NT)",
+    "type": "AccountableNav",
+    "category": "Private Credit",
+    "chain": "MonadTestnet",
+    "vaultAddress": "0x22767B5c9C5472A2784e31Acb95dF599338662d9",
+    "strategyAddress": "0xD327a1584d34Bc7381C16D056B6951fC7A9587d7",
+    "accountableLoanId": 609080863,
+    "depositToken": "AUSD",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
   }
 ]
