@@ -12,7 +12,10 @@ export enum SupportedChain {
 /** Robinhood Chain (Arbitrum Orbit L2). Gas is paid in ETH. */
 export const ROBINHOOD_CHAIN_ID = 4663
 
-/** Monad Testnet. Gas is paid in MON. Hosts the Accountable staging vault. */
+/**
+ * Monad Testnet. Hosts the Accountable staging vault.
+ * Gas is believed to be paid in MON -- not yet confirmed against the chain.
+ */
 export const MONAD_TESTNET_CHAIN_ID = 10143
 
 export enum SupportedToken {
@@ -132,8 +135,11 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.MonadTestnet]: null,
     },
   },
-  // Accountable staging asset. 6 decimals, NOT the 18 the Accountable
-  // integration guide claims for everything -- always read decimals from here.
+  /**
+   * Accountable staging asset. **6 decimals**, not the 18 the Accountable
+   * integration guide claims applies to everything -- always read decimals
+   * from this table rather than assuming 18.
+   */
   [SupportedToken.AUSD]: {
     name: 'Accountable USD',
     symbol: 'AUSD',

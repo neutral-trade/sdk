@@ -63,10 +63,13 @@ export interface VaultRegistryEntry {
 }
 
 /** Registry entry after cluster-specific program ids have been resolved. */
-export type VaultConfig = Omit<VaultRegistryEntry, 'bundleProgramId' | 'driftProgramId'> & {
+export type VaultConfig = Omit<VaultRegistryEntry, 'bundleProgramId' | 'driftProgramId' | 'chain'> & {
+  chain: SupportedChain
   bundleProgramId: string | undefined
   driftProgramId: string | undefined
 }
+
+const EVM_ADDRESS_REGEX = /^0x[0-9a-f]{40}$/i
 
 /** Zod schema for validating registry entries */
 export const VaultRegistryEntrySchema = z.object({
@@ -76,14 +79,21 @@ export const VaultRegistryEntrySchema = z.object({
   type: z.nativeEnum(VaultType),
   category: z.nativeEnum(VaultCategory),
   chain: z.nativeEnum(SupportedChain).optional(),
-  vaultAddress: z.string().min(32).max(44),
+  vaultAddress: z
+    .string()
+    .refine(
+      value => (value.startsWith('0x')
+        ? EVM_ADDRESS_REGEX.test(value)
+        : value.length >= 32 && value.length <= 44),
+      'vaultAddress must be a base58 Solana address (32-44 chars) or a 0x-prefixed EVM address',
+    ),
   depositToken: z.nativeEnum(SupportedToken),
   driftProgramId: z.string().min(32).max(44).optional(),
   bundleProgramId: z.string().min(32).max(44).optional(),
   pointsMultiplier: z.number().min(0).optional(),
   pointsEnabled: z.boolean().optional(),
   accountableLoanId: z.number().int().positive().optional(),
-  strategyAddress: z.string().regex(/^0x[0-9a-f]{40}$/i).optional(),
+  strategyAddress: z.string().regex(EVM_ADDRESS_REGEX).optional(),
 })
 
 /** Schema for validating array of registry entries */

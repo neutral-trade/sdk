@@ -9,12 +9,15 @@ import {
   getDefaultBundleProgramIdByCluster,
   isAllowlistedBundleProgramId,
 } from '../src/constants/programs'
+import { VaultId } from '../src/constants/vault-ids'
 import { DevnetVaultId } from '../src/constants/vault-ids.devnet'
 import {
   getBundleProgramId,
   getDriftProgramId,
+  getVaultByAddress,
   getVaultById,
   getVaultRegistry,
+  isValidVaultAddress,
   toVaultConfig,
   toVaultRegistry,
   vaults,
@@ -134,6 +137,12 @@ describe('types and Constants Validation', () => {
       })
     })
 
+    it('rejects a truncated EVM vaultAddress', () => {
+      expect(() =>
+        VaultRegistryEntrySchema.parse({ ...accountableEntry, vaultAddress: '0x11111111111111111111111111111111111111' }),
+      ).toThrow()
+    })
+
     it('rejects a non-EVM strategyAddress', () => {
       expect(() =>
         VaultRegistryEntrySchema.parse({ ...accountableEntry, strategyAddress: 'not-an-address' }),
@@ -163,7 +172,7 @@ describe('types and Constants Validation', () => {
 
   describe('accountable NAV registry entries', () => {
     it('mainnet 81 is the Robinhood MLP vault with all three identities', () => {
-      const mlp = getVaultById(81, 'mainnet')!
+      const mlp = getVaultById(VaultId.meridian_liquidity_provider_81, 'mainnet')!
       expect(mlp.type).toBe(VaultType.AccountableNav)
       expect(mlp.chain).toBe(SupportedChain.Robinhood)
       expect(mlp.name).toBe('Meridian Liquidity Provider')
@@ -199,8 +208,29 @@ describe('types and Constants Validation', () => {
       }
     })
 
+    it('resolves chain to Solana on entries that omit it', () => {
+      expect(getVaultById(VaultId.master_bundle_76, 'mainnet')!.chain).toBe(SupportedChain.Solana)
+      expect(getVaultById(DevnetVaultId.bundle_1_100000002, 'devnet')!.chain).toBe(SupportedChain.Solana)
+    })
+
+    it('looks up EVM vaults regardless of address casing', () => {
+      const mlp = getVaultById(VaultId.meridian_liquidity_provider_81, 'mainnet')!
+      expect(getVaultByAddress(mlp.vaultAddress.toLowerCase())?.vaultId).toBe(mlp.vaultId)
+      expect(isValidVaultAddress(mlp.vaultAddress.toUpperCase().replace('0X', '0x'))).toBe(true)
+    })
+
+    it('base58 vault lookups stay case-sensitive', () => {
+      const bundle = Object.values(vaults).find(v => v.chain === SupportedChain.Solana)!
+      expect(isValidVaultAddress(bundle.vaultAddress)).toBe(true)
+      expect(isValidVaultAddress(bundle.vaultAddress.toLowerCase())).toBe(false)
+    })
+
     it('bundle/Drift helpers skip the real Accountable entries too', () => {
-      for (const v of [getVaultById(81, 'mainnet')!, getVaultById(100000010, 'devnet')!]) {
+      const accountable = [
+        getVaultById(VaultId.meridian_liquidity_provider_81, 'mainnet')!,
+        getVaultById(DevnetVaultId.meridian_liquidity_provider_nt_100000010, 'devnet')!,
+      ]
+      for (const v of accountable) {
         expect(getBundleProgramId(v, 'mainnet')).toBeUndefined()
         expect(getDriftProgramId(v)).toBeUndefined()
         expect(v.bundleProgramId).toBeUndefined()
@@ -268,7 +298,7 @@ describe('types and Constants Validation', () => {
 
     it('vault addresses should be valid Solana addresses', () => {
       for (const config of Object.values(vaults)) {
-        if (config.chain && config.chain !== SupportedChain.Solana) {
+        if (config.chain !== SupportedChain.Solana) {
           expect(config.vaultAddress).toMatch(/^0x[0-9a-f]{40}$/i)
           continue
         }
