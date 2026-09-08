@@ -7,17 +7,15 @@
 - Add `chain` to registry entries: optional in the JSON, always resolved on `VaultConfig` (omitted means `SupportedChain.Solana`), so consumers never branch on it being absent.
 - `getVaultByAddress` / `isValidVaultAddress` now match EVM addresses case-insensitively. Base58 Solana addresses stay case-sensitive.
 - `vaultAddress` validation now rejects a malformed `0x`-prefixed address instead of accepting it on base58 length rules alone.
+- Add Accountable NAV vault taxonomy: `VaultType.AccountableNav`, `SupportedChain.Robinhood` (`ROBINHOOD_CHAIN_ID = 4663`, gas in ETH), USDe metadata on Robinhood Chain (`0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34`, 18 decimals), and optional registry fields `accountableLoanId` (Accountable API id) and `strategyAddress` (strategy/loan contract). `vaultAddress` stays the ERC-4626 transaction target; Bundle/Drift helpers ignore Accountable entries.
+- Add protocol v2 raw `builderAddress` attribution to `@neutral-trade/widget-sdk` while preserving protocol v1 for existing `builderCode` embeds.
+- Add `@neutral-trade/widget-sdk` with inline and floating embeds, a shared versioned postMessage protocol, Wallet Standard signing, strict wire-byte transaction verification, lifecycle tracking, and devnet examples for vanilla JavaScript and React.
 
 ### Breaking changes
 
 - **Vault 81 is no longer the `Ethereal-USDE-Bundle` Solana bundle.** It is now the Accountable `Meridian Liquidity Provider` NAV vault on Robinhood Chain: `type` `Bundle` -> `AccountableNav`, `category` `Market Neutral` -> `Private Credit`, and `vaultAddress` moves from the base58 bundle address to the ERC-4626 contract `0x24b84023c8e4Da635be228C380C09bfE5271BF9d`. Anything treating 81 as a Solana bundle breaks.
 - `VaultId.ethereal_usde_bundle_81` is renamed to `VaultId.meridian_liquidity_provider_81` (the enum is generated from the registry name).
 - Entry 81 now carries all three Accountable identities -- `vaultAddress` (ERC-4626 transaction target), `strategyAddress` (loan contract, `0xF62c201e9A28F6A57C4262004dd2e8B8e95bB1eC`), `accountableLoanId` (`607290214`, Accountable API only). Consumers hard-coding the loan id should drop their copy.
-
-- Add Accountable NAV vault taxonomy: `VaultType.AccountableNav`, `SupportedChain.Robinhood` (`ROBINHOOD_CHAIN_ID = 4663`, gas in ETH), USDe metadata on Robinhood Chain (`0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34`, 18 decimals), and optional registry fields `accountableLoanId` (Accountable API id) and `strategyAddress` (strategy/loan contract). `vaultAddress` stays the ERC-4626 transaction target; Bundle/Drift helpers ignore Accountable entries.
-
-- Add protocol v2 raw `builderAddress` attribution to `@neutral-trade/widget-sdk` while preserving protocol v1 for existing `builderCode` embeds.
-- Add `@neutral-trade/widget-sdk` with inline and floating embeds, a shared versioned postMessage protocol, Wallet Standard signing, strict wire-byte transaction verification, lifecycle tracking, and devnet examples for vanilla JavaScript and React.
 
 ## 1.0.0
 

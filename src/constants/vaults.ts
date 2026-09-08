@@ -112,10 +112,10 @@ export function isValidVaultAddress(address: string, cluster: BundleCluster = 'm
   return getVaultByAddress(address, cluster) !== undefined
 }
 
-export function getVaultByAddress(address: string, cluster: BundleCluster = 'mainnet'): VaultRegistryEntry | undefined {
+export function getVaultByAddress(address: string, cluster: BundleCluster = 'mainnet'): VaultConfig | undefined {
   return Object.values(getVaultRegistry(cluster)).find(v => isSameVaultAddress(v.vaultAddress, address))
 }
 
-export function getVaultById(vaultId: number, cluster: BundleCluster = 'mainnet'): VaultRegistryEntry | undefined {
+export function getVaultById(vaultId: number, cluster: BundleCluster = 'mainnet'): VaultConfig | undefined {
   return getVaultRegistry(cluster)[vaultId]
 }
