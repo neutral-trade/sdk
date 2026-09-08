@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.0
 
 - Registry: add devnet vault `100000010` `Meridian Liquidity Provider(NT)`, the Accountable staging vault on Monad Testnet.
 - Add `SupportedChain.MonadTestnet` (`MONAD_TESTNET_CHAIN_ID = 10143`, gas believed to be MON -- unconfirmed) and `SupportedToken.AUSD` (`Accountable USD`, `0x333a12e2B519DA16EBE75012d54574C16ef4463f`, **6 decimals** -- the Accountable integration guide's "everything is 18-decimal" does not hold on staging, so always read decimals from the token table).
