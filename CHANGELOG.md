@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.2
+
+- Registry: `SPRMCY-USDC-Bundle` (vault 84) now has `pointsEnabled: false`. 2.0.1 shipped it as `true` by mistake -- anything that read points state from 2.0.1 should re-read it.
+
+## 2.0.1
+
+- Registry: add mainnet vault 84 `SPRMCY-USDC-Bundle`, a USDC Bundle vault on Solana (`VaultId.sprmcy_usdc_bundle_84`). Uses the cluster-default bundle program.
+
 ## 2.0.0
 
 - Registry: add devnet vault `100000010` `Meridian Liquidity Provider(NT)`, the Accountable staging vault on Monad Testnet.
