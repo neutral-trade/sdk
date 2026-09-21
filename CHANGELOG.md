@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+
+- Add `VaultCategory.discretionary` (`"Discretionary"`): a manager sizes and times positions by judgement rather than a fixed rule set. Consumers with an exhaustive `Record<VaultCategory, T>` must add a branch for it.
+- Registry: `SPRMCY-USDC-Bundle` (vault 84) moves from `Market Neutral` to `Discretionary`. 2.0.1 and 2.0.2 shipped it as `Market Neutral`, which never matched how the strategy is run -- anything that grouped, coloured or filtered vault 84 by category changes bucket.
+
 ## 2.0.2
 
 - Registry: `SPRMCY-USDC-Bundle` (vault 84) now has `pointsEnabled: false`. 2.0.1 shipped it as `true` by mistake -- anything that read points state from 2.0.1 should re-read it.
