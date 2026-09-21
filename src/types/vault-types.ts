@@ -24,6 +24,7 @@ export enum VaultCategory {
   airdropFarming = 'Airdrop Farming',
   yieldEnhancement = 'Yield Enhancement',
   fundOfFund = 'Master Vault',
+  discretionary = 'Discretionary',
 }
 
 // =============================================================================

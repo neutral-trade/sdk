@@ -3,7 +3,7 @@
     "vaultId": 84,
     "name": "SPRMCY-USDC-Bundle",
     "type": "Bundle",
-    "category": "Market Neutral",
+    "category": "Discretionary",
     "vaultAddress": "7epzfBXkMkLFdBXdmicm6GWiyjFvDxNGduLGyYokLkws",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
