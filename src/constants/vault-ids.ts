@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** SPRMCY-USDC-Bundle */
+  sprmcy_usdc_bundle_84 = 84,
   /** CTA-C-USDC-Bundle */
   cta_c_usdc_bundle_83 = 83,
   /** Nexus-USDC-Bundle */
