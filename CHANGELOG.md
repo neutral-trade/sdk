@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0
+
+- Add `SupportedChain.Ethereum` (`ETHEREUM_CHAIN_ID = 1`, gas in ETH) and `SupportedChain.Monad` (`MONAD_CHAIN_ID = 143`, gas in MON), with USDC on both (Ethereum `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`, Monad `0x754704Bc059F8C67012fEd69BC8A327a5aafb603`, 6 decimals). Consumers with an exhaustive `Record<SupportedChain, T>` must add branches for them.
+- Registry: add mainnet vaults 85 `Neutral Trade Autopilot (Ethereum)` and 86 `Neutral Trade Autopilot (Monad)`, the Accountable NAV vaults for Neutral Trade Autopilot (`VaultId.neutral_trade_autopilot_ethereum_85`, `VaultId.neutral_trade_autopilot_monad_86`). Category `Master Vault` like the Solana Autopilot (vault 76); points disabled, as for other Accountable vaults.
+
 ## 2.1.0
 
 - Add `VaultCategory.discretionary` (`"Discretionary"`): a manager sizes and times positions by judgement rather than a fixed rule set. Consumers with an exhaustive `Record<VaultCategory, T>` must add a branch for it.

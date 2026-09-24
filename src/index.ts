@@ -25,8 +25,10 @@ export {
 export { getPointsVaults } from './constants/points-vaults'
 export type { PointsVaultEntry } from './constants/points-vaults'
 export {
+  ETHEREUM_CHAIN_ID,
   getSolanaTokenDecimals,
   getSolanaTokenMint,
+  MONAD_CHAIN_ID,
   MONAD_TESTNET_CHAIN_ID,
   ROBINHOOD_CHAIN_ID,
   SupportedChain,
