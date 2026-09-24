@@ -7,6 +7,10 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Neutral Trade Autopilot (Monad) */
+  neutral_trade_autopilot_monad_86 = 86,
+  /** Neutral Trade Autopilot (Ethereum) */
+  neutral_trade_autopilot_ethereum_85 = 85,
   /** SPRMCY-USDC-Bundle */
   sprmcy_usdc_bundle_84 = 84,
   /** CTA-C-USDC-Bundle */

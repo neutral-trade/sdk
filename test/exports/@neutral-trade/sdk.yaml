@@ -50,6 +50,7 @@
   estimatePendingUserFees: function
   estimateWithdrawalAvailableTimestamp: function
   estimateWithdrawalCooldownSeconds: function
+  ETHEREUM_CHAIN_ID: number
   FEE_OVERRIDE_DEPOSIT: number
   FEE_OVERRIDE_MANAGEMENT: number
   FEE_OVERRIDE_PERFORMANCE: number
@@ -463,6 +464,7 @@
   MANAGER_WITHDRAW_WITH_SPLIT_DISCRIMINATOR: object
   MAX_DEPOSIT_FEE_BPS: number
   MAX_REFERRAL_TIERS: number
+  MONAD_CHAIN_ID: number
   MONAD_TESTNET_CHAIN_ID: number
   NET_PENDING_TRANSACTIONS_DISCRIMINATOR: object
   NTBUNDLE_ERROR__ALLOCATION_AMOUNT_ZERO: number

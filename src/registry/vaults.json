@@ -1,5 +1,31 @@
 [
   {
+    "vaultId": 86,
+    "name": "Neutral Trade Autopilot (Monad)",
+    "type": "AccountableNav",
+    "category": "Master Vault",
+    "chain": "Monad",
+    "vaultAddress": "0xaABab7598be3c4fE58c593e73C2F5934b73b573E",
+    "strategyAddress": "0x5ee57E42DF67e5707F0CAE1a18DfeaDB4F0Df86c",
+    "accountableLoanId": 608250958,
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
+    "vaultId": 85,
+    "name": "Neutral Trade Autopilot (Ethereum)",
+    "type": "AccountableNav",
+    "category": "Master Vault",
+    "chain": "Ethereum",
+    "vaultAddress": "0x909dAdBcA7955614A455d9e7447aD4adB4902C8E",
+    "strategyAddress": "0x56B935Fe5183cC0DE489233d032F9A4B8ec2f9Ff",
+    "accountableLoanId": 608250934,
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 84,
     "name": "SPRMCY-USDC-Bundle",
     "type": "Bundle",

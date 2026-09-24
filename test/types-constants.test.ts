@@ -24,8 +24,10 @@ import {
   vaultsDevnet,
 } from '../src/constants/vaults'
 import {
+  ETHEREUM_CHAIN_ID,
   getSolanaTokenDecimals,
   getSolanaTokenMint,
+  MONAD_CHAIN_ID,
   MONAD_TESTNET_CHAIN_ID,
   ROBINHOOD_CHAIN_ID,
   SupportedChain,
@@ -118,6 +120,29 @@ describe('types and Constants Validation', () => {
     })
   })
 
+  describe('ethereum and monad mainnet chains', () => {
+    it('expose chain enum members and chain ids', () => {
+      expect(SupportedChain.Ethereum).toBe('Ethereum')
+      expect(ETHEREUM_CHAIN_ID).toBe(1)
+      expect(SupportedChain.Monad).toBe('Monad')
+      expect(MONAD_CHAIN_ID).toBe(143)
+    })
+
+    it('uSDC is 6 decimals on both', () => {
+      const eth = tokens[SupportedToken.USDC].onChain[SupportedChain.Ethereum]
+      expect(eth?.address).toBe('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48')
+      expect(eth?.decimals).toBe(6)
+      const monad = tokens[SupportedToken.USDC].onChain[SupportedChain.Monad]
+      expect(monad?.address).toBe('0x754704Bc059F8C67012fEd69BC8A327a5aafb603')
+      expect(monad?.decimals).toBe(6)
+    })
+
+    it('other tokens have no Ethereum or Monad deployment', () => {
+      expect(tokens[SupportedToken.USDE].onChain[SupportedChain.Ethereum]).toBeNull()
+      expect(tokens[SupportedToken.AUSD].onChain[SupportedChain.Monad]).toBeNull()
+    })
+  })
+
   describe('accountable NAV registry fields', () => {
     const accountableEntry = {
       vaultId: 81,
@@ -183,6 +208,24 @@ describe('types and Constants Validation', () => {
       expect(mlp.strategyAddress).toBe('0xF62c201e9A28F6A57C4262004dd2e8B8e95bB1eC')
       // API-only id -- never an address, never a Neutral vaultId
       expect(mlp.accountableLoanId).toBe(607290214)
+    })
+
+    it('mainnet 85 / 86 are Neutral Trade Autopilot on Ethereum and Monad', () => {
+      const eth = getVaultById(VaultId.neutral_trade_autopilot_ethereum_85, 'mainnet')!
+      expect(eth.type).toBe(VaultType.AccountableNav)
+      expect(eth.chain).toBe(SupportedChain.Ethereum)
+      expect(eth.depositToken).toBe(SupportedToken.USDC)
+      expect(eth.vaultAddress).toBe('0x909dAdBcA7955614A455d9e7447aD4adB4902C8E')
+      expect(eth.strategyAddress).toBe('0x56B935Fe5183cC0DE489233d032F9A4B8ec2f9Ff')
+      expect(eth.accountableLoanId).toBe(608250934)
+
+      const monad = getVaultById(VaultId.neutral_trade_autopilot_monad_86, 'mainnet')!
+      expect(monad.type).toBe(VaultType.AccountableNav)
+      expect(monad.chain).toBe(SupportedChain.Monad)
+      expect(monad.depositToken).toBe(SupportedToken.USDC)
+      expect(monad.vaultAddress).toBe('0xaABab7598be3c4fE58c593e73C2F5934b73b573E')
+      expect(monad.strategyAddress).toBe('0x5ee57E42DF67e5707F0CAE1a18DfeaDB4F0Df86c')
+      expect(monad.accountableLoanId).toBe(608250958)
     })
 
     it('devnet staging vault lives on Monad Testnet and takes AUSD', () => {

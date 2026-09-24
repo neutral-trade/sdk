@@ -7,6 +7,8 @@ export enum SupportedChain {
   Hyperliquid = 'Hyperliquid',
   Robinhood = 'Robinhood',
   MonadTestnet = 'MonadTestnet',
+  Ethereum = 'Ethereum',
+  Monad = 'Monad',
 }
 
 /** Robinhood Chain (Arbitrum Orbit L2). Gas is paid in ETH. */
@@ -17,6 +19,15 @@ export const ROBINHOOD_CHAIN_ID = 4663
  * Gas is believed to be paid in MON -- not yet confirmed against the chain.
  */
 export const MONAD_TESTNET_CHAIN_ID = 10143
+
+/** Ethereum mainnet. Hosts the Accountable `Neutral Trade Autopilot` vault. Gas is paid in ETH. */
+export const ETHEREUM_CHAIN_ID = 1
+
+/**
+ * Monad mainnet. Hosts the Accountable `Neutral Trade Autopilot` vault.
+ * Gas is paid in MON.
+ */
+export const MONAD_CHAIN_ID = 143
 
 export enum SupportedToken {
   USDC = 'USDC',
@@ -52,6 +63,14 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: {
+        address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+        decimals: 6,
+      },
+      [SupportedChain.Monad]: {
+        address: '0x754704Bc059F8C67012fEd69BC8A327a5aafb603',
+        decimals: 6,
+      },
     },
   },
   [SupportedToken.USDT]: {
@@ -65,6 +84,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
   [SupportedToken.USDE]: {
@@ -81,6 +102,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
         decimals: 18,
       },
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
   [SupportedToken.SOL]: {
@@ -94,6 +117,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
   [SupportedToken.WBTC]: {
@@ -107,6 +132,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
   [SupportedToken.WETH]: {
@@ -120,6 +147,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
   [SupportedToken.JLP]: {
@@ -133,6 +162,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
       [SupportedChain.Hyperliquid]: null,
       [SupportedChain.Robinhood]: null,
       [SupportedChain.MonadTestnet]: null,
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
   /**
@@ -151,6 +182,8 @@ export const tokens: { [name in SupportedToken]: Token } = {
         address: '0x333a12e2B519DA16EBE75012d54574C16ef4463f',
         decimals: 6,
       },
+      [SupportedChain.Ethereum]: null,
+      [SupportedChain.Monad]: null,
     },
   },
 }
