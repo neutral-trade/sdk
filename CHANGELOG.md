@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+- Registry: enable points on the Accountable vaults that the points backend now scores from indexer data -- vault 81 `Meridian Liquidity Provider` (Robinhood) at 1x, and vault 85 `Neutral Trade Autopilot (Ethereum)` at 2x, matching the Solana Autopilot (vault 76). Vault 86 `Neutral Trade Autopilot (Monad)` stays disabled until the indexer covers Monad. `getPointsVaults()` now includes 81 and 85, and apps that derive a points badge from `pointsEnabled` / `pointsMultiplier` will start showing one for them.
+
 ## 2.2.0
 
 - Add `SupportedChain.Ethereum` (`ETHEREUM_CHAIN_ID = 1`, gas in ETH) and `SupportedChain.Monad` (`MONAD_CHAIN_ID = 143`, gas in MON), with USDC on both (Ethereum `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`, Monad `0x754704Bc059F8C67012fEd69BC8A327a5aafb603`, 6 decimals). Consumers with an exhaustive `Record<SupportedChain, T>` must add branches for them.
