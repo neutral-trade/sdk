@@ -22,8 +22,8 @@
     "strategyAddress": "0x56B935Fe5183cC0DE489233d032F9A4B8ec2f9Ff",
     "accountableLoanId": 608250934,
     "depositToken": "USDC",
-    "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 84,
@@ -66,7 +66,7 @@
     "accountableLoanId": 607290214,
     "depositToken": "USDE",
     "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsEnabled": true
   },
   {
     "vaultId": 80,
