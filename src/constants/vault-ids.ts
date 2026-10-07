@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Zavara-SOL-Bundle */
+  zavara_sol_bundle_87 = 87,
   /** Neutral Trade Autopilot (Monad) */
   neutral_trade_autopilot_monad_86 = 86,
   /** Neutral Trade Autopilot (Ethereum) */

@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 87,
+    "name": "Zavara-SOL-Bundle",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "7opUmfSUpCeobeAFkMYcVTn76CyLwgVDqoDqmnZZ9Zpi",
+    "depositToken": "SOL",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 86,
     "name": "Neutral Trade Autopilot (Monad)",
     "type": "AccountableNav",
