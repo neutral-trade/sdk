@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2
+
+- Registry: add mainnet vault 87 `Zavara-SOL-Bundle`, a Bundle vault on Solana that takes wSOL (`SupportedToken.SOL`, 9 decimals) -- the first Bundle vault in the registry not denominated in a stablecoin (`VaultId.zavara_sol_bundle_87`). Uses the cluster-default bundle program; points disabled.
+
 ## 2.2.1
 
 - Registry: enable points on the Accountable vaults that the points backend now scores from indexer data -- vault 81 `Meridian Liquidity Provider` (Robinhood) at 1x, and vault 85 `Neutral Trade Autopilot (Ethereum)` at 2x, matching the Solana Autopilot (vault 76). Vault 86 `Neutral Trade Autopilot (Monad)` stays disabled until the indexer covers Monad. `getPointsVaults()` now includes 81 and 85, and apps that derive a points badge from `pointsEnabled` / `pointsMultiplier` will start showing one for them.
