@@ -101,6 +101,15 @@ export type Bundle = {
   referrerMinDepositAmount: bigint;
   referralTiers: Array<ReferralTier>;
   tierCount: number;
+  issuanceFeeBps: number;
+  lastManagementFeeChangeTimestamp: bigint;
+  /** Lets an unchanged user override acknowledge a bundle change without losing accrual. */
+  managementFeeVersion: bigint;
+  /**
+   * Holders acknowledge a new version when they reset their performance fee basis.
+   * A counter distinguishes changes made within the same clock timestamp.
+   */
+  performanceFeeVersion: bigint;
   padding: ReadonlyUint8Array;
 };
 
@@ -139,6 +148,15 @@ export type BundleArgs = {
   referrerMinDepositAmount: number | bigint;
   referralTiers: Array<ReferralTierArgs>;
   tierCount: number;
+  issuanceFeeBps: number;
+  lastManagementFeeChangeTimestamp: number | bigint;
+  /** Lets an unchanged user override acknowledge a bundle change without losing accrual. */
+  managementFeeVersion: number | bigint;
+  /**
+   * Holders acknowledge a new version when they reset their performance fee basis.
+   * A counter distinguishes changes made within the same clock timestamp.
+   */
+  performanceFeeVersion: number | bigint;
   padding: ReadonlyUint8Array;
 };
 
@@ -181,7 +199,11 @@ export function getBundleEncoder(): Encoder<BundleArgs> {
       ["referrerMinDepositAmount", getU64Encoder()],
       ["referralTiers", getArrayEncoder(getReferralTierEncoder(), { size: 5 })],
       ["tierCount", getU8Encoder()],
-      ["padding", fixEncoderSize(getBytesEncoder(), 117)],
+      ["issuanceFeeBps", getU32Encoder()],
+      ["lastManagementFeeChangeTimestamp", getI64Encoder()],
+      ["managementFeeVersion", getU64Encoder()],
+      ["performanceFeeVersion", getU64Encoder()],
+      ["padding", fixEncoderSize(getBytesEncoder(), 89)],
     ]),
     (value) => ({ ...value, discriminator: BUNDLE_DISCRIMINATOR }),
   );
@@ -225,7 +247,11 @@ export function getBundleDecoder(): Decoder<Bundle> {
     ["referrerMinDepositAmount", getU64Decoder()],
     ["referralTiers", getArrayDecoder(getReferralTierDecoder(), { size: 5 })],
     ["tierCount", getU8Decoder()],
-    ["padding", fixDecoderSize(getBytesDecoder(), 117)],
+    ["issuanceFeeBps", getU32Decoder()],
+    ["lastManagementFeeChangeTimestamp", getI64Decoder()],
+    ["managementFeeVersion", getU64Decoder()],
+    ["performanceFeeVersion", getU64Decoder()],
+    ["padding", fixDecoderSize(getBytesDecoder(), 89)],
   ]);
 }
 

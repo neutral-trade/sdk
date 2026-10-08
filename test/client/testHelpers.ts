@@ -101,7 +101,11 @@ export function emptyBundleArgs(): BundleArgs {
       mfeeBps: 0,
     })),
     tierCount: 0,
-    padding: new Uint8Array(117),
+    issuanceFeeBps: 0,
+    lastManagementFeeChangeTimestamp: 0n,
+    managementFeeVersion: 0n,
+    performanceFeeVersion: 0n,
+    padding: new Uint8Array(89),
   };
 }
 
@@ -134,7 +138,10 @@ export function emptyUserBundleArgs(): UserBundleAccountArgs {
     switchTargetBundle: ZERO_ADDRESS,
     switchCreatedAt: 0n,
     referrer: ZERO_ADDRESS,
-    padding: new Uint8Array(145),
+    performanceFeeVersion: 0n,
+    performanceFeeResetPending: false,
+    managementFeeVersion: 0n,
+    padding: new Uint8Array(128),
   };
 }
 

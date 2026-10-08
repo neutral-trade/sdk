@@ -194,6 +194,9 @@ export function estimatePendingUserFees(args: {
     | "assetPrecision"
     | "bundleUnderlyingBalance"
     | "totalShares"
+    | "lastManagementFeeChangeTimestamp"
+    | "managementFeeVersion"
+    | "performanceFeeVersion"
   >;
   oracleData: Pick<OracleData, "averageExternalEquity">;
   userBundle: Pick<
@@ -206,6 +209,9 @@ export function estimatePendingUserFees(args: {
     | "customWithdrawalFeeBps"
     | "customPerformanceFeeBps"
     | "customManagementFeeBps"
+    | "performanceFeeVersion"
+    | "performanceFeeResetPending"
+    | "managementFeeVersion"
   >;
   nowUnixSeconds: number | bigint;
 }): PendingFeeEstimate {
@@ -223,7 +229,16 @@ export function estimatePendingUserFees(args: {
   let managementFeeShares = 0n;
   if (args.userBundle.lastManagementFeeTimestamp > 0n) {
     const nowUnixSeconds = BigInt(args.nowUnixSeconds);
-    const elapsed = nowUnixSeconds - args.userBundle.lastManagementFeeTimestamp;
+    const changeTimestamp =
+      args.userBundle.feeOverrideFlags & FEE_OVERRIDE_MANAGEMENT ||
+      args.userBundle.managementFeeVersion === args.bundle.managementFeeVersion
+        ? 0n
+        : args.bundle.lastManagementFeeChangeTimestamp;
+    const accrualStart =
+      args.userBundle.lastManagementFeeTimestamp > changeTimestamp
+        ? args.userBundle.lastManagementFeeTimestamp
+        : changeTimestamp;
+    const elapsed = nowUnixSeconds - accrualStart;
     const secondsElapsed = elapsed > 0n ? elapsed : 0n;
     managementFeeShares =
       (args.userBundle.shares *
@@ -237,7 +252,12 @@ export function estimatePendingUserFees(args: {
       ? sharePrice
       : args.userBundle.hwmPerShare;
   let performanceFeeShares = 0n;
-  if (sharePrice !== 0n && sharePrice > hwmValue) {
+  const performanceBasisReset =
+    args.userBundle.performanceFeeResetPending ||
+    (!(args.userBundle.feeOverrideFlags & FEE_OVERRIDE_PERFORMANCE) &&
+      args.userBundle.performanceFeeVersion !==
+        args.bundle.performanceFeeVersion);
+  if (!performanceBasisReset && sharePrice !== 0n && sharePrice > hwmValue) {
     performanceFeeShares =
       ((sharePrice - hwmValue) *
         args.userBundle.shares *

@@ -13,4 +13,5 @@ export * from "./bundleTempData";
 export * from "./oracleData";
 export * from "./referrerAccount";
 export * from "./strategy";
+export * from "./tokenizedBundleDepositor";
 export * from "./userBundleAccount";
