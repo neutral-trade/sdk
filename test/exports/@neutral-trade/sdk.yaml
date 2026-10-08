@@ -1,6 +1,7 @@
 .:
   ADD_STRATEGY_DISCRIMINATOR: object
   ALLOWLISTED_BUNDLE_PROGRAM_IDS_BY_CLUSTER: object
+  APPLY_FEES_TO_TOKENIZED_DEPOSITOR_DISCRIMINATOR: object
   APPLY_FEES_TO_USER_DISCRIMINATOR: object
   assertAllowlistedBundleProgramId: function
   assertValidAmountRaw: function
@@ -39,6 +40,7 @@
   decodeOracleData: function
   decodeReferrerAccount: function
   decodeStrategy: function
+  decodeTokenizedBundleDepositor: function
   decodeUserBundleAccount: function
   DEFAULT_BUNDLE_PROGRAM_ID_DEVNET: string
   DEFAULT_BUNDLE_PROGRAM_ID_MAINNET: string
@@ -66,10 +68,12 @@
   fetchAllMaybeOracleData: function
   fetchAllMaybeReferrerAccount: function
   fetchAllMaybeStrategy: function
+  fetchAllMaybeTokenizedBundleDepositor: function
   fetchAllMaybeUserBundleAccount: function
   fetchAllOracleData: function
   fetchAllReferrerAccount: function
   fetchAllStrategy: function
+  fetchAllTokenizedBundleDepositor: function
   fetchAllUserBundleAccount: function
   fetchBundle: function
   fetchBundleCreatorAccount: function
@@ -82,11 +86,13 @@
   fetchMaybeOracleData: function
   fetchMaybeReferrerAccount: function
   fetchMaybeStrategy: function
+  fetchMaybeTokenizedBundleDepositor: function
   fetchMaybeUserBundleAccount: function
   fetchOracleData: function
   fetchReferrerAccount: function
   fetchReferrerStatus: function
   fetchStrategy: function
+  fetchTokenizedBundleDepositor: function
   fetchUserBundleAccount: function
   fetchUserBundleBalance: function
   fetchUserBundleBalances: function
@@ -97,6 +103,7 @@
   findBundleMasterAccountPda: function
   findBundleTempDataPda: function
   findCloseUserBundleAccountUserBundleAccountPda: function
+  findMintPda: function
   findOracleDataPda: function
   findPendingBundleAssetAuthorityPda: function
   findReferrerAccountPda: function
@@ -111,6 +118,8 @@
   findTargetOracleDataPda: function
   findTargetPendingBundleAssetAuthorityPda: function
   findTargetUserBundleAccountPda: function
+  findTokenAuthorityPda: function
+  findTokenizedBundleDepositorPda: function
   findUserBundleAccountPda: function
   getAddStrategyDiscriminatorBytes: function
   getAddStrategyInstruction: function
@@ -118,6 +127,12 @@
   getAddStrategyInstructionDataCodec: function
   getAddStrategyInstructionDataDecoder: function
   getAddStrategyInstructionDataEncoder: function
+  getApplyFeesToTokenizedDepositorDiscriminatorBytes: function
+  getApplyFeesToTokenizedDepositorInstruction: function
+  getApplyFeesToTokenizedDepositorInstructionAsync: function
+  getApplyFeesToTokenizedDepositorInstructionDataCodec: function
+  getApplyFeesToTokenizedDepositorInstructionDataDecoder: function
+  getApplyFeesToTokenizedDepositorInstructionDataEncoder: function
   getApplyFeesToUserDiscriminatorBytes: function
   getApplyFeesToUserInstruction: function
   getApplyFeesToUserInstructionAsync: function
@@ -217,6 +232,18 @@
   getInitializePermissionedBundleDepositorInstructionDataCodec: function
   getInitializePermissionedBundleDepositorInstructionDataDecoder: function
   getInitializePermissionedBundleDepositorInstructionDataEncoder: function
+  getInitializeTokenizedBundleDepositorDiscriminatorBytes: function
+  getInitializeTokenizedBundleDepositorInstruction: function
+  getInitializeTokenizedBundleDepositorInstructionAsync: function
+  getInitializeTokenizedBundleDepositorInstructionDataCodec: function
+  getInitializeTokenizedBundleDepositorInstructionDataDecoder: function
+  getInitializeTokenizedBundleDepositorInstructionDataEncoder: function
+  getInstantMintBundleTokensDiscriminatorBytes: function
+  getInstantMintBundleTokensInstruction: function
+  getInstantMintBundleTokensInstructionAsync: function
+  getInstantMintBundleTokensInstructionDataCodec: function
+  getInstantMintBundleTokensInstructionDataDecoder: function
+  getInstantMintBundleTokensInstructionDataEncoder: function
   getManagerWithdrawDiscriminatorBytes: function
   getManagerWithdrawInstruction: function
   getManagerWithdrawInstructionAsync: function
@@ -322,6 +349,12 @@
   getRequestDepositInstructionDataCodec: function
   getRequestDepositInstructionDataDecoder: function
   getRequestDepositInstructionDataEncoder: function
+  getRequestTokenWithdrawalDiscriminatorBytes: function
+  getRequestTokenWithdrawalInstruction: function
+  getRequestTokenWithdrawalInstructionAsync: function
+  getRequestTokenWithdrawalInstructionDataCodec: function
+  getRequestTokenWithdrawalInstructionDataDecoder: function
+  getRequestTokenWithdrawalInstructionDataEncoder: function
   getRequestWithdrawalDiscriminatorBytes: function
   getRequestWithdrawalInstruction: function
   getRequestWithdrawalInstructionAsync: function
@@ -344,6 +377,11 @@
   getSetFeesInstructionDataCodec: function
   getSetFeesInstructionDataDecoder: function
   getSetFeesInstructionDataEncoder: function
+  getSetIssuanceFeeDiscriminatorBytes: function
+  getSetIssuanceFeeInstruction: function
+  getSetIssuanceFeeInstructionDataCodec: function
+  getSetIssuanceFeeInstructionDataDecoder: function
+  getSetIssuanceFeeInstructionDataEncoder: function
   getSetKeeperDiscriminatorBytes: function
   getSetKeeperInstruction: function
   getSetKeeperInstructionDataCodec: function
@@ -359,6 +397,12 @@
   getSetMinDepositAmountInstructionDataCodec: function
   getSetMinDepositAmountInstructionDataDecoder: function
   getSetMinDepositAmountInstructionDataEncoder: function
+  getSetMintCapPerCycleDiscriminatorBytes: function
+  getSetMintCapPerCycleInstruction: function
+  getSetMintCapPerCycleInstructionAsync: function
+  getSetMintCapPerCycleInstructionDataCodec: function
+  getSetMintCapPerCycleInstructionDataDecoder: function
+  getSetMintCapPerCycleInstructionDataEncoder: function
   getSetOracleBufferDiscriminatorBytes: function
   getSetOracleBufferInstruction: function
   getSetOracleBufferInstructionDataCodec: function
@@ -430,6 +474,11 @@
   getStrategyDiscriminatorBytes: function
   getStrategyEncoder: function
   getStrategySize: function
+  getTokenizedBundleDepositorCodec: function
+  getTokenizedBundleDepositorDecoder: function
+  getTokenizedBundleDepositorDiscriminatorBytes: function
+  getTokenizedBundleDepositorEncoder: function
+  getTokenizedBundleDepositorSize: function
   getUpdateAllocationsDiscriminatorBytes: function
   getUpdateAllocationsInstruction: function
   getUpdateAllocationsInstructionAsync: function
@@ -457,6 +506,8 @@
   INITIALIZE_BUNDLE_DISCRIMINATOR: object
   INITIALIZE_BUNDLE_MASTER_ACCOUNT_DISCRIMINATOR: object
   INITIALIZE_PERMISSIONED_BUNDLE_DEPOSITOR_DISCRIMINATOR: object
+  INITIALIZE_TOKENIZED_BUNDLE_DEPOSITOR_DISCRIMINATOR: object
+  INSTANT_MINT_BUNDLE_TOKENS_DISCRIMINATOR: object
   isAllowlistedBundleProgramId: function
   isNtbundleError: function
   isValidVaultAddress: function
@@ -482,9 +533,11 @@
   NTBUNDLE_ERROR__EMPTY_USER_WITHDRAWAL_TIMING_CLEAR_REQUEST: number
   NTBUNDLE_ERROR__EQUITY_OUT_OF_BUFFER_BOUND: number
   NTBUNDLE_ERROR__EXCESSIVE_DEPOSIT_FEE: number
+  NTBUNDLE_ERROR__EXCESSIVE_ISSUANCE_FEE: number
   NTBUNDLE_ERROR__EXCESSIVE_MANAGEMENT_FEE: number
   NTBUNDLE_ERROR__EXCESSIVE_PERFORMANCE_FEE: number
   NTBUNDLE_ERROR__EXCESSIVE_WITHDRAW_FEE: number
+  NTBUNDLE_ERROR__INSTANT_MINT_CAP_EXCEEDED: number
   NTBUNDLE_ERROR__INSUFFICIENT_BUNDLE_BALANCE: number
   NTBUNDLE_ERROR__INSUFFICIENT_FUNDS: number
   NTBUNDLE_ERROR__INSUFFICIENT_SHARES_BALANCE: number
@@ -500,6 +553,9 @@
   NTBUNDLE_ERROR__INVALID_RECEIVER: number
   NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG: number
   NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG: number
+  NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_DEPOSITOR: number
+  NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_MINT: number
+  NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_TOKEN_AUTHORITY: number
   NTBUNDLE_ERROR__INVALID_TWAP_PERIOD: number
   NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG: number
   NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG: number
@@ -512,6 +568,8 @@
   NTBUNDLE_ERROR__MATH_ERROR: number
   NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED: number
   NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET: number
+  NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET: number
+  NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET: number
   NTBUNDLE_ERROR__MUST_BE_IN_WHITELIST: number
   NTBUNDLE_ERROR__NETTING_ALREADY_DONE: number
   NTBUNDLE_ERROR__NETTING_NOT_DONE: number
@@ -527,8 +585,10 @@
   NTBUNDLE_ERROR__PENDING_DEPOSIT_AMOUNT_ZERO: number
   NTBUNDLE_ERROR__PENDING_DEPOSIT_EXISTS: number
   NTBUNDLE_ERROR__PENDING_DEPOSIT_OR_WITHDRAWAL_EXISTS: number
+  NTBUNDLE_ERROR__PENDING_STATE_ACTIVE: number
   NTBUNDLE_ERROR__PENDING_TRANSACTIONS_EXIST: number
   NTBUNDLE_ERROR__PENDING_WITHDRAWAL_EXISTS: number
+  NTBUNDLE_ERROR__PERMISSIONED_BUNDLE_TOKENIZATION_UNSUPPORTED: number
   NTBUNDLE_ERROR__POD_TOKEN_TOTAL_SUPPLY_ZERO: number
   NTBUNDLE_ERROR__RAW_TRANSFER_RECEIVER: number
   NTBUNDLE_ERROR__RECEIVER_ALREADY_ALLOCATED: number
@@ -549,6 +609,9 @@
   NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNT_MISMATCH: number
   NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNTS_MISSING: number
   NTBUNDLE_ERROR__SWITCH_TARGET_SAME_AS_SOURCE: number
+  NTBUNDLE_ERROR__TOKEN_AMOUNT_TOO_SMALL: number
+  NTBUNDLE_ERROR__TOKEN_AMOUNT_ZERO: number
+  NTBUNDLE_ERROR__TOKENIZED_BUNDLE_STATE_INVALID: number
   NTBUNDLE_ERROR__TOO_MANY_ALLOCATED_RECEIVERS: number
   NTBUNDLE_ERROR__TOTAL_ASSET_EXCEED_NEW_MAX_DEPOSIT_AMOUNT: number
   NTBUNDLE_ERROR__UNAUTHORIZED_ADMIN_ACTION: number
@@ -568,6 +631,7 @@
   ORACLE_DATA_DISCRIMINATOR: object
   parseAddStrategyInstruction: function
   parseAmountRaw: function
+  parseApplyFeesToTokenizedDepositorInstruction: function
   parseApplyFeesToUserInstruction: function
   parseChangeBundleMasterAdminInstruction: function
   parseChangeManagerInstruction: function
@@ -581,6 +645,8 @@
   parseInitializeBundleInstruction: function
   parseInitializeBundleMasterAccountInstruction: function
   parseInitializePermissionedBundleDepositorInstruction: function
+  parseInitializeTokenizedBundleDepositorInstruction: function
+  parseInstantMintBundleTokensInstruction: function
   parseManagerWithdrawInstruction: function
   parseManagerWithdrawWithSplitInstruction: function
   parseNetPendingTransactionsInstruction: function
@@ -597,13 +663,16 @@
   parseRemoveStrategyInstruction: function
   parseRequestBundleSwitchInstruction: function
   parseRequestDepositInstruction: function
+  parseRequestTokenWithdrawalInstruction: function
   parseRequestWithdrawalInstruction: function
   parseSetBundleCreatorInstruction: function
   parseSetDelaysInstruction: function
   parseSetFeesInstruction: function
+  parseSetIssuanceFeeInstruction: function
   parseSetKeeperInstruction: function
   parseSetMaxDepositAmountInstruction: function
   parseSetMinDepositAmountInstruction: function
+  parseSetMintCapPerCycleInstruction: function
   parseSetOracleBufferInstruction: function
   parseSetOracleMaxAgeInstruction: function
   parseSetOracleUpdateTimeLimitInstruction: function
@@ -633,6 +702,7 @@
   REMOVE_STRATEGY_DISCRIMINATOR: object
   REQUEST_BUNDLE_SWITCH_DISCRIMINATOR: object
   REQUEST_DEPOSIT_DISCRIMINATOR: object
+  REQUEST_TOKEN_WITHDRAWAL_DISCRIMINATOR: object
   REQUEST_WITHDRAWAL_DISCRIMINATOR: object
   resolveBundleReferralRates: function
   resolveEffectiveFees: function
@@ -642,9 +712,11 @@
   SET_BUNDLE_CREATOR_DISCRIMINATOR: object
   SET_DELAYS_DISCRIMINATOR: object
   SET_FEES_DISCRIMINATOR: object
+  SET_ISSUANCE_FEE_DISCRIMINATOR: object
   SET_KEEPER_DISCRIMINATOR: object
   SET_MAX_DEPOSIT_AMOUNT_DISCRIMINATOR: object
   SET_MIN_DEPOSIT_AMOUNT_DISCRIMINATOR: object
+  SET_MINT_CAP_PER_CYCLE_DISCRIMINATOR: object
   SET_ORACLE_BUFFER_DISCRIMINATOR: object
   SET_ORACLE_MAX_AGE_DISCRIMINATOR: object
   SET_ORACLE_UPDATE_TIME_LIMIT_DISCRIMINATOR: object
@@ -662,6 +734,7 @@
   SupportedChain: object
   SupportedToken: object
   TOKEN_PROGRAM_ADDRESS: string
+  TOKENIZED_BUNDLE_DEPOSITOR_DISCRIMINATOR: object
   tokens: object
   totalEquityRaw: function
   toVaultConfig: function
@@ -677,6 +750,7 @@
   VaultType: object
 ./generated:
   ADD_STRATEGY_DISCRIMINATOR: object
+  APPLY_FEES_TO_TOKENIZED_DEPOSITOR_DISCRIMINATOR: object
   APPLY_FEES_TO_USER_DISCRIMINATOR: object
   BUNDLE_CREATOR_ACCOUNT_DISCRIMINATOR: object
   BUNDLE_DISCRIMINATOR: object
@@ -694,6 +768,7 @@
   decodeOracleData: function
   decodeReferrerAccount: function
   decodeStrategy: function
+  decodeTokenizedBundleDepositor: function
   decodeUserBundleAccount: function
   DISTRIBUTE_TO_RECEIVERS_DISCRIMINATOR: object
   ENABLE_STRATEGY_DISCRIMINATOR: object
@@ -709,10 +784,12 @@
   fetchAllMaybeOracleData: function
   fetchAllMaybeReferrerAccount: function
   fetchAllMaybeStrategy: function
+  fetchAllMaybeTokenizedBundleDepositor: function
   fetchAllMaybeUserBundleAccount: function
   fetchAllOracleData: function
   fetchAllReferrerAccount: function
   fetchAllStrategy: function
+  fetchAllTokenizedBundleDepositor: function
   fetchAllUserBundleAccount: function
   fetchBundle: function
   fetchBundleCreatorAccount: function
@@ -725,10 +802,12 @@
   fetchMaybeOracleData: function
   fetchMaybeReferrerAccount: function
   fetchMaybeStrategy: function
+  fetchMaybeTokenizedBundleDepositor: function
   fetchMaybeUserBundleAccount: function
   fetchOracleData: function
   fetchReferrerAccount: function
   fetchStrategy: function
+  fetchTokenizedBundleDepositor: function
   fetchUserBundleAccount: function
   findBundleAccountPda: function
   findBundleAssetAuthorityPda: function
@@ -736,6 +815,7 @@
   findBundleMasterAccountPda: function
   findBundleTempDataPda: function
   findCloseUserBundleAccountUserBundleAccountPda: function
+  findMintPda: function
   findOracleDataPda: function
   findPendingBundleAssetAuthorityPda: function
   findReferrerAccountPda: function
@@ -750,6 +830,8 @@
   findTargetOracleDataPda: function
   findTargetPendingBundleAssetAuthorityPda: function
   findTargetUserBundleAccountPda: function
+  findTokenAuthorityPda: function
+  findTokenizedBundleDepositorPda: function
   findUserBundleAccountPda: function
   getAddStrategyDiscriminatorBytes: function
   getAddStrategyInstruction: function
@@ -757,6 +839,12 @@
   getAddStrategyInstructionDataCodec: function
   getAddStrategyInstructionDataDecoder: function
   getAddStrategyInstructionDataEncoder: function
+  getApplyFeesToTokenizedDepositorDiscriminatorBytes: function
+  getApplyFeesToTokenizedDepositorInstruction: function
+  getApplyFeesToTokenizedDepositorInstructionAsync: function
+  getApplyFeesToTokenizedDepositorInstructionDataCodec: function
+  getApplyFeesToTokenizedDepositorInstructionDataDecoder: function
+  getApplyFeesToTokenizedDepositorInstructionDataEncoder: function
   getApplyFeesToUserDiscriminatorBytes: function
   getApplyFeesToUserInstruction: function
   getApplyFeesToUserInstructionAsync: function
@@ -853,6 +941,18 @@
   getInitializePermissionedBundleDepositorInstructionDataCodec: function
   getInitializePermissionedBundleDepositorInstructionDataDecoder: function
   getInitializePermissionedBundleDepositorInstructionDataEncoder: function
+  getInitializeTokenizedBundleDepositorDiscriminatorBytes: function
+  getInitializeTokenizedBundleDepositorInstruction: function
+  getInitializeTokenizedBundleDepositorInstructionAsync: function
+  getInitializeTokenizedBundleDepositorInstructionDataCodec: function
+  getInitializeTokenizedBundleDepositorInstructionDataDecoder: function
+  getInitializeTokenizedBundleDepositorInstructionDataEncoder: function
+  getInstantMintBundleTokensDiscriminatorBytes: function
+  getInstantMintBundleTokensInstruction: function
+  getInstantMintBundleTokensInstructionAsync: function
+  getInstantMintBundleTokensInstructionDataCodec: function
+  getInstantMintBundleTokensInstructionDataDecoder: function
+  getInstantMintBundleTokensInstructionDataEncoder: function
   getManagerWithdrawDiscriminatorBytes: function
   getManagerWithdrawInstruction: function
   getManagerWithdrawInstructionAsync: function
@@ -957,6 +1057,12 @@
   getRequestDepositInstructionDataCodec: function
   getRequestDepositInstructionDataDecoder: function
   getRequestDepositInstructionDataEncoder: function
+  getRequestTokenWithdrawalDiscriminatorBytes: function
+  getRequestTokenWithdrawalInstruction: function
+  getRequestTokenWithdrawalInstructionAsync: function
+  getRequestTokenWithdrawalInstructionDataCodec: function
+  getRequestTokenWithdrawalInstructionDataDecoder: function
+  getRequestTokenWithdrawalInstructionDataEncoder: function
   getRequestWithdrawalDiscriminatorBytes: function
   getRequestWithdrawalInstruction: function
   getRequestWithdrawalInstructionAsync: function
@@ -979,6 +1085,11 @@
   getSetFeesInstructionDataCodec: function
   getSetFeesInstructionDataDecoder: function
   getSetFeesInstructionDataEncoder: function
+  getSetIssuanceFeeDiscriminatorBytes: function
+  getSetIssuanceFeeInstruction: function
+  getSetIssuanceFeeInstructionDataCodec: function
+  getSetIssuanceFeeInstructionDataDecoder: function
+  getSetIssuanceFeeInstructionDataEncoder: function
   getSetKeeperDiscriminatorBytes: function
   getSetKeeperInstruction: function
   getSetKeeperInstructionDataCodec: function
@@ -994,6 +1105,12 @@
   getSetMinDepositAmountInstructionDataCodec: function
   getSetMinDepositAmountInstructionDataDecoder: function
   getSetMinDepositAmountInstructionDataEncoder: function
+  getSetMintCapPerCycleDiscriminatorBytes: function
+  getSetMintCapPerCycleInstruction: function
+  getSetMintCapPerCycleInstructionAsync: function
+  getSetMintCapPerCycleInstructionDataCodec: function
+  getSetMintCapPerCycleInstructionDataDecoder: function
+  getSetMintCapPerCycleInstructionDataEncoder: function
   getSetOracleBufferDiscriminatorBytes: function
   getSetOracleBufferInstruction: function
   getSetOracleBufferInstructionDataCodec: function
@@ -1063,6 +1180,11 @@
   getStrategyDiscriminatorBytes: function
   getStrategyEncoder: function
   getStrategySize: function
+  getTokenizedBundleDepositorCodec: function
+  getTokenizedBundleDepositorDecoder: function
+  getTokenizedBundleDepositorDiscriminatorBytes: function
+  getTokenizedBundleDepositorEncoder: function
+  getTokenizedBundleDepositorSize: function
   getUpdateAllocationsDiscriminatorBytes: function
   getUpdateAllocationsInstruction: function
   getUpdateAllocationsInstructionAsync: function
@@ -1086,6 +1208,8 @@
   INITIALIZE_BUNDLE_DISCRIMINATOR: object
   INITIALIZE_BUNDLE_MASTER_ACCOUNT_DISCRIMINATOR: object
   INITIALIZE_PERMISSIONED_BUNDLE_DEPOSITOR_DISCRIMINATOR: object
+  INITIALIZE_TOKENIZED_BUNDLE_DEPOSITOR_DISCRIMINATOR: object
+  INSTANT_MINT_BUNDLE_TOKENS_DISCRIMINATOR: object
   isNtbundleError: function
   MANAGER_WITHDRAW_DISCRIMINATOR: object
   MANAGER_WITHDRAW_WITH_SPLIT_DISCRIMINATOR: object
@@ -1105,9 +1229,11 @@
   NTBUNDLE_ERROR__EMPTY_USER_WITHDRAWAL_TIMING_CLEAR_REQUEST: number
   NTBUNDLE_ERROR__EQUITY_OUT_OF_BUFFER_BOUND: number
   NTBUNDLE_ERROR__EXCESSIVE_DEPOSIT_FEE: number
+  NTBUNDLE_ERROR__EXCESSIVE_ISSUANCE_FEE: number
   NTBUNDLE_ERROR__EXCESSIVE_MANAGEMENT_FEE: number
   NTBUNDLE_ERROR__EXCESSIVE_PERFORMANCE_FEE: number
   NTBUNDLE_ERROR__EXCESSIVE_WITHDRAW_FEE: number
+  NTBUNDLE_ERROR__INSTANT_MINT_CAP_EXCEEDED: number
   NTBUNDLE_ERROR__INSUFFICIENT_BUNDLE_BALANCE: number
   NTBUNDLE_ERROR__INSUFFICIENT_FUNDS: number
   NTBUNDLE_ERROR__INSUFFICIENT_SHARES_BALANCE: number
@@ -1123,6 +1249,9 @@
   NTBUNDLE_ERROR__INVALID_RECEIVER: number
   NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG: number
   NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG: number
+  NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_DEPOSITOR: number
+  NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_MINT: number
+  NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_TOKEN_AUTHORITY: number
   NTBUNDLE_ERROR__INVALID_TWAP_PERIOD: number
   NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG: number
   NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG: number
@@ -1135,6 +1264,8 @@
   NTBUNDLE_ERROR__MATH_ERROR: number
   NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED: number
   NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET: number
+  NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET: number
+  NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET: number
   NTBUNDLE_ERROR__MUST_BE_IN_WHITELIST: number
   NTBUNDLE_ERROR__NETTING_ALREADY_DONE: number
   NTBUNDLE_ERROR__NETTING_NOT_DONE: number
@@ -1150,8 +1281,10 @@
   NTBUNDLE_ERROR__PENDING_DEPOSIT_AMOUNT_ZERO: number
   NTBUNDLE_ERROR__PENDING_DEPOSIT_EXISTS: number
   NTBUNDLE_ERROR__PENDING_DEPOSIT_OR_WITHDRAWAL_EXISTS: number
+  NTBUNDLE_ERROR__PENDING_STATE_ACTIVE: number
   NTBUNDLE_ERROR__PENDING_TRANSACTIONS_EXIST: number
   NTBUNDLE_ERROR__PENDING_WITHDRAWAL_EXISTS: number
+  NTBUNDLE_ERROR__PERMISSIONED_BUNDLE_TOKENIZATION_UNSUPPORTED: number
   NTBUNDLE_ERROR__POD_TOKEN_TOTAL_SUPPLY_ZERO: number
   NTBUNDLE_ERROR__RAW_TRANSFER_RECEIVER: number
   NTBUNDLE_ERROR__RECEIVER_ALREADY_ALLOCATED: number
@@ -1172,6 +1305,9 @@
   NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNT_MISMATCH: number
   NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNTS_MISSING: number
   NTBUNDLE_ERROR__SWITCH_TARGET_SAME_AS_SOURCE: number
+  NTBUNDLE_ERROR__TOKEN_AMOUNT_TOO_SMALL: number
+  NTBUNDLE_ERROR__TOKEN_AMOUNT_ZERO: number
+  NTBUNDLE_ERROR__TOKENIZED_BUNDLE_STATE_INVALID: number
   NTBUNDLE_ERROR__TOO_MANY_ALLOCATED_RECEIVERS: number
   NTBUNDLE_ERROR__TOTAL_ASSET_EXCEED_NEW_MAX_DEPOSIT_AMOUNT: number
   NTBUNDLE_ERROR__UNAUTHORIZED_ADMIN_ACTION: number
@@ -1190,6 +1326,7 @@
   ntbundleProgram: function
   ORACLE_DATA_DISCRIMINATOR: object
   parseAddStrategyInstruction: function
+  parseApplyFeesToTokenizedDepositorInstruction: function
   parseApplyFeesToUserInstruction: function
   parseChangeBundleMasterAdminInstruction: function
   parseChangeManagerInstruction: function
@@ -1203,6 +1340,8 @@
   parseInitializeBundleInstruction: function
   parseInitializeBundleMasterAccountInstruction: function
   parseInitializePermissionedBundleDepositorInstruction: function
+  parseInitializeTokenizedBundleDepositorInstruction: function
+  parseInstantMintBundleTokensInstruction: function
   parseManagerWithdrawInstruction: function
   parseManagerWithdrawWithSplitInstruction: function
   parseNetPendingTransactionsInstruction: function
@@ -1219,13 +1358,16 @@
   parseRemoveStrategyInstruction: function
   parseRequestBundleSwitchInstruction: function
   parseRequestDepositInstruction: function
+  parseRequestTokenWithdrawalInstruction: function
   parseRequestWithdrawalInstruction: function
   parseSetBundleCreatorInstruction: function
   parseSetDelaysInstruction: function
   parseSetFeesInstruction: function
+  parseSetIssuanceFeeInstruction: function
   parseSetKeeperInstruction: function
   parseSetMaxDepositAmountInstruction: function
   parseSetMinDepositAmountInstruction: function
+  parseSetMintCapPerCycleInstruction: function
   parseSetOracleBufferInstruction: function
   parseSetOracleMaxAgeInstruction: function
   parseSetOracleUpdateTimeLimitInstruction: function
@@ -1253,13 +1395,16 @@
   REMOVE_STRATEGY_DISCRIMINATOR: object
   REQUEST_BUNDLE_SWITCH_DISCRIMINATOR: object
   REQUEST_DEPOSIT_DISCRIMINATOR: object
+  REQUEST_TOKEN_WITHDRAWAL_DISCRIMINATOR: object
   REQUEST_WITHDRAWAL_DISCRIMINATOR: object
   SET_BUNDLE_CREATOR_DISCRIMINATOR: object
   SET_DELAYS_DISCRIMINATOR: object
   SET_FEES_DISCRIMINATOR: object
+  SET_ISSUANCE_FEE_DISCRIMINATOR: object
   SET_KEEPER_DISCRIMINATOR: object
   SET_MAX_DEPOSIT_AMOUNT_DISCRIMINATOR: object
   SET_MIN_DEPOSIT_AMOUNT_DISCRIMINATOR: object
+  SET_MINT_CAP_PER_CYCLE_DISCRIMINATOR: object
   SET_ORACLE_BUFFER_DISCRIMINATOR: object
   SET_ORACLE_MAX_AGE_DISCRIMINATOR: object
   SET_ORACLE_UPDATE_TIME_LIMIT_DISCRIMINATOR: object
@@ -1273,6 +1418,7 @@
   SET_WITHDRAWAL_REDEMPTION_SCHEDULE_DISCRIMINATOR: object
   START_DISTRIBUTION_DISCRIMINATOR: object
   STRATEGY_DISCRIMINATOR: object
+  TOKENIZED_BUNDLE_DEPOSITOR_DISCRIMINATOR: object
   UPDATE_ALLOCATIONS_DISCRIMINATOR: object
   UPDATE_ORACLE_DISCRIMINATOR: object
   USER_BUNDLE_ACCOUNT_DISCRIMINATOR: object

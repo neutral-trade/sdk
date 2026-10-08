@@ -42,6 +42,7 @@ import {
   getOracleDataCodec,
   getReferrerAccountCodec,
   getStrategyCodec,
+  getTokenizedBundleDepositorCodec,
   getUserBundleAccountCodec,
   type Bundle,
   type BundleArgs,
@@ -57,11 +58,14 @@ import {
   type ReferrerAccountArgs,
   type Strategy,
   type StrategyArgs,
+  type TokenizedBundleDepositor,
+  type TokenizedBundleDepositorArgs,
   type UserBundleAccount,
   type UserBundleAccountArgs,
 } from "../accounts";
 import {
   getAddStrategyInstructionAsync,
+  getApplyFeesToTokenizedDepositorInstructionAsync,
   getApplyFeesToUserInstructionAsync,
   getChangeBundleMasterAdminInstructionAsync,
   getChangeManagerInstruction,
@@ -75,6 +79,8 @@ import {
   getInitializeBundleInstructionAsync,
   getInitializeBundleMasterAccountInstructionAsync,
   getInitializePermissionedBundleDepositorInstructionAsync,
+  getInitializeTokenizedBundleDepositorInstructionAsync,
+  getInstantMintBundleTokensInstructionAsync,
   getManagerWithdrawInstructionAsync,
   getManagerWithdrawWithSplitInstructionAsync,
   getNetPendingTransactionsInstructionAsync,
@@ -90,13 +96,16 @@ import {
   getRemoveStrategyInstructionAsync,
   getRequestBundleSwitchInstructionAsync,
   getRequestDepositInstructionAsync,
+  getRequestTokenWithdrawalInstructionAsync,
   getRequestWithdrawalInstructionAsync,
   getSetBundleCreatorInstructionAsync,
   getSetDelaysInstruction,
   getSetFeesInstruction,
+  getSetIssuanceFeeInstruction,
   getSetKeeperInstruction,
   getSetMaxDepositAmountInstruction,
   getSetMinDepositAmountInstruction,
+  getSetMintCapPerCycleInstructionAsync,
   getSetOracleBufferInstruction,
   getSetOracleMaxAgeInstruction,
   getSetOracleUpdateTimeLimitInstruction,
@@ -112,6 +121,7 @@ import {
   getUpdateAllocationsInstructionAsync,
   getUpdateOracleInstructionAsync,
   parseAddStrategyInstruction,
+  parseApplyFeesToTokenizedDepositorInstruction,
   parseApplyFeesToUserInstruction,
   parseChangeBundleMasterAdminInstruction,
   parseChangeManagerInstruction,
@@ -125,6 +135,8 @@ import {
   parseInitializeBundleInstruction,
   parseInitializeBundleMasterAccountInstruction,
   parseInitializePermissionedBundleDepositorInstruction,
+  parseInitializeTokenizedBundleDepositorInstruction,
+  parseInstantMintBundleTokensInstruction,
   parseManagerWithdrawInstruction,
   parseManagerWithdrawWithSplitInstruction,
   parseNetPendingTransactionsInstruction,
@@ -140,13 +152,16 @@ import {
   parseRemoveStrategyInstruction,
   parseRequestBundleSwitchInstruction,
   parseRequestDepositInstruction,
+  parseRequestTokenWithdrawalInstruction,
   parseRequestWithdrawalInstruction,
   parseSetBundleCreatorInstruction,
   parseSetDelaysInstruction,
   parseSetFeesInstruction,
+  parseSetIssuanceFeeInstruction,
   parseSetKeeperInstruction,
   parseSetMaxDepositAmountInstruction,
   parseSetMinDepositAmountInstruction,
+  parseSetMintCapPerCycleInstruction,
   parseSetOracleBufferInstruction,
   parseSetOracleMaxAgeInstruction,
   parseSetOracleUpdateTimeLimitInstruction,
@@ -162,6 +177,7 @@ import {
   parseUpdateAllocationsInstruction,
   parseUpdateOracleInstruction,
   type AddStrategyAsyncInput,
+  type ApplyFeesToTokenizedDepositorAsyncInput,
   type ApplyFeesToUserAsyncInput,
   type ChangeBundleMasterAdminAsyncInput,
   type ChangeManagerInput,
@@ -175,10 +191,13 @@ import {
   type InitializeBundleDepositorAsyncInput,
   type InitializeBundleMasterAccountAsyncInput,
   type InitializePermissionedBundleDepositorAsyncInput,
+  type InitializeTokenizedBundleDepositorAsyncInput,
+  type InstantMintBundleTokensAsyncInput,
   type ManagerWithdrawAsyncInput,
   type ManagerWithdrawWithSplitAsyncInput,
   type NetPendingTransactionsAsyncInput,
   type ParsedAddStrategyInstruction,
+  type ParsedApplyFeesToTokenizedDepositorInstruction,
   type ParsedApplyFeesToUserInstruction,
   type ParsedChangeBundleMasterAdminInstruction,
   type ParsedChangeManagerInstruction,
@@ -192,6 +211,8 @@ import {
   type ParsedInitializeBundleInstruction,
   type ParsedInitializeBundleMasterAccountInstruction,
   type ParsedInitializePermissionedBundleDepositorInstruction,
+  type ParsedInitializeTokenizedBundleDepositorInstruction,
+  type ParsedInstantMintBundleTokensInstruction,
   type ParsedManagerWithdrawInstruction,
   type ParsedManagerWithdrawWithSplitInstruction,
   type ParsedNetPendingTransactionsInstruction,
@@ -207,13 +228,16 @@ import {
   type ParsedRemoveStrategyInstruction,
   type ParsedRequestBundleSwitchInstruction,
   type ParsedRequestDepositInstruction,
+  type ParsedRequestTokenWithdrawalInstruction,
   type ParsedRequestWithdrawalInstruction,
   type ParsedSetBundleCreatorInstruction,
   type ParsedSetDelaysInstruction,
   type ParsedSetFeesInstruction,
+  type ParsedSetIssuanceFeeInstruction,
   type ParsedSetKeeperInstruction,
   type ParsedSetMaxDepositAmountInstruction,
   type ParsedSetMinDepositAmountInstruction,
+  type ParsedSetMintCapPerCycleInstruction,
   type ParsedSetOracleBufferInstruction,
   type ParsedSetOracleMaxAgeInstruction,
   type ParsedSetOracleUpdateTimeLimitInstruction,
@@ -240,13 +264,16 @@ import {
   type RemoveStrategyAsyncInput,
   type RequestBundleSwitchAsyncInput,
   type RequestDepositAsyncInput,
+  type RequestTokenWithdrawalAsyncInput,
   type RequestWithdrawalAsyncInput,
   type SetBundleCreatorAsyncInput,
   type SetDelaysInput,
   type SetFeesInput,
+  type SetIssuanceFeeInput,
   type SetKeeperInput,
   type SetMaxDepositAmountInput,
   type SetMinDepositAmountInput,
+  type SetMintCapPerCycleAsyncInput,
   type SetOracleBufferInput,
   type SetOracleMaxAgeInput,
   type SetOracleUpdateTimeLimitInput,
@@ -269,6 +296,7 @@ import {
   findBundleMasterAccountPda,
   findBundleTempDataPda,
   findCloseUserBundleAccountUserBundleAccountPda,
+  findMintPda,
   findOracleDataPda,
   findPendingBundleAssetAuthorityPda,
   findReferrerAccountPda,
@@ -283,6 +311,8 @@ import {
   findTargetOracleDataPda,
   findTargetPendingBundleAssetAuthorityPda,
   findTargetUserBundleAccountPda,
+  findTokenAuthorityPda,
+  findTokenizedBundleDepositorPda,
   findUserBundleAccountPda,
 } from "../pdas";
 
@@ -297,6 +327,7 @@ export enum NtbundleAccount {
   OracleData,
   ReferrerAccount,
   Strategy,
+  TokenizedBundleDepositor,
   UserBundleAccount,
 }
 
@@ -385,6 +416,17 @@ export function identifyNtbundleAccount(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([76, 78, 8, 31, 121, 235, 87, 100]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleAccount.TokenizedBundleDepositor;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([32, 181, 106, 26, 67, 130, 185, 241]),
       ),
       0,
@@ -400,6 +442,7 @@ export function identifyNtbundleAccount(
 
 export enum NtbundleInstruction {
   AddStrategy,
+  ApplyFeesToTokenizedDepositor,
   ApplyFeesToUser,
   ChangeBundleMasterAdmin,
   ChangeManager,
@@ -413,6 +456,8 @@ export enum NtbundleInstruction {
   InitializeBundleDepositor,
   InitializeBundleMasterAccount,
   InitializePermissionedBundleDepositor,
+  InitializeTokenizedBundleDepositor,
+  InstantMintBundleTokens,
   ManagerWithdraw,
   ManagerWithdrawWithSplit,
   NetPendingTransactions,
@@ -428,13 +473,16 @@ export enum NtbundleInstruction {
   RemoveStrategy,
   RequestBundleSwitch,
   RequestDeposit,
+  RequestTokenWithdrawal,
   RequestWithdrawal,
   SetBundleCreator,
   SetDelays,
   SetFees,
+  SetIssuanceFee,
   SetKeeper,
   SetMaxDepositAmount,
   SetMinDepositAmount,
+  SetMintCapPerCycle,
   SetOracleBuffer,
   SetOracleMaxAge,
   SetOracleUpdateTimeLimit,
@@ -465,6 +513,17 @@ export function identifyNtbundleInstruction(
     )
   ) {
     return NtbundleInstruction.AddStrategy;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([237, 243, 229, 36, 146, 77, 86, 168]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.ApplyFeesToTokenizedDepositor;
   }
   if (
     containsBytes(
@@ -608,6 +667,28 @@ export function identifyNtbundleInstruction(
     )
   ) {
     return NtbundleInstruction.InitializePermissionedBundleDepositor;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([56, 137, 71, 110, 14, 153, 246, 241]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.InitializeTokenizedBundleDepositor;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([56, 192, 88, 145, 75, 250, 148, 33]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.InstantMintBundleTokens;
   }
   if (
     containsBytes(
@@ -778,6 +859,17 @@ export function identifyNtbundleInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([138, 108, 216, 213, 7, 119, 182, 63]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.RequestTokenWithdrawal;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([251, 85, 121, 205, 56, 201, 12, 177]),
       ),
       0,
@@ -822,6 +914,17 @@ export function identifyNtbundleInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([44, 117, 252, 159, 144, 198, 56, 169]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.SetIssuanceFee;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([102, 94, 23, 78, 157, 222, 243, 214]),
       ),
       0,
@@ -850,6 +953,17 @@ export function identifyNtbundleInstruction(
     )
   ) {
     return NtbundleInstruction.SetMinDepositAmount;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([114, 75, 182, 13, 172, 126, 102, 237]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.SetMintCapPerCycle;
   }
   if (
     containsBytes(
@@ -1018,6 +1132,9 @@ export type ParsedNtbundleInstruction<
       instructionType: NtbundleInstruction.AddStrategy;
     } & ParsedAddStrategyInstruction<TProgram>)
   | ({
+      instructionType: NtbundleInstruction.ApplyFeesToTokenizedDepositor;
+    } & ParsedApplyFeesToTokenizedDepositorInstruction<TProgram>)
+  | ({
       instructionType: NtbundleInstruction.ApplyFeesToUser;
     } & ParsedApplyFeesToUserInstruction<TProgram>)
   | ({
@@ -1056,6 +1173,12 @@ export type ParsedNtbundleInstruction<
   | ({
       instructionType: NtbundleInstruction.InitializePermissionedBundleDepositor;
     } & ParsedInitializePermissionedBundleDepositorInstruction<TProgram>)
+  | ({
+      instructionType: NtbundleInstruction.InitializeTokenizedBundleDepositor;
+    } & ParsedInitializeTokenizedBundleDepositorInstruction<TProgram>)
+  | ({
+      instructionType: NtbundleInstruction.InstantMintBundleTokens;
+    } & ParsedInstantMintBundleTokensInstruction<TProgram>)
   | ({
       instructionType: NtbundleInstruction.ManagerWithdraw;
     } & ParsedManagerWithdrawInstruction<TProgram>)
@@ -1102,6 +1225,9 @@ export type ParsedNtbundleInstruction<
       instructionType: NtbundleInstruction.RequestDeposit;
     } & ParsedRequestDepositInstruction<TProgram>)
   | ({
+      instructionType: NtbundleInstruction.RequestTokenWithdrawal;
+    } & ParsedRequestTokenWithdrawalInstruction<TProgram>)
+  | ({
       instructionType: NtbundleInstruction.RequestWithdrawal;
     } & ParsedRequestWithdrawalInstruction<TProgram>)
   | ({
@@ -1114,6 +1240,9 @@ export type ParsedNtbundleInstruction<
       instructionType: NtbundleInstruction.SetFees;
     } & ParsedSetFeesInstruction<TProgram>)
   | ({
+      instructionType: NtbundleInstruction.SetIssuanceFee;
+    } & ParsedSetIssuanceFeeInstruction<TProgram>)
+  | ({
       instructionType: NtbundleInstruction.SetKeeper;
     } & ParsedSetKeeperInstruction<TProgram>)
   | ({
@@ -1122,6 +1251,9 @@ export type ParsedNtbundleInstruction<
   | ({
       instructionType: NtbundleInstruction.SetMinDepositAmount;
     } & ParsedSetMinDepositAmountInstruction<TProgram>)
+  | ({
+      instructionType: NtbundleInstruction.SetMintCapPerCycle;
+    } & ParsedSetMintCapPerCycleInstruction<TProgram>)
   | ({
       instructionType: NtbundleInstruction.SetOracleBuffer;
     } & ParsedSetOracleBufferInstruction<TProgram>)
@@ -1175,6 +1307,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
       return {
         instructionType: NtbundleInstruction.AddStrategy,
         ...parseAddStrategyInstruction(instruction),
+      };
+    }
+    case NtbundleInstruction.ApplyFeesToTokenizedDepositor: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.ApplyFeesToTokenizedDepositor,
+        ...parseApplyFeesToTokenizedDepositorInstruction(instruction),
       };
     }
     case NtbundleInstruction.ApplyFeesToUser: {
@@ -1267,6 +1406,20 @@ export function parseNtbundleInstruction<TProgram extends string>(
         instructionType:
           NtbundleInstruction.InitializePermissionedBundleDepositor,
         ...parseInitializePermissionedBundleDepositorInstruction(instruction),
+      };
+    }
+    case NtbundleInstruction.InitializeTokenizedBundleDepositor: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.InitializeTokenizedBundleDepositor,
+        ...parseInitializeTokenizedBundleDepositorInstruction(instruction),
+      };
+    }
+    case NtbundleInstruction.InstantMintBundleTokens: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.InstantMintBundleTokens,
+        ...parseInstantMintBundleTokensInstruction(instruction),
       };
     }
     case NtbundleInstruction.ManagerWithdraw: {
@@ -1374,6 +1527,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
         ...parseRequestDepositInstruction(instruction),
       };
     }
+    case NtbundleInstruction.RequestTokenWithdrawal: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.RequestTokenWithdrawal,
+        ...parseRequestTokenWithdrawalInstruction(instruction),
+      };
+    }
     case NtbundleInstruction.RequestWithdrawal: {
       assertIsInstructionWithAccounts(instruction);
       return {
@@ -1402,6 +1562,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
         ...parseSetFeesInstruction(instruction),
       };
     }
+    case NtbundleInstruction.SetIssuanceFee: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.SetIssuanceFee,
+        ...parseSetIssuanceFeeInstruction(instruction),
+      };
+    }
     case NtbundleInstruction.SetKeeper: {
       assertIsInstructionWithAccounts(instruction);
       return {
@@ -1421,6 +1588,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
       return {
         instructionType: NtbundleInstruction.SetMinDepositAmount,
         ...parseSetMinDepositAmountInstruction(instruction),
+      };
+    }
+    case NtbundleInstruction.SetMintCapPerCycle: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.SetMintCapPerCycle,
+        ...parseSetMintCapPerCycleInstruction(instruction),
       };
     }
     case NtbundleInstruction.SetOracleBuffer: {
@@ -1553,6 +1727,10 @@ export type NtbundlePluginAccounts = {
     SelfFetchFunctions<ReferrerAccountArgs, ReferrerAccount>;
   strategy: ReturnType<typeof getStrategyCodec> &
     SelfFetchFunctions<StrategyArgs, Strategy>;
+  tokenizedBundleDepositor: ReturnType<
+    typeof getTokenizedBundleDepositorCodec
+  > &
+    SelfFetchFunctions<TokenizedBundleDepositorArgs, TokenizedBundleDepositor>;
   userBundleAccount: ReturnType<typeof getUserBundleAccountCodec> &
     SelfFetchFunctions<UserBundleAccountArgs, UserBundleAccount>;
 };
@@ -1561,6 +1739,10 @@ export type NtbundlePluginInstructions = {
   addStrategy: (
     input: AddStrategyAsyncInput,
   ) => ReturnType<typeof getAddStrategyInstructionAsync> &
+    SelfPlanAndSendFunctions;
+  applyFeesToTokenizedDepositor: (
+    input: ApplyFeesToTokenizedDepositorAsyncInput,
+  ) => ReturnType<typeof getApplyFeesToTokenizedDepositorInstructionAsync> &
     SelfPlanAndSendFunctions;
   applyFeesToUser: (
     input: ApplyFeesToUserAsyncInput,
@@ -1618,6 +1800,16 @@ export type NtbundlePluginInstructions = {
   ) => ReturnType<
     typeof getInitializePermissionedBundleDepositorInstructionAsync
   > &
+    SelfPlanAndSendFunctions;
+  initializeTokenizedBundleDepositor: (
+    input: InitializeTokenizedBundleDepositorAsyncInput,
+  ) => ReturnType<
+    typeof getInitializeTokenizedBundleDepositorInstructionAsync
+  > &
+    SelfPlanAndSendFunctions;
+  instantMintBundleTokens: (
+    input: InstantMintBundleTokensAsyncInput,
+  ) => ReturnType<typeof getInstantMintBundleTokensInstructionAsync> &
     SelfPlanAndSendFunctions;
   managerWithdraw: (
     input: ManagerWithdrawAsyncInput,
@@ -1679,6 +1871,10 @@ export type NtbundlePluginInstructions = {
     input: RequestDepositAsyncInput,
   ) => ReturnType<typeof getRequestDepositInstructionAsync> &
     SelfPlanAndSendFunctions;
+  requestTokenWithdrawal: (
+    input: RequestTokenWithdrawalAsyncInput,
+  ) => ReturnType<typeof getRequestTokenWithdrawalInstructionAsync> &
+    SelfPlanAndSendFunctions;
   requestWithdrawal: (
     input: RequestWithdrawalAsyncInput,
   ) => ReturnType<typeof getRequestWithdrawalInstructionAsync> &
@@ -1693,6 +1889,10 @@ export type NtbundlePluginInstructions = {
   setFees: (
     input: SetFeesInput,
   ) => ReturnType<typeof getSetFeesInstruction> & SelfPlanAndSendFunctions;
+  setIssuanceFee: (
+    input: SetIssuanceFeeInput,
+  ) => ReturnType<typeof getSetIssuanceFeeInstruction> &
+    SelfPlanAndSendFunctions;
   setKeeper: (
     input: SetKeeperInput,
   ) => ReturnType<typeof getSetKeeperInstruction> & SelfPlanAndSendFunctions;
@@ -1703,6 +1903,10 @@ export type NtbundlePluginInstructions = {
   setMinDepositAmount: (
     input: SetMinDepositAmountInput,
   ) => ReturnType<typeof getSetMinDepositAmountInstruction> &
+    SelfPlanAndSendFunctions;
+  setMintCapPerCycle: (
+    input: SetMintCapPerCycleAsyncInput,
+  ) => ReturnType<typeof getSetMintCapPerCycleInstructionAsync> &
     SelfPlanAndSendFunctions;
   setOracleBuffer: (
     input: SetOracleBufferInput,
@@ -1764,14 +1968,17 @@ export type NtbundlePluginInstructions = {
 
 export type NtbundlePluginPdas = {
   strategyAccount: typeof findStrategyAccountPda;
-  userBundleAccount: typeof findUserBundleAccountPda;
+  bundleTempData: typeof findBundleTempDataPda;
   oracleData: typeof findOracleDataPda;
+  tokenizedBundleDepositor: typeof findTokenizedBundleDepositorPda;
+  userBundleAccount: typeof findUserBundleAccountPda;
   bundleAssetAuthority: typeof findBundleAssetAuthorityPda;
   bundleMasterAccount: typeof findBundleMasterAccountPda;
   closeUserBundleAccountUserBundleAccount: typeof findCloseUserBundleAccountUserBundleAccountPda;
-  bundleTempData: typeof findBundleTempDataPda;
   bundleCreatorAccount: typeof findBundleCreatorAccountPda;
   bundleAccount: typeof findBundleAccountPda;
+  tokenAuthority: typeof findTokenAuthorityPda;
+  mint: typeof findMintPda;
   pendingBundleAssetAuthority: typeof findPendingBundleAssetAuthorityPda;
   sourceUserBundleAccount: typeof findSourceUserBundleAccountPda;
   sourceBundleAssetAuthority: typeof findSourceBundleAssetAuthorityPda;
@@ -1819,6 +2026,10 @@ export function ntbundleProgram() {
             getReferrerAccountCodec(),
           ),
           strategy: addSelfFetchFunctions(client, getStrategyCodec()),
+          tokenizedBundleDepositor: addSelfFetchFunctions(
+            client,
+            getTokenizedBundleDepositorCodec(),
+          ),
           userBundleAccount: addSelfFetchFunctions(
             client,
             getUserBundleAccountCodec(),
@@ -1829,6 +2040,11 @@ export function ntbundleProgram() {
             addSelfPlanAndSendFunctions(
               client,
               getAddStrategyInstructionAsync(input),
+            ),
+          applyFeesToTokenizedDepositor: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getApplyFeesToTokenizedDepositorInstructionAsync(input),
             ),
           applyFeesToUser: (input) =>
             addSelfPlanAndSendFunctions(
@@ -1900,6 +2116,16 @@ export function ntbundleProgram() {
                 ...input,
                 payer: input.payer ?? client.payer,
               }),
+            ),
+          initializeTokenizedBundleDepositor: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getInitializeTokenizedBundleDepositorInstructionAsync(input),
+            ),
+          instantMintBundleTokens: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getInstantMintBundleTokensInstructionAsync(input),
             ),
           managerWithdraw: (input) =>
             addSelfPlanAndSendFunctions(
@@ -1976,6 +2202,11 @@ export function ntbundleProgram() {
               client,
               getRequestDepositInstructionAsync(input),
             ),
+          requestTokenWithdrawal: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getRequestTokenWithdrawalInstructionAsync(input),
+            ),
           requestWithdrawal: (input) =>
             addSelfPlanAndSendFunctions(
               client,
@@ -1990,6 +2221,11 @@ export function ntbundleProgram() {
             addSelfPlanAndSendFunctions(client, getSetDelaysInstruction(input)),
           setFees: (input) =>
             addSelfPlanAndSendFunctions(client, getSetFeesInstruction(input)),
+          setIssuanceFee: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getSetIssuanceFeeInstruction(input),
+            ),
           setKeeper: (input) =>
             addSelfPlanAndSendFunctions(client, getSetKeeperInstruction(input)),
           setMaxDepositAmount: (input) =>
@@ -2001,6 +2237,11 @@ export function ntbundleProgram() {
             addSelfPlanAndSendFunctions(
               client,
               getSetMinDepositAmountInstruction(input),
+            ),
+          setMintCapPerCycle: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getSetMintCapPerCycleInstructionAsync(input),
             ),
           setOracleBuffer: (input) =>
             addSelfPlanAndSendFunctions(
@@ -2075,15 +2316,18 @@ export function ntbundleProgram() {
         },
         pdas: {
           strategyAccount: findStrategyAccountPda,
-          userBundleAccount: findUserBundleAccountPda,
+          bundleTempData: findBundleTempDataPda,
           oracleData: findOracleDataPda,
+          tokenizedBundleDepositor: findTokenizedBundleDepositorPda,
+          userBundleAccount: findUserBundleAccountPda,
           bundleAssetAuthority: findBundleAssetAuthorityPda,
           bundleMasterAccount: findBundleMasterAccountPda,
           closeUserBundleAccountUserBundleAccount:
             findCloseUserBundleAccountUserBundleAccountPda,
-          bundleTempData: findBundleTempDataPda,
           bundleCreatorAccount: findBundleCreatorAccountPda,
           bundleAccount: findBundleAccountPda,
+          tokenAuthority: findTokenAuthorityPda,
+          mint: findMintPda,
           pendingBundleAssetAuthority: findPendingBundleAssetAuthorityPda,
           sourceUserBundleAccount: findSourceUserBundleAccountPda,
           sourceBundleAssetAuthority: findSourceBundleAssetAuthorityPda,

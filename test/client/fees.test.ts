@@ -30,12 +30,18 @@ const defaultUserOverrides = {
 
 const estimateBundle = {
   ...defaultFees,
+  lastManagementFeeChangeTimestamp: 0n,
+  managementFeeVersion: 0n,
+  performanceFeeVersion: 0n,
   assetPrecision: 1_000_000n,
   bundleUnderlyingBalance: 1_000_000_000_000n,
   totalShares: 1_000_000_000_000n,
 };
 
 const estimateUser = {
+  managementFeeVersion: 0n,
+  performanceFeeVersion: 0n,
+  performanceFeeResetPending: false,
   shares: 1_000_000_000_000n,
   hwmPerShare: 1_000_000n,
   lastManagementFeeTimestamp: 1n,
@@ -280,6 +286,60 @@ describe("fee extensions", () => {
   });
 
   describe("estimatePendingUserFees", () => {
+    it("exempts the performance reset window and clamps management accrual", () => {
+      const result = estimate({
+        bundle: {
+          lastManagementFeeChangeTimestamp: 31_536_001n,
+          managementFeeVersion: 1n,
+          performanceFeeVersion: 1n,
+          bundleUnderlyingBalance: 1_500_000_000_000n,
+        },
+        nowUnixSeconds: 63_072_001n,
+      });
+      expect(result.managementFeeShares).to.equal(50_000_000_000n);
+      expect(result.performanceFeeShares).to.equal(0n);
+    });
+
+    it("preserves overrides across bundle changes and honors pending override resets", () => {
+      const overrides = {
+        bundle: {
+          lastManagementFeeChangeTimestamp: 31_536_001n,
+          managementFeeVersion: 1n,
+          performanceFeeVersion: 1n,
+          bundleUnderlyingBalance: 2_000_000_000_000n,
+        },
+        userBundle: {
+          feeOverrideFlags: FEE_OVERRIDE_MANAGEMENT | FEE_OVERRIDE_PERFORMANCE,
+          customManagementFeeBps: 500,
+          customPerformanceFeeBps: 2_000,
+        },
+        nowUnixSeconds: 63_072_001n,
+      };
+      const result = estimate(overrides);
+      expect(result.managementFeeShares).to.equal(100_000_000_000n);
+      expect(result.performanceFeeShares).to.equal(100_000_000_000n);
+      const reset = estimate({
+        ...overrides,
+        userBundle: {
+          ...overrides.userBundle,
+          performanceFeeResetPending: true,
+        },
+      });
+      expect(reset.performanceFeeShares).to.equal(0n);
+    });
+
+    it("retains accrual after acknowledging a bundle rate that matched an override", () => {
+      const result = estimate({
+        bundle: {
+          lastManagementFeeChangeTimestamp: 31_536_001n,
+          managementFeeVersion: 1n,
+        },
+        userBundle: { managementFeeVersion: 1n },
+        nowUnixSeconds: 63_072_001n,
+      });
+      expect(result.managementFeeShares).to.equal(100_000_000_000n);
+    });
+
     it("calculates an exact one-year management fee", () => {
       const result = estimate({
         bundle: { managementFeeBps: 200, performanceFee: 0 },

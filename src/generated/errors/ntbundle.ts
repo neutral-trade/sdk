@@ -202,6 +202,30 @@ export const NTBUNDLE_ERROR__UNAUTHORIZED_REFERRER_ACTION = 0x17cb; // 6091
 export const NTBUNDLE_ERROR__REFERRER_DEPOSIT_TOO_LOW = 0x17cc; // 6092
 /** InvalidReferralTierConfig: Invalid referral tier configuration */
 export const NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG = 0x17cd; // 6093
+/** InvalidTokenizedBundleDepositor: Invalid tokenized bundle depositor */
+export const NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_DEPOSITOR = 0x17ce; // 6094
+/** InvalidTokenizedBundleMint: Invalid tokenized bundle mint */
+export const NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_MINT = 0x17cf; // 6095
+/** InvalidTokenizedBundleTokenAuthority: Invalid tokenized bundle token authority */
+export const NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_TOKEN_AUTHORITY = 0x17d0; // 6096
+/** TokenAmountZero: Token amount must be greater than zero */
+export const NTBUNDLE_ERROR__TOKEN_AMOUNT_ZERO = 0x17d1; // 6097
+/** TokenAmountTooSmall: Token amount is too small */
+export const NTBUNDLE_ERROR__TOKEN_AMOUNT_TOO_SMALL = 0x17d2; // 6098
+/** PermissionedBundleTokenizationUnsupported: Permissioned bundle tokenization is not supported */
+export const NTBUNDLE_ERROR__PERMISSIONED_BUNDLE_TOKENIZATION_UNSUPPORTED = 0x17d3; // 6099
+/** PendingStateActive: Pending deposit, withdrawal, or switch state is active */
+export const NTBUNDLE_ERROR__PENDING_STATE_ACTIVE = 0x17d4; // 6100
+/** TokenizedBundleStateInvalid: Tokenized bundle state is invalid */
+export const NTBUNDLE_ERROR__TOKENIZED_BUNDLE_STATE_INVALID = 0x17d5; // 6101
+/** MinimumTokensOutNotMet: Minimum share tokens out was not met */
+export const NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET = 0x17d6; // 6102
+/** ExcessiveIssuanceFee: Excessive issuance fee */
+export const NTBUNDLE_ERROR__EXCESSIVE_ISSUANCE_FEE = 0x17d7; // 6103
+/** MinimumSharesOutNotMet: Minimum bundle shares out was not met */
+export const NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET = 0x17d8; // 6104
+/** InstantMintCapExceeded: Instant mint cap per cycle exceeded */
+export const NTBUNDLE_ERROR__INSTANT_MINT_CAP_EXCEEDED = 0x17d9; // 6105
 
 export type NtbundleError =
   | typeof NTBUNDLE_ERROR__ALLOCATION_AMOUNT_ZERO
@@ -219,9 +243,11 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__EMPTY_USER_WITHDRAWAL_TIMING_CLEAR_REQUEST
   | typeof NTBUNDLE_ERROR__EQUITY_OUT_OF_BUFFER_BOUND
   | typeof NTBUNDLE_ERROR__EXCESSIVE_DEPOSIT_FEE
+  | typeof NTBUNDLE_ERROR__EXCESSIVE_ISSUANCE_FEE
   | typeof NTBUNDLE_ERROR__EXCESSIVE_MANAGEMENT_FEE
   | typeof NTBUNDLE_ERROR__EXCESSIVE_PERFORMANCE_FEE
   | typeof NTBUNDLE_ERROR__EXCESSIVE_WITHDRAW_FEE
+  | typeof NTBUNDLE_ERROR__INSTANT_MINT_CAP_EXCEEDED
   | typeof NTBUNDLE_ERROR__INSUFFICIENT_BUNDLE_BALANCE
   | typeof NTBUNDLE_ERROR__INSUFFICIENT_FUNDS
   | typeof NTBUNDLE_ERROR__INSUFFICIENT_SHARES_BALANCE
@@ -237,6 +263,9 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__INVALID_RECEIVER
   | typeof NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG
   | typeof NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG
+  | typeof NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_DEPOSITOR
+  | typeof NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_MINT
+  | typeof NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_TOKEN_AUTHORITY
   | typeof NTBUNDLE_ERROR__INVALID_TWAP_PERIOD
   | typeof NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG
   | typeof NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG
@@ -249,6 +278,8 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__MATH_ERROR
   | typeof NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED
   | typeof NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET
+  | typeof NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET
+  | typeof NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET
   | typeof NTBUNDLE_ERROR__MUST_BE_IN_WHITELIST
   | typeof NTBUNDLE_ERROR__NETTING_ALREADY_DONE
   | typeof NTBUNDLE_ERROR__NETTING_NOT_DONE
@@ -264,8 +295,10 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__PENDING_DEPOSIT_AMOUNT_ZERO
   | typeof NTBUNDLE_ERROR__PENDING_DEPOSIT_EXISTS
   | typeof NTBUNDLE_ERROR__PENDING_DEPOSIT_OR_WITHDRAWAL_EXISTS
+  | typeof NTBUNDLE_ERROR__PENDING_STATE_ACTIVE
   | typeof NTBUNDLE_ERROR__PENDING_TRANSACTIONS_EXIST
   | typeof NTBUNDLE_ERROR__PENDING_WITHDRAWAL_EXISTS
+  | typeof NTBUNDLE_ERROR__PERMISSIONED_BUNDLE_TOKENIZATION_UNSUPPORTED
   | typeof NTBUNDLE_ERROR__POD_TOKEN_TOTAL_SUPPLY_ZERO
   | typeof NTBUNDLE_ERROR__RAW_TRANSFER_RECEIVER
   | typeof NTBUNDLE_ERROR__RECEIVER_ALREADY_ALLOCATED
@@ -286,6 +319,9 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNT_MISMATCH
   | typeof NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNTS_MISSING
   | typeof NTBUNDLE_ERROR__SWITCH_TARGET_SAME_AS_SOURCE
+  | typeof NTBUNDLE_ERROR__TOKEN_AMOUNT_TOO_SMALL
+  | typeof NTBUNDLE_ERROR__TOKEN_AMOUNT_ZERO
+  | typeof NTBUNDLE_ERROR__TOKENIZED_BUNDLE_STATE_INVALID
   | typeof NTBUNDLE_ERROR__TOO_MANY_ALLOCATED_RECEIVERS
   | typeof NTBUNDLE_ERROR__TOTAL_ASSET_EXCEED_NEW_MAX_DEPOSIT_AMOUNT
   | typeof NTBUNDLE_ERROR__UNAUTHORIZED_ADMIN_ACTION
@@ -317,9 +353,11 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__EMPTY_USER_WITHDRAWAL_TIMING_CLEAR_REQUEST]: `Empty user withdrawal timing clear request`,
     [NTBUNDLE_ERROR__EQUITY_OUT_OF_BUFFER_BOUND]: `Equity out of buffer bound`,
     [NTBUNDLE_ERROR__EXCESSIVE_DEPOSIT_FEE]: `Excessive deposit fee`,
+    [NTBUNDLE_ERROR__EXCESSIVE_ISSUANCE_FEE]: `Excessive issuance fee`,
     [NTBUNDLE_ERROR__EXCESSIVE_MANAGEMENT_FEE]: `Excessive management fee`,
     [NTBUNDLE_ERROR__EXCESSIVE_PERFORMANCE_FEE]: `Excessive performance fee`,
     [NTBUNDLE_ERROR__EXCESSIVE_WITHDRAW_FEE]: `Excessive withdraw fee`,
+    [NTBUNDLE_ERROR__INSTANT_MINT_CAP_EXCEEDED]: `Instant mint cap per cycle exceeded`,
     [NTBUNDLE_ERROR__INSUFFICIENT_BUNDLE_BALANCE]: `Insufficient bundle balance`,
     [NTBUNDLE_ERROR__INSUFFICIENT_FUNDS]: `Insufficient funds to process withdrawal`,
     [NTBUNDLE_ERROR__INSUFFICIENT_SHARES_BALANCE]: `Insufficient Shares balance`,
@@ -335,6 +373,9 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__INVALID_RECEIVER]: `Invalid receiver address`,
     [NTBUNDLE_ERROR__INVALID_REFERRAL_CONFIG]: `Invalid referral configuration`,
     [NTBUNDLE_ERROR__INVALID_REFERRAL_TIER_CONFIG]: `Invalid referral tier configuration`,
+    [NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_DEPOSITOR]: `Invalid tokenized bundle depositor`,
+    [NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_MINT]: `Invalid tokenized bundle mint`,
+    [NTBUNDLE_ERROR__INVALID_TOKENIZED_BUNDLE_TOKEN_AUTHORITY]: `Invalid tokenized bundle token authority`,
     [NTBUNDLE_ERROR__INVALID_TWAP_PERIOD]: `Invalid twap period`,
     [NTBUNDLE_ERROR__INVALID_USER_FEE_CONFIG]: `Invalid user fee configuration`,
     [NTBUNDLE_ERROR__INVALID_USER_WITHDRAWAL_TIMING_CONFIG]: `Invalid user withdrawal timing configuration`,
@@ -347,6 +388,8 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__MATH_ERROR]: `Math error`,
     [NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED]: `Max deposit amount exceeded`,
     [NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET]: `Min deposit amount not met`,
+    [NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET]: `Minimum bundle shares out was not met`,
+    [NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET]: `Minimum share tokens out was not met`,
     [NTBUNDLE_ERROR__MUST_BE_IN_WHITELIST]: `Not in whitelist`,
     [NTBUNDLE_ERROR__NETTING_ALREADY_DONE]: `Netting already done`,
     [NTBUNDLE_ERROR__NETTING_NOT_DONE]: `Netting not done`,
@@ -362,8 +405,10 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__PENDING_DEPOSIT_AMOUNT_ZERO]: `Pending deposit amount is zero`,
     [NTBUNDLE_ERROR__PENDING_DEPOSIT_EXISTS]: `Pending deposit exists`,
     [NTBUNDLE_ERROR__PENDING_DEPOSIT_OR_WITHDRAWAL_EXISTS]: `Pending deposit or withdrawal exists`,
+    [NTBUNDLE_ERROR__PENDING_STATE_ACTIVE]: `Pending deposit, withdrawal, or switch state is active`,
     [NTBUNDLE_ERROR__PENDING_TRANSACTIONS_EXIST]: `Pending transactions exist`,
     [NTBUNDLE_ERROR__PENDING_WITHDRAWAL_EXISTS]: `Pending withdrawal exists`,
+    [NTBUNDLE_ERROR__PERMISSIONED_BUNDLE_TOKENIZATION_UNSUPPORTED]: `Permissioned bundle tokenization is not supported`,
     [NTBUNDLE_ERROR__POD_TOKEN_TOTAL_SUPPLY_ZERO]: `Pod token total supply is zero`,
     [NTBUNDLE_ERROR__RAW_TRANSFER_RECEIVER]: `Not a raw transfer receiver`,
     [NTBUNDLE_ERROR__RECEIVER_ALREADY_ALLOCATED]: `Receiver already allocated`,
@@ -384,6 +429,9 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNT_MISMATCH]: `Switch target account mismatch`,
     [NTBUNDLE_ERROR__SWITCH_TARGET_ACCOUNTS_MISSING]: `Switch target accounts missing`,
     [NTBUNDLE_ERROR__SWITCH_TARGET_SAME_AS_SOURCE]: `Switch target cannot be source bundle`,
+    [NTBUNDLE_ERROR__TOKEN_AMOUNT_TOO_SMALL]: `Token amount is too small`,
+    [NTBUNDLE_ERROR__TOKEN_AMOUNT_ZERO]: `Token amount must be greater than zero`,
+    [NTBUNDLE_ERROR__TOKENIZED_BUNDLE_STATE_INVALID]: `Tokenized bundle state is invalid`,
     [NTBUNDLE_ERROR__TOO_MANY_ALLOCATED_RECEIVERS]: `Too many allocated receivers`,
     [NTBUNDLE_ERROR__TOTAL_ASSET_EXCEED_NEW_MAX_DEPOSIT_AMOUNT]: `Total asset exceed new max deposit amount`,
     [NTBUNDLE_ERROR__UNAUTHORIZED_ADMIN_ACTION]: `Not bundle admin`,

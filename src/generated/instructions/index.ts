@@ -7,6 +7,7 @@
  */
 
 export * from "./addStrategy";
+export * from "./applyFeesToTokenizedDepositor";
 export * from "./applyFeesToUser";
 export * from "./changeBundleMasterAdmin";
 export * from "./changeManager";
@@ -20,6 +21,8 @@ export * from "./initializeBundle";
 export * from "./initializeBundleDepositor";
 export * from "./initializeBundleMasterAccount";
 export * from "./initializePermissionedBundleDepositor";
+export * from "./initializeTokenizedBundleDepositor";
+export * from "./instantMintBundleTokens";
 export * from "./managerWithdraw";
 export * from "./managerWithdrawWithSplit";
 export * from "./netPendingTransactions";
@@ -35,13 +38,16 @@ export * from "./registerReferrer";
 export * from "./removeStrategy";
 export * from "./requestBundleSwitch";
 export * from "./requestDeposit";
+export * from "./requestTokenWithdrawal";
 export * from "./requestWithdrawal";
 export * from "./setBundleCreator";
 export * from "./setDelays";
 export * from "./setFees";
+export * from "./setIssuanceFee";
 export * from "./setKeeper";
 export * from "./setMaxDepositAmount";
 export * from "./setMinDepositAmount";
+export * from "./setMintCapPerCycle";
 export * from "./setOracleBuffer";
 export * from "./setOracleMaxAge";
 export * from "./setOracleUpdateTimeLimit";

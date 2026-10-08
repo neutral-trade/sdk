@@ -89,6 +89,9 @@ export type UserBundleAccount = {
   switchTargetBundle: Address;
   switchCreatedAt: bigint;
   referrer: Address;
+  performanceFeeVersion: bigint;
+  performanceFeeResetPending: boolean;
+  managementFeeVersion: bigint;
   padding: ReadonlyUint8Array;
 };
 
@@ -120,6 +123,9 @@ export type UserBundleAccountArgs = {
   switchTargetBundle: Address;
   switchCreatedAt: number | bigint;
   referrer: Address;
+  performanceFeeVersion: number | bigint;
+  performanceFeeResetPending: boolean;
+  managementFeeVersion: number | bigint;
   padding: ReadonlyUint8Array;
 };
 
@@ -155,7 +161,10 @@ export function getUserBundleAccountEncoder(): FixedSizeEncoder<UserBundleAccoun
       ["switchTargetBundle", getAddressEncoder()],
       ["switchCreatedAt", getI64Encoder()],
       ["referrer", getAddressEncoder()],
-      ["padding", fixEncoderSize(getBytesEncoder(), 145)],
+      ["performanceFeeVersion", getU64Encoder()],
+      ["performanceFeeResetPending", getBooleanEncoder()],
+      ["managementFeeVersion", getU64Encoder()],
+      ["padding", fixEncoderSize(getBytesEncoder(), 128)],
     ]),
     (value) => ({ ...value, discriminator: USER_BUNDLE_ACCOUNT_DISCRIMINATOR }),
   );
@@ -192,7 +201,10 @@ export function getUserBundleAccountDecoder(): FixedSizeDecoder<UserBundleAccoun
     ["switchTargetBundle", getAddressDecoder()],
     ["switchCreatedAt", getI64Decoder()],
     ["referrer", getAddressDecoder()],
-    ["padding", fixDecoderSize(getBytesDecoder(), 145)],
+    ["performanceFeeVersion", getU64Decoder()],
+    ["performanceFeeResetPending", getBooleanDecoder()],
+    ["managementFeeVersion", getU64Decoder()],
+    ["padding", fixDecoderSize(getBytesDecoder(), 128)],
   ]);
 }
 
