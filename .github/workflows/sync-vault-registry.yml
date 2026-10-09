@@ -1,0 +1,51 @@
+name: Sync vault registry
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-vault-registry
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - run: pnpm i -g @antfu/ni
+      - run: nci
+      - run: nr sync:registry
+        env:
+          INDEXER_API_URL: ${{ secrets.INDEXER_API_URL }}
+          INDEXER_API_KEY: ${{ secrets.INDEXER_API_KEY }}
+      - run: nr generate
+
+      # Creates the sync PR, or updates the open one on the same branch; no diff means no PR.
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/sync-vault-registry
+          delete-branch: true
+          commit-message: 'chore(registry): sync vault registry from indexer'
+          title: 'chore(registry): sync vault registry from indexer'
+          body: |
+            Automated sync of `src/registry/vaults.json` from the bundle indexer `/v2/vaults`, with the `VaultId` enums regenerated.
+
+            New vaults are added with `pointsEnabled: false`; enable points by hand during review if intended.
+          add-paths: |
+            src/registry/vaults.json
+            src/constants/vault-ids.ts
+            src/constants/vault-ids.devnet.ts
