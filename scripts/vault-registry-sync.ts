@@ -1,6 +1,6 @@
 import type { VaultRegistryEntry } from '../src/types/vault-types'
 import { z } from 'zod'
-import { DEFAULT_BUNDLE_PROGRAM_ID_MAINNET } from '../src/constants/programs'
+import { DEFAULT_BUNDLE_PROGRAM_ID_MAINNET, isAllowlistedBundleProgramId } from '../src/constants/programs'
 import {
   ETHEREUM_CHAIN_ID,
   MONAD_CHAIN_ID,
@@ -131,19 +131,45 @@ function newEntry(vaultId: number, row: IndexerVault): VaultRegistryEntry | unde
   return VaultRegistryEntrySchema.safeParse(entry).success ? entry : undefined
 }
 
+export interface SkippedRow {
+  legacyVaultId: number
+  bundleKey: string
+  reason: string
+}
+
+/** Why a row must not be written into the registry, or undefined when it may be. */
+function rejectReason(row: IndexerVault, existing: VaultRegistryEntry | undefined): string | undefined {
+  const type = row.chain === 'solana' ? VaultType.Bundle : VaultType.AccountableNav
+  if (existing && existing.type !== type)
+    return `registry entry is ${existing.type} but the ${row.chain} row maps to ${type}`
+  if (row.chain === 'solana' && !isAllowlistedBundleProgramId(row.programId, 'mainnet'))
+    return `program id ${row.programId} is not allowlisted on mainnet`
+  return undefined
+}
+
 /**
  * Upserts indexer /v2/vaults rows into the mainnet registry, keyed by legacyVaultId.
  * Registry entries the indexer does not list are left untouched; an in-sync
  * registry comes back deep-equal (and byte-identical once serialized).
+ * Rows that cannot be written safely are returned in `skipped`; drafts (no legacyVaultId) are ignored silently.
  */
-export function syncVaultRegistry(rows: IndexerVault[], registry: VaultRegistryEntry[]): VaultRegistryEntry[] {
+export function syncVaultRegistry(
+  rows: IndexerVault[],
+  registry: VaultRegistryEntry[],
+): { registry: VaultRegistryEntry[], skipped: SkippedRow[] } {
   const result = structuredClone(registry)
   const byId = new Map(result.map(entry => [entry.vaultId, entry]))
+  const skipped: SkippedRow[] = []
 
   for (const row of rows) {
     if (row.legacyVaultId === null)
       continue
     const existing = byId.get(row.legacyVaultId)
+    const reason = rejectReason(row, existing)
+    if (reason) {
+      skipped.push({ legacyVaultId: row.legacyVaultId, bundleKey: row.bundleKey, reason })
+      continue
+    }
     if (existing) {
       updateEntry(existing, row)
       continue
@@ -153,7 +179,10 @@ export function syncVaultRegistry(rows: IndexerVault[], registry: VaultRegistryE
       result.push(created)
       byId.set(created.vaultId, created)
     }
+    else {
+      skipped.push({ legacyVaultId: row.legacyVaultId, bundleKey: row.bundleKey, reason: 'cannot build a valid registry entry (name, category, chain or deposit token)' })
+    }
   }
 
-  return result.sort((a, b) => b.vaultId - a.vaultId)
+  return { registry: result.sort((a, b) => b.vaultId - a.vaultId), skipped }
 }

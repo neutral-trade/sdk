@@ -1,6 +1,7 @@
 import type { VaultRegistryEntry } from '../src/types/vault-types'
 import { describe, expect, it } from 'vitest'
 import { parseIndexerVaults, syncVaultRegistry } from '../scripts/vault-registry-sync'
+import { BUNDLE_PROGRAM_ID_V2_MAINNET, DEFAULT_BUNDLE_PROGRAM_ID_MAINNET } from '../src/constants/programs'
 
 // Old registry fixture: a slice of src/registry/vaults.json (sorted by vaultId descending).
 const registryJson = `[
@@ -45,7 +46,7 @@ const registryJson = `[
     "category": "Market Neutral",
     "vaultAddress": "GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY",
     "depositToken": "USDC",
-    "bundleProgramId": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9",
+    "bundleProgramId": "${BUNDLE_PROGRAM_ID_V2_MAINNET}",
     "pointsMultiplier": 1,
     "pointsEnabled": false
   },
@@ -63,9 +64,6 @@ const registryJson = `[
 ]
 `
 
-const DEFAULT_PROGRAM = 'BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU'
-const V2_PROGRAM = 'BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9'
-
 // /v2/vaults rows as the indexer returns them (trimmed to a realistic subset of fields).
 function solanaRow(overrides: Record<string, unknown>): Record<string, unknown> {
   return {
@@ -77,7 +75,7 @@ function solanaRow(overrides: Record<string, unknown>): Record<string, unknown> 
     managementFeeBps: 0,
     ntMultiplier: 1,
     performanceFeeBps: 2000,
-    programId: DEFAULT_PROGRAM,
+    programId: DEFAULT_BUNDLE_PROGRAM_ID_MAINNET,
     visible: true,
     ...overrides,
   }
@@ -113,7 +111,7 @@ const inSyncRows = [
     legacyVaultId: 69,
     name: 'JLP Delta Neutral',
     bundleKey: 'GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY',
-    programId: V2_PROGRAM,
+    programId: BUNDLE_PROGRAM_ID_V2_MAINNET,
   }),
 ]
 
@@ -121,8 +119,12 @@ function envelope(vaults: unknown[]): unknown {
   return { data: { count: vaults.length, unavailableVaults: [], vaults } }
 }
 
-function sync(rows: unknown[]): VaultRegistryEntry[] {
+function run(rows: unknown[]): ReturnType<typeof syncVaultRegistry> {
   return syncVaultRegistry(parseIndexerVaults(envelope(rows)), JSON.parse(registryJson))
+}
+
+function sync(rows: unknown[]): VaultRegistryEntry[] {
+  return run(rows).registry
 }
 
 function serialize(registry: VaultRegistryEntry[]): string {
@@ -148,7 +150,7 @@ describe('syncVaultRegistry', () => {
         name: 'New-USDC-Bundle',
         category: 'etf',
         bundleKey: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy',
-        programId: V2_PROGRAM,
+        programId: BUNDLE_PROGRAM_ID_V2_MAINNET,
         ntMultiplier: 1.5,
       }),
     ])
@@ -160,7 +162,7 @@ describe('syncVaultRegistry', () => {
       category: 'Index',
       vaultAddress: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy',
       depositToken: 'USDC',
-      bundleProgramId: V2_PROGRAM,
+      bundleProgramId: BUNDLE_PROGRAM_ID_V2_MAINNET,
       pointsMultiplier: 1.5,
       pointsEnabled: false,
     })
@@ -201,13 +203,14 @@ describe('syncVaultRegistry', () => {
 `)
   })
 
-  it('skips rows without a legacyVaultId, such as drafts', () => {
-    const result = sync([
+  it('skips rows without a legacyVaultId, such as drafts, without reporting them', () => {
+    const { registry: result, skipped } = run([
       ...inSyncRows,
       solanaRow({ legacyVaultId: null, name: null, category: null, bundleKey: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy' }),
       solanaRow({ legacyVaultId: null, name: 'Draft', bundleKey: 'G5aMxQTbGWMnYycpfjHpD7Y1muoKBwaB1HtCdpUUcQZp' }),
     ])
     expect(serialize(result)).toBe(registryJson)
+    expect(skipped).toEqual([])
   })
 
   it('leaves registry entries the indexer does not list untouched', () => {
@@ -222,7 +225,7 @@ describe('syncVaultRegistry', () => {
         name: 'Options Market Making',
         category: 'directional',
         bundleKey: '3vZKAcd74bzwNYZmsJndYExkGj6ABQwrUoiMtdNfzLZe',
-        programId: V2_PROGRAM,
+        programId: BUNDLE_PROGRAM_ID_V2_MAINNET,
         ntMultiplier: 3,
         asset: { decimals: 6, mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', symbol: 'USDT' },
       }),
@@ -238,14 +241,14 @@ describe('syncVaultRegistry', () => {
       depositToken: 'USDT',
       pointsMultiplier: 3,
       pointsEnabled: true,
-      bundleProgramId: V2_PROGRAM,
+      bundleProgramId: BUNDLE_PROGRAM_ID_V2_MAINNET,
     })
     expect(byId(result, 69)).not.toHaveProperty('bundleProgramId')
     expect(byId(result, 69)).toMatchObject({ name: 'JLP Delta Neutral', subname: 'vault-jupiter' })
   })
 
-  it('skips new rows whose chain or deposit token the SDK cannot represent', () => {
-    const result = sync([
+  it('skips and reports new rows whose chain or deposit token the SDK cannot represent', () => {
+    const { registry: result, skipped } = run([
       ...inSyncRows,
       solanaRow({ legacyVaultId: 90, name: 'Odd-Token', bundleKey: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy', asset: { decimals: 6, mint: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy', symbol: 'BONK' } }),
       {
@@ -261,5 +264,30 @@ describe('syncVaultRegistry', () => {
       },
     ])
     expect(serialize(result)).toBe(registryJson)
+    expect(skipped.map(row => row.legacyVaultId)).toEqual([90, 91])
+  })
+
+  it('leaves an existing entry of another vault type untouched and reports the row', () => {
+    // vaultId 0 is a Drift vault; a Solana bundle row must not overwrite it.
+    const { registry: result, skipped } = run([
+      ...inSyncRows,
+      solanaRow({ legacyVaultId: 0, name: 'JLP Delta Neutral', bundleKey: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy', ntMultiplier: 2 }),
+    ])
+    expect(serialize(result)).toBe(registryJson)
+    expect(skipped).toEqual([{ legacyVaultId: 0, bundleKey: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy', reason: expect.stringContaining('Drift') }])
+  })
+
+  it('never writes a Solana program id outside the mainnet allowlist and reports the rows', () => {
+    const rogue = 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy'
+    const { registry: result, skipped } = run([
+      ...inSyncRows.filter(row => row.legacyVaultId !== 80),
+      solanaRow({ legacyVaultId: 80, name: 'Options Market Making', bundleKey: '3vZKAcd74bzwNYZmsJndYExkGj6ABQwrUoiMtdNfzLZe', programId: rogue, ntMultiplier: 3 }),
+      solanaRow({ legacyVaultId: 88, name: 'New-USDC-Bundle', bundleKey: 'G5aMxQTbGWMnYycpfjHpD7Y1muoKBwaB1HtCdpUUcQZp', programId: rogue }),
+    ])
+    expect(serialize(result)).toBe(registryJson)
+    expect(skipped).toEqual([
+      { legacyVaultId: 80, bundleKey: '3vZKAcd74bzwNYZmsJndYExkGj6ABQwrUoiMtdNfzLZe', reason: expect.stringContaining(rogue) },
+      { legacyVaultId: 88, bundleKey: 'G5aMxQTbGWMnYycpfjHpD7Y1muoKBwaB1HtCdpUUcQZp', reason: expect.stringContaining(rogue) },
+    ])
   })
 })
