@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** CTA - Momentum LongShort */
+  cta_momentum_longshort_88 = 88,
   /** Zavara-SOL-Bundle */
   zavara_sol_bundle_87 = 87,
   /** Neutral Trade Autopilot (Monad) */
