@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 88,
+    "name": "CTA - Momentum LongShort",
+    "type": "Bundle",
+    "category": "Directional",
+    "vaultAddress": "Aea2VZfX6hw758cxx2WaGm7kqmdVjhbYsLfde5chVG1W",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": false
+  },
+  {
     "vaultId": 87,
     "name": "Zavara-SOL-Bundle",
     "type": "Bundle",
