@@ -31,3 +31,18 @@ VaultRegistryArraySchema.parse(result)
 
 fs.writeFileSync(registryPath, `${JSON.stringify(result, null, 2)}\n`, 'utf-8')
 console.log(`✓ Synced ${rows.length} indexer vaults into src/registry/vaults.json (${result.length} entries)`)
+
+// In GitHub Actions: list skipped rows on the run page, and hand the count to the step that fails the job.
+const { GITHUB_OUTPUT, GITHUB_STEP_SUMMARY } = process.env
+if (GITHUB_OUTPUT)
+  fs.appendFileSync(GITHUB_OUTPUT, `skipped=${skipped.length}\n`)
+if (GITHUB_STEP_SUMMARY && skipped.length > 0) {
+  fs.appendFileSync(GITHUB_STEP_SUMMARY, [
+    '### Skipped indexer vaults',
+    '',
+    '| vaultId | address | reason |',
+    '|---|---|---|',
+    ...skipped.map(row => `| ${row.legacyVaultId} | \`${row.bundleKey}\` | ${row.reason} |`),
+    '',
+  ].join('\n'))
+}

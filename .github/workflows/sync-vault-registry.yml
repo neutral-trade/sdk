@@ -28,7 +28,8 @@ jobs:
 
       - run: pnpm i -g @antfu/ni
       - run: nci
-      - run: nr sync:registry
+      - id: sync
+        run: nr sync:registry
         env:
           INDEXER_API_URL: ${{ secrets.INDEXER_API_URL }}
           INDEXER_API_KEY: ${{ secrets.INDEXER_API_KEY }}
@@ -52,3 +53,12 @@ jobs:
             src/registry/vaults.json
             src/constants/vault-ids.ts
             src/constants/vault-ids.devnet.ts
+
+      # Skipped rows need a human (mistyped legacy_vault_id, unsupported category, ...). Fail after
+      # the PR step so the other updates still land; the run summary lists the rows.
+      - if: steps.sync.outputs.skipped != '0'
+        env:
+          SKIPPED: ${{ steps.sync.outputs.skipped }}
+        run: |
+          echo "::error::$SKIPPED indexer vault(s) skipped; see the run summary"
+          exit 1
