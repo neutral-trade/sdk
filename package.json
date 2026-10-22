@@ -38,6 +38,7 @@
   "scripts": {
     "cli": "pnpm --filter @neutral-trade/cli dev --",
     "generate": "node --import tsx scripts/generate-vault-ids.ts",
+    "sync:registry": "node --import tsx scripts/sync-vault-registry.ts",
     "prebuild": "pnpm generate",
     "build": "tsdown",
     "dev": "tsdown --watch",
