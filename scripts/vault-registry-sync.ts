@@ -67,9 +67,6 @@ function sameAddress(a: string, b: string): boolean {
 
 /** Mutates an existing entry in place, touching only indexer-owned fields that actually changed. */
 function updateEntry(entry: VaultRegistryEntry, row: IndexerVault): void {
-  if (!sameAddress(entry.vaultAddress, row.bundleKey))
-    entry.vaultAddress = row.bundleKey
-
   const token = toToken(row.asset.symbol)
   if (token && token !== entry.depositToken)
     entry.depositToken = token
@@ -142,6 +139,12 @@ function rejectReason(row: IndexerVault, existing: VaultRegistryEntry | undefine
   const type = row.chain === 'solana' ? VaultType.Bundle : VaultType.AccountableNav
   if (existing && existing.type !== type)
     return `registry entry is ${existing.type} but the ${row.chain} row maps to ${type}`
+  const chain = row.chain === 'solana' ? SupportedChain.Solana : EVM_CHAINS[Number(row.chain.replace(/^evm:/, ''))]
+  if (existing && (existing.chain ?? SupportedChain.Solana) !== chain)
+    return `registry entry is on ${existing.chain} but the row is on ${row.chain}`
+  // The address is the vault's identity: a mismatch means a mislabelled legacyVaultId, not an update.
+  if (existing && !sameAddress(existing.vaultAddress, row.bundleKey))
+    return `registry entry has address ${existing.vaultAddress}`
   if (row.chain === 'solana' && !isAllowlistedBundleProgramId(row.programId, 'mainnet'))
     return `program id ${row.programId} is not allowlisted on mainnet`
   return undefined
@@ -172,6 +175,11 @@ export function syncVaultRegistry(
     }
     if (existing) {
       updateEntry(existing, row)
+      continue
+    }
+    const owner = result.find(entry => sameAddress(entry.vaultAddress, row.bundleKey))
+    if (owner) {
+      skipped.push({ legacyVaultId: row.legacyVaultId, bundleKey: row.bundleKey, reason: `address already belongs to vaultId ${owner.vaultId}` })
       continue
     }
     const created = newEntry(row.legacyVaultId, row)

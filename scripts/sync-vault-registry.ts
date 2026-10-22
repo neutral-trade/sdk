@@ -26,7 +26,8 @@ const registry = JSON.parse(fs.readFileSync(registryPath, 'utf-8')) as VaultRegi
 const { registry: result, skipped } = syncVaultRegistry(rows, registry)
 for (const row of skipped)
   console.warn(`⚠ Skipped vault ${row.legacyVaultId} (${row.bundleKey}): ${row.reason}`)
-const synced = VaultRegistryArraySchema.parse(result)
+// Validate only: writing zod's output would reorder keys and break byte-identical no-op runs.
+VaultRegistryArraySchema.parse(result)
 
-fs.writeFileSync(registryPath, `${JSON.stringify(synced, null, 2)}\n`, 'utf-8')
-console.log(`✓ Synced ${rows.length} indexer vaults into src/registry/vaults.json (${synced.length} entries)`)
+fs.writeFileSync(registryPath, `${JSON.stringify(result, null, 2)}\n`, 'utf-8')
+console.log(`✓ Synced ${rows.length} indexer vaults into src/registry/vaults.json (${result.length} entries)`)

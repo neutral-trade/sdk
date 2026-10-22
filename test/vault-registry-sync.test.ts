@@ -277,6 +277,37 @@ describe('syncVaultRegistry', () => {
     expect(skipped).toEqual([{ legacyVaultId: 0, bundleKey: 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy', reason: expect.stringContaining('Drift') }])
   })
 
+  it('leaves an existing entry untouched and reports the row when the indexer address differs', () => {
+    // A mistyped legacy_vault_id in the overlay must not repoint vaultId 80 at another bundle.
+    const other = 'G5aMxQTbGWMnYycpfjHpD7Y1muoKBwaB1HtCdpUUcQZp'
+    const { registry: result, skipped } = run([
+      ...inSyncRows.map(row => row.legacyVaultId === 80 ? { ...row, bundleKey: other, ntMultiplier: 3 } : row),
+    ])
+    expect(serialize(result)).toBe(registryJson)
+    expect(skipped).toEqual([{ legacyVaultId: 80, bundleKey: other, reason: expect.stringContaining('3vZKAcd74bzwNYZmsJndYExkGj6ABQwrUoiMtdNfzLZe') }])
+  })
+
+  it('does not add a second entry for an address the registry already lists under another vaultId', () => {
+    // vault 87's legacy_vault_id mistyped as 88 in the overlay.
+    const zavara = '7opUmfSUpCeobeAFkMYcVTn76CyLwgVDqoDqmnZZ9Zpi'
+    const { registry: result, skipped } = run([
+      ...inSyncRows.filter(row => row.legacyVaultId !== 87),
+      solanaRow({ legacyVaultId: 88, name: 'Zavara SOL', bundleKey: zavara }),
+    ])
+    expect(serialize(result)).toBe(registryJson)
+    expect(skipped).toEqual([{ legacyVaultId: 88, bundleKey: zavara, reason: expect.stringContaining('87') }])
+  })
+
+  it('leaves an existing EVM entry on another chain untouched and reports the row', () => {
+    // vaultId 85 lives on Ethereum; a Monad row carrying its legacyVaultId must not overwrite it.
+    const monad = '0xaABab7598be3c4fE58c593e73C2F5934b73b573E'
+    const { registry: result, skipped } = run([
+      ...inSyncRows.map(row => row.legacyVaultId === 85 ? { ...row, chain: 'evm:143', chainId: 143, bundleKey: monad } : row),
+    ])
+    expect(serialize(result)).toBe(registryJson)
+    expect(skipped).toEqual([{ legacyVaultId: 85, bundleKey: monad, reason: expect.stringContaining('Ethereum') }])
+  })
+
   it('never writes a Solana program id outside the mainnet allowlist and reports the rows', () => {
     const rogue = 'C68A4mAhA9EE4rWq9HmFnq3SPcbNmst6qiBWcna5VDHy'
     const { registry: result, skipped } = run([
