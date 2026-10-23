@@ -7,7 +7,7 @@
     "vaultAddress": "Aea2VZfX6hw758cxx2WaGm7kqmdVjhbYsLfde5chVG1W",
     "depositToken": "USDC",
     "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsEnabled": true
   },
   {
     "vaultId": 87,

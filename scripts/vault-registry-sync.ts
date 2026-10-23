@@ -15,7 +15,7 @@ import {
   VaultType,
 } from '../src/types/vault-types'
 
-/** Only the /v2/vaults fields the sync reads; everything else is stripped. */
+/** Only the /v2/internal/vaults fields the sync reads; everything else is stripped. */
 const indexerVaultSchema = z.object({
   legacyVaultId: z.number().int().nonnegative().nullable(),
   name: z.string().nullable(),
@@ -24,6 +24,8 @@ const indexerVaultSchema = z.object({
   bundleKey: z.string(),
   programId: z.string(),
   ntMultiplier: z.number().positive().nullable(),
+  // App-only overlay flag (internal endpoint): absent = points on
+  pointsEnabled: z.boolean().nullable().optional(),
   asset: z.object({ symbol: z.string().nullable() }),
   evm: z.object({
     strategy: z.string(),
@@ -34,12 +36,17 @@ const indexerVaultSchema = z.object({
 export type IndexerVault = z.infer<typeof indexerVaultSchema>
 
 const indexerResponseSchema = z.object({
-  data: z.object({ vaults: z.array(indexerVaultSchema) }),
+  data: z.object({ vaults: z.array(z.object({ venue: z.string().optional() }).passthrough()) }),
 })
 
-/** Validates a raw /v2/vaults response body and returns its vault rows. */
+/** Validates a raw /v2/internal/vaults response body and returns its bundle rows (external venue vaults have no bundle, so they are left out). */
 export function parseIndexerVaults(body: unknown): IndexerVault[] {
-  return indexerResponseSchema.parse(body).data.vaults
+  return indexerResponseSchema.parse(body).data.vaults.filter(row => row.venue === undefined).map(row => indexerVaultSchema.parse(row))
+}
+
+/** Points follow the indexer overlay, as the app shows them: on unless turned off, and only with a multiplier. */
+function pointsEnabled(row: IndexerVault): boolean {
+  return row.pointsEnabled !== false && row.ntMultiplier !== null
 }
 
 const EVM_CHAINS: Record<number, SupportedChain> = {
@@ -80,6 +87,9 @@ function updateEntry(entry: VaultRegistryEntry, row: IndexerVault): void {
 
   if (row.ntMultiplier !== null && row.ntMultiplier !== (entry.pointsMultiplier ?? 1))
     entry.pointsMultiplier = row.ntMultiplier
+
+  if (pointsEnabled(row) !== entry.pointsEnabled)
+    entry.pointsEnabled = pointsEnabled(row)
 }
 
 /** Builds a registry entry for a vault the SDK does not know yet, or undefined when the row cannot form a valid one. */
@@ -91,8 +101,7 @@ function newEntry(vaultId: number, row: IndexerVault): VaultRegistryEntry | unde
 
   const points = {
     ...(row.ntMultiplier !== null && { pointsMultiplier: row.ntMultiplier }),
-    // Points are opt-in after human review of the sync PR.
-    pointsEnabled: false,
+    pointsEnabled: pointsEnabled(row),
   }
 
   let entry: VaultRegistryEntry

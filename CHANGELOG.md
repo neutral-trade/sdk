@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.4
+
+- Registry: enable points on vault 88 `CTA - Momentum LongShort` at 1x. 2.2.3 shipped it with `pointsEnabled: false`, the default the hourly registry sync gives a new vault -- the points backend starts scoring it from this version.
+
+## 2.2.3
+
+- Registry: add mainnet vault 88 `CTA - Momentum LongShort` (`Aea2VZfX6hw758cxx2WaGm7kqmdVjhbYsLfde5chVG1W`), a USDC Bundle vault on Solana in `Directional` (`VaultId.cta_momentum_longshort_88`), added by the hourly sync from the indexer's `/v2/vaults`. Points disabled.
+
 ## 2.2.2
 
 - Registry: add mainnet vault 87 `Zavara-SOL-Bundle`, a Bundle vault on Solana that takes wSOL (`SupportedToken.SOL`, 9 decimals) -- the first Bundle vault in the registry not denominated in a stablecoin (`VaultId.zavara_sol_bundle_87`). Uses the cluster-default bundle program; points disabled.
