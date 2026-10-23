@@ -31,6 +31,7 @@ import {
 const COMPUTE_BUDGET_PROGRAM_ADDRESS = address(
   'ComputeBudget111111111111111111111111111111',
 )
+const MEMO_PROGRAM_ADDRESS = address('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr')
 const SYSTEM_PROGRAM_ADDRESS = address('11111111111111111111111111111111')
 const RENT_SYSVAR_ADDRESS = address('SysvarRent111111111111111111111111111111111')
 const MAX_TRANSACTION_BYTES = 1_232
@@ -446,7 +447,7 @@ export async function verifyWidgetTransaction({
   let observedAttribution = false
   let operationInstructionObserved = false
 
-  for (const instruction of instructions) {
+  for (const [instructionIndex, instruction] of instructions.entries()) {
     if (instruction.programAddress === COMPUTE_BUDGET_PROGRAM_ADDRESS) {
       if (operationInstructionObserved) {
         fail('invalid-instruction', 'Compute budget instructions must precede operation instructions')
@@ -455,6 +456,22 @@ export async function verifyWidgetTransaction({
       continue
     }
     operationInstructionObserved = true
+
+    if (instruction.programAddress === MEMO_PROGRAM_ADDRESS) {
+      if (
+        request.operation !== 'deposit'
+        || request.attribution.status !== 'applied'
+        || instructionIndex !== instructions.length - 1
+        || instruction.accounts.length !== 0
+        || !bytesEqual(
+          instruction.data,
+          new TextEncoder().encode(`NT_REF=v1|op=register|ref=${request.attribution.referrer}`),
+        )
+      ) {
+        fail('instruction-not-allowed', 'Only a trailing points register memo for the applied referrer is allowed')
+      }
+      continue
+    }
 
     if (instruction.programAddress === ASSOCIATED_TOKEN_PROGRAM_ADDRESS) {
       if (request.operation !== 'withdraw') {

@@ -117,6 +117,7 @@ export interface DepositFixtureOptions {
   programAddress?: Address
   referrer?: Address
   stripUserSignerRole?: boolean
+  trailingInstructions?: ReadonlyArray<Instruction>
   transactionUser?: Address
   vault?: Address
 }
@@ -207,6 +208,7 @@ export async function createDepositFixture(
   else {
     instructions.push(depositInstruction)
   }
+  instructions.push(...(options.trailingInstructions ?? []))
   return compileFixtureTransaction(
     instructions,
     options.feePayer ?? FIXTURE_ADDRESSES.user,
@@ -216,6 +218,7 @@ export async function createDepositFixture(
 export interface WithdrawalFixtureOptions {
   includeAssociatedTokenInstruction?: boolean
   sharesAmount?: bigint
+  trailingInstructions?: ReadonlyArray<Instruction>
   user?: Address
   vault?: Address
 }
@@ -265,6 +268,7 @@ export async function createWithdrawalFixture(
     },
     { programAddress },
   ))
+  instructions.push(...(options.trailingInstructions ?? []))
   return compileFixtureTransaction(instructions, user)
 }
 

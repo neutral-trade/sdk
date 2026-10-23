@@ -47,6 +47,8 @@ Low-level generated bindings are also available from the `./generated` subpath.
 - `packages/widget-sdk/**` - embeddable host SDK with Wallet Standard signing, strict transaction verification, vanilla mounting, and a React entry point.
 - `examples/widget-vanilla/**`, `examples/widget-react/**` - devnet widget integrations using Wallet Standard discovery.
 
+Changes to `main` require a pull request with successful lint, tests on all three CI operating systems, and the bot-owned client paths guard. This requirement also applies to repository admins.
+
 ## License
 
 [MIT](./LICENSE.md)
