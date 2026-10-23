@@ -57,6 +57,7 @@ type ParsableInstruction = Instruction &
 
 const referrer = createNoopSigner(fakeAddress(51));
 const user = createNoopSigner(TEST_USER_ADDRESS);
+const MEMO_PROGRAM_ADDRESS = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 function oneTierReferralSchedule(pfeeBps: number, mfeeBps: number) {
   return [
@@ -404,8 +405,8 @@ describe("referral extensions", () => {
         amount: 123_456n,
       });
 
-      expect(instructions).to.have.length(3);
-      for (const instruction of instructions) {
+      expect(instructions).to.have.length(4);
+      for (const instruction of instructions.slice(0, 3)) {
         assertParsableInstruction(instruction);
       }
       const initialize = parseInitializeBundleDepositorInstruction(
@@ -444,6 +445,25 @@ describe("referral extensions", () => {
       expect(deposit.data.amount).to.equal(123_456n);
     });
 
+    it("appends an accountless points attribution memo carrying the referrer wallet", async () => {
+      const { rpc } = await attributedDepositRpc();
+      const instructions = await buildAttributedDepositTx(rpc, {
+        user,
+        referrer: referrer.address,
+        vault: TEST_BUNDLE_ADDRESS,
+        amount: 123_456n,
+      });
+
+      expect(instructions).to.have.length(4);
+      const memo = instructions[3]!;
+      expect(memo.programAddress).to.equal(MEMO_PROGRAM_ADDRESS);
+      expect(memo.accounts ?? []).to.deep.equal([]);
+      assertIsInstructionWithData(memo);
+      expect(new TextDecoder().decode(new Uint8Array(memo.data))).to.equal(
+        `NT_REF=v1|op=register|ref=${referrer.address}`,
+      );
+    });
+
     it("resolves and trims a code and skips initialization for a virgin account", async () => {
       const { rpc } = await attributedDepositRpc({ userOverrides: {} });
       const seenCodes: Array<string> = [];
@@ -459,7 +479,7 @@ describe("referral extensions", () => {
       });
 
       expect(seenCodes).to.deep.equal(["partner-one"]);
-      expect(instructions).to.have.length(2);
+      expect(instructions).to.have.length(3);
       assertParsableInstruction(instructions[0]!);
       assertParsableInstruction(instructions[1]!);
       expect(() =>
@@ -469,6 +489,12 @@ describe("referral extensions", () => {
         parseRequestDepositInstruction(instructions[1] as ParsableInstruction)
           .data.amount,
       ).to.equal(25n);
+      expect(instructions[2]).to.deep.equal({
+        programAddress: MEMO_PROGRAM_ADDRESS,
+        data: new TextEncoder().encode(
+          `NT_REF=v1|op=register|ref=${referrer.address}`,
+        ),
+      });
     });
 
     it("rejects every onchain freshness field before building a doomed transaction", async () => {
@@ -601,7 +627,7 @@ describe("referral extensions", () => {
         vault: TEST_BUNDLE_ADDRESS,
         amount: 1n,
       });
-      expect(instructions).to.have.length(3);
+      expect(instructions).to.have.length(4);
     });
 
     it("rejects disabled referrals, self-referrals, manager referrals, and blank codes", async () => {
