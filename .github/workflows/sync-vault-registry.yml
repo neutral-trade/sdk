@@ -46,9 +46,9 @@ jobs:
           commit-message: 'chore(registry): sync vault registry from indexer'
           title: 'chore(registry): sync vault registry from indexer'
           body: |
-            Automated sync of `src/registry/vaults.json` from the bundle indexer `/v2/vaults`, with the `VaultId` enums regenerated.
+            Automated sync of `src/registry/vaults.json` from the bundle indexer `/v2/internal/vaults`, with the `VaultId` enums regenerated.
 
-            New vaults are added with `pointsEnabled: false`. Do not push edits to this branch: it is regenerated from `main` every hour and edits are overwritten. Enable points in a follow-up PR after merging.
+            Points (`pointsEnabled`, `pointsMultiplier`) follow the indexer overlay (`points_enabled`, `nt_multiplier`); change them there, not here. Do not push edits to this branch: it is regenerated from `main` every hour and edits are overwritten.
           add-paths: |
             src/registry/vaults.json
             src/constants/vault-ids.ts

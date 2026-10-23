@@ -87,6 +87,8 @@ const inSyncRows = [
     name: 'Zavara SOL',
     bundleKey: '7opUmfSUpCeobeAFkMYcVTn76CyLwgVDqoDqmnZZ9Zpi',
     asset: { decimals: 9, mint: 'So11111111111111111111111111111111111111112', symbol: 'WSOL' },
+    // No multiplier in the overlay: no points
+    ntMultiplier: null,
   }),
   {
     asset: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6, mint: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', symbol: 'USDC' },
@@ -112,6 +114,7 @@ const inSyncRows = [
     name: 'JLP Delta Neutral',
     bundleKey: 'GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY',
     programId: BUNDLE_PROGRAM_ID_V2_MAINNET,
+    pointsEnabled: false,
   }),
 ]
 
@@ -142,7 +145,7 @@ describe('syncVaultRegistry', () => {
     expect(serialize(result)).toBe(registryJson)
   })
 
-  it('adds a new Solana bundle in vaultId-descending position with points disabled', () => {
+  it('adds a new Solana bundle in vaultId-descending position, with points as the indexer has them', () => {
     const result = sync([
       ...inSyncRows,
       solanaRow({
@@ -164,8 +167,24 @@ describe('syncVaultRegistry', () => {
       depositToken: 'USDC',
       bundleProgramId: BUNDLE_PROGRAM_ID_V2_MAINNET,
       pointsMultiplier: 1.5,
-      pointsEnabled: false,
+      pointsEnabled: true,
     })
+  })
+
+  it('takes points from the indexer: off when the overlay turns them off or sets no multiplier', () => {
+    const result = sync([
+      solanaRow({ legacyVaultId: 80, name: 'Options Market Making', bundleKey: '3vZKAcd74bzwNYZmsJndYExkGj6ABQwrUoiMtdNfzLZe', pointsEnabled: false }),
+      solanaRow({ legacyVaultId: 87, name: 'Zavara SOL', bundleKey: '7opUmfSUpCeobeAFkMYcVTn76CyLwgVDqoDqmnZZ9Zpi', asset: { decimals: 9, symbol: 'WSOL' } }),
+      solanaRow({ legacyVaultId: 69, name: 'JLP Delta Neutral', bundleKey: 'GiNbTRuRqvVGEEQGZKMjmwX84LrsbqfzVVNtWYbcZPCY', programId: BUNDLE_PROGRAM_ID_V2_MAINNET, ntMultiplier: null }),
+    ])
+    expect(byId(result, 80)?.pointsEnabled).toBe(false)
+    expect(byId(result, 87)?.pointsEnabled).toBe(true)
+    expect(byId(result, 69)?.pointsEnabled).toBe(false)
+  })
+
+  it('ignores external venue rows (no bundle of their own) instead of failing the whole response', () => {
+    const venueRow = { venue: 'hyperliquid', chain: 'hyperliquid', address: '0xb2246d6f3ddeeca74cfd29dc3cce05c1746fcd68', legacyVaultId: 53, name: 'The Big Short', category: 'bet' }
+    expect(serialize(sync([...inSyncRows, venueRow]))).toBe(registryJson)
   })
 
   it('adds a new EVM vault with the same shape as existing AccountableNav entries', () => {
@@ -181,6 +200,8 @@ describe('syncVaultRegistry', () => {
         legacyVaultId: 86,
         name: 'Neutral Trade Autopilot (Monad)',
         ntMultiplier: 1,
+        // Monad points stay off until the points backend covers it
+        pointsEnabled: false,
         programId: '0xaABab7598be3c4fE58c593e73C2F5934b73b573E',
       },
     ])
