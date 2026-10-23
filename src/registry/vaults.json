@@ -43,7 +43,7 @@
     "accountableLoanId": 608250934,
     "depositToken": "USDC",
     "pointsMultiplier": 2,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 84,
@@ -86,7 +86,7 @@
     "accountableLoanId": 607290214,
     "depositToken": "USDE",
     "pointsMultiplier": 1,
-    "pointsEnabled": true
+    "pointsEnabled": false
   },
   {
     "vaultId": 80,
