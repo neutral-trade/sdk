@@ -168,13 +168,16 @@ A themed mount sends protocol v3 and advertises versions 1, 2, and 3. If a widge
 - Every static account is unique and referenced.
 - Compute budget instructions may set one compute unit limit and one compute unit price before operation instructions. Host limits cap both values.
 - Withdrawal transactions may create one correctly derived associated token account with the idempotent instruction.
+- Deposits with applied attribution may include one final Memo program instruction (`MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr`), with no accounts and UTF-8 data exactly equal to `NT_REF=v1|op=register|ref=<applied referrer wallet>`. Every other memo is rejected with `instruction-not-allowed`.
 - ntbundle instructions must target `getDefaultBundleProgramIdByCluster` for the configured cluster.
-- Only `initializeBundleDepositor`, `setUserReferrer`, `requestDeposit`, and `requestWithdrawal` are accepted.
+- Accepted ntbundle instructions are `initializeBundleDepositor`, `setUserReferrer`, `requestDeposit`, and `requestWithdrawal`.
 - The user, vault, operation, deposit amount, withdrawal shares amount, and referrer PDAs are re-derived from instruction accounts and instruction data.
 - When address mode applies attribution, it verifies the `setUserReferrer` accounts against the configured `builderAddress` rather than trusting a resolved address from the iframe.
 - The configured transport must report the blockhash as valid.
 
 The postMessage protocol has no generic transaction-signing request. A wallet-returned transaction is decoded again, and its message bytes must exactly match the verified message before submission.
+
+Widget hosts must upgrade to version 2.3.0 or newer before the transaction API starts returning attributed deposits with the points memo. Attributed deposits without a memo remain accepted for compatibility during the rollout.
 
 ## Hosted widget protocol
 
@@ -211,4 +214,4 @@ pnpm --filter @neutral-trade/widget-sdk test
 pnpm --filter @neutral-trade/widget-sdk build
 ```
 
-The verifier tests generate valid wire transactions and adversarial mutations for extra instructions, swapped vaults, added signers, address lookup tables, wrong program IDs, tampered amounts, foreign fee payers, stale blockhashes, nonzero signature slots, and incorrect referrer PDAs. Protocol properties are exercised with `fast-check`.
+The verifier tests generate valid wire transactions and adversarial mutations for extra instructions, malformed or misplaced points memos, swapped vaults, added signers, address lookup tables, wrong program IDs, tampered amounts, foreign fee payers, stale blockhashes, nonzero signature slots, and incorrect referrer PDAs. Protocol properties are exercised with `fast-check`.

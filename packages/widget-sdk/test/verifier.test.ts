@@ -2,7 +2,7 @@ import type { WidgetDepositRequestMessage, WidgetOperationRequestMessage, Widget
 import type { WidgetTransactionVerificationErrorCode } from '../src/verifier'
 import assert from 'node:assert'
 import { describe, test } from 'node:test'
-import { getBase64Decoder } from '@solana/kit'
+import { AccountRole, address, getBase64Decoder } from '@solana/kit'
 import {
   NEUTRAL_TRADE_WIDGET_PROTOCOL,
   NEUTRAL_TRADE_WIDGET_PROTOCOL_VERSION,
@@ -22,6 +22,11 @@ import {
 
 const DEPOSIT_AMOUNT = 8_765_432n
 const WITHDRAWAL_SHARES_AMOUNT = 987_654_321n
+const REGISTER_MEMO_TEXT = `NT_REF=v1|op=register|ref=${FIXTURE_ADDRESSES.referrer}`
+const REGISTER_MEMO_INSTRUCTION = {
+  data: new TextEncoder().encode(REGISTER_MEMO_TEXT),
+  programAddress: address('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
+}
 
 function encodeTransaction(wireTransaction: Uint8Array): string {
   return getBase64Decoder().decode(wireTransaction)
@@ -100,6 +105,52 @@ async function assertRejectedWithCode(
 }
 
 describe('verifyWidgetTransaction golden fixtures', () => {
+  test('accepts an attributed deposit ending in the exact points register memo', async () => {
+    const wireTransaction = await createDepositFixture({
+      amount: DEPOSIT_AMOUNT,
+      includeAttribution: true,
+      trailingInstructions: [REGISTER_MEMO_INSTRUCTION],
+    })
+    const request = createDepositRequest(wireTransaction, {
+      attribution: {
+        status: 'applied',
+        referrer: FIXTURE_ADDRESSES.referrer,
+      },
+    })
+
+    const verified = await verify(
+      wireTransaction,
+      request,
+      true,
+      FIXTURE_ADDRESSES.referrer,
+    )
+
+    if (verified.operation !== 'deposit')
+      assert.fail('Expected a verified deposit')
+    assert.equal(verified.amount, DEPOSIT_AMOUNT)
+    assert.deepEqual(verified.attribution, request.attribution)
+  })
+
+  test('accepts the register memo with depositor initialization in builderCode mode', async () => {
+    const wireTransaction = await createDepositFixture({
+      includeAttribution: true,
+      includeInitialize: true,
+      trailingInstructions: [REGISTER_MEMO_INSTRUCTION],
+    })
+    const request = createDepositRequest(wireTransaction, {
+      attribution: {
+        status: 'applied',
+        referrer: FIXTURE_ADDRESSES.referrer,
+      },
+    })
+
+    const verified = await verify(wireTransaction, request)
+
+    if (verified.operation !== 'deposit')
+      assert.fail('Expected a verified deposit')
+    assert.deepEqual(verified.attribution, request.attribution)
+  })
+
   test('accepts an attributed deposit and re-derives the signed values', async () => {
     const wireTransaction = await createDepositFixture({
       amount: DEPOSIT_AMOUNT,
@@ -187,6 +238,116 @@ describe('verifyWidgetTransaction golden fixtures', () => {
 })
 
 describe('verifyWidgetTransaction adversarial mutants', () => {
+  for (const [description, data] of Object.entries({
+    'a different referrer': new TextEncoder().encode(`NT_REF=v1|op=register|ref=${FIXTURE_ADDRESSES.secondReferrer}`),
+    'extra text': new TextEncoder().encode(`${REGISTER_MEMO_TEXT}|extra=value`),
+    'leading text': new TextEncoder().encode(`extra=value|${REGISTER_MEMO_TEXT}`),
+    'a different version': new TextEncoder().encode(REGISTER_MEMO_TEXT.replace('v1', 'v2')),
+    'a different operation': new TextEncoder().encode(REGISTER_MEMO_TEXT.replace('register', 'unregister')),
+    'a trailing newline': new TextEncoder().encode(`${REGISTER_MEMO_TEXT}\n`),
+    'a trailing null byte': new Uint8Array([...REGISTER_MEMO_INSTRUCTION.data, 0]),
+    'a UTF-8 BOM': new Uint8Array([0xEF, 0xBB, 0xBF, ...REGISTER_MEMO_INSTRUCTION.data]),
+    'invalid UTF-8': new Uint8Array([...REGISTER_MEMO_INSTRUCTION.data, 0xFF]),
+    'empty data': new Uint8Array(),
+  })) {
+    test(`rejects a points memo with ${description}`, async () => {
+      const wireTransaction = await createDepositFixture({
+        includeAttribution: true,
+        trailingInstructions: [{ ...REGISTER_MEMO_INSTRUCTION, data }],
+      })
+      const request = createDepositRequest(wireTransaction, {
+        attribution: {
+          status: 'applied',
+          referrer: FIXTURE_ADDRESSES.referrer,
+        },
+      })
+
+      await assertRejectedWithCode(
+        verify(wireTransaction, request),
+        'instruction-not-allowed',
+      )
+    })
+  }
+
+  test('rejects a points memo with accounts', async () => {
+    const wireTransaction = await createDepositFixture({
+      includeAttribution: true,
+      trailingInstructions: [{
+        ...REGISTER_MEMO_INSTRUCTION,
+        accounts: [{ address: FIXTURE_ADDRESSES.user, role: AccountRole.READONLY }],
+      }],
+    })
+    const request = createDepositRequest(wireTransaction, {
+      attribution: {
+        status: 'applied',
+        referrer: FIXTURE_ADDRESSES.referrer,
+      },
+    })
+
+    await assertRejectedWithCode(
+      verify(wireTransaction, request),
+      'instruction-not-allowed',
+    )
+  })
+
+  test('rejects two points memos', async () => {
+    const wireTransaction = await createDepositFixture({
+      includeAttribution: true,
+      trailingInstructions: [REGISTER_MEMO_INSTRUCTION, REGISTER_MEMO_INSTRUCTION],
+    })
+    const request = createDepositRequest(wireTransaction, {
+      attribution: {
+        status: 'applied',
+        referrer: FIXTURE_ADDRESSES.referrer,
+      },
+    })
+
+    await assertRejectedWithCode(
+      verify(wireTransaction, request),
+      'instruction-not-allowed',
+    )
+  })
+
+  test('rejects a points memo before the deposit instruction', async () => {
+    const wireTransaction = await createDepositFixture({
+      extraInstructions: [REGISTER_MEMO_INSTRUCTION],
+      includeAttribution: true,
+    })
+    const request = createDepositRequest(wireTransaction, {
+      attribution: {
+        status: 'applied',
+        referrer: FIXTURE_ADDRESSES.referrer,
+      },
+    })
+
+    await assertRejectedWithCode(
+      verify(wireTransaction, request),
+      'instruction-not-allowed',
+    )
+  })
+
+  test('rejects a points memo on an unattributed deposit', async () => {
+    const wireTransaction = await createDepositFixture({
+      trailingInstructions: [REGISTER_MEMO_INSTRUCTION],
+    })
+
+    await assertRejectedWithCode(
+      verify(wireTransaction, createDepositRequest(wireTransaction)),
+      'instruction-not-allowed',
+    )
+  })
+
+  test('rejects a points memo on a withdrawal', async () => {
+    const wireTransaction = await createWithdrawalFixture({
+      trailingInstructions: [REGISTER_MEMO_INSTRUCTION],
+    })
+
+    await assertRejectedWithCode(
+      verify(wireTransaction, createWithdrawalRequest(wireTransaction)),
+      'instruction-not-allowed',
+    )
+  })
+
   test('rejects an extra instruction', async () => {
     const wireTransaction = await createDepositFixture({
       extraInstructions: [createExtraInstruction()],

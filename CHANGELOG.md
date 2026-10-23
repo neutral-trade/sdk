@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.0
+
+- Restore the trailing `NT_REF=v1|op=register|ref=<referrer wallet>` points memo in `buildAttributedDepositTx` through the automated bundle-sc client drop.
+- Widget SDK: accept exactly one trailing, accountless points register memo matching the applied deposit referrer, with regression coverage for invalid memo data, accounts, ordering, duplicates, and unsupported operations.
+- Publish `@neutral-trade/sdk` and `@neutral-trade/widget-sdk` at the same minor version. Widget hosts must upgrade before the indexer's SDK pins are updated to send the restored memo.
+
 ## 2.2.4
 
 - Registry: enable points on vault 88 `CTA - Momentum LongShort` at 1x. 2.2.3 shipped it with `pointsEnabled: false`, the default the hourly registry sync gives a new vault -- the points backend starts scoring it from this version.
