@@ -50,6 +50,16 @@ import type { ExtensionsRpc } from "./rpc";
 const DEFAULT_PUBLIC_KEY =
   "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
 
+const MEMO_PROGRAM_ADDRESS =
+  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr" as Address<"MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr">;
+
+function buildPointsAttributionMemoInstruction(referrer: Address): Instruction {
+  return {
+    programAddress: MEMO_PROGRAM_ADDRESS,
+    data: new TextEncoder().encode(`NT_REF=v1|op=register|ref=${referrer}`),
+  };
+}
+
 export type BundleVaultInput =
   | Address
   | {
@@ -550,7 +560,8 @@ export async function fetchReferrerStatus(
 
 /**
  * Builds the only valid first-deposit ordering: initialize (when needed),
- * bind the referrer, then request the deposit. Fee settlement uses the
+ * bind the referrer, request the deposit, then append the points attribution
+ * memo with the referrer's wallet address. Fee settlement uses the
  * referrer's live effective rates, including later tier-schedule and override
  * changes that raise, lower, or zero either component.
  *
@@ -623,6 +634,7 @@ export async function buildAttributedDepositTx(
   instructions.push(
     setUserReferrerInstruction,
     depositContext.requestInstruction,
+    buildPointsAttributionMemoInstruction(referrer),
   );
   return instructions;
 }
