@@ -1,5 +1,15 @@
 [
   {
+    "vaultId": 89,
+    "name": "HFT Market Making",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "DzmixPGgru86YkQY4LSEuM1Sfz7ZFPc1wHwSm4fejXbJ",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 88,
     "name": "CTA - Momentum LongShort",
     "type": "Bundle",

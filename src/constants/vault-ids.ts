@@ -7,6 +7,8 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** HFT Market Making */
+  hft_market_making_89 = 89,
   /** CTA - Momentum LongShort */
   cta_momentum_longshort_88 = 88,
   /** Zavara-SOL-Bundle */
