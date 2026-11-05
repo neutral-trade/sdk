@@ -1,4 +1,4 @@
-# source: neutral-trade/bundle-sc@fad6e34
+# source: neutral-trade/bundle-sc@e43e830
 # bot-owned paths; verified by client-guard.yml — do not edit by hand
 4b5937745e2750df8589627e92f1492ac7daab584b4499cbea4134155cc18da1  src/extensions/ata.ts
 c2db07270ae46ab280fa17406098d317d29c4c8859489bbaffde17d5352c2a9a  src/extensions/balances.ts
