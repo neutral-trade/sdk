@@ -4,9 +4,13 @@ on:
   push:
     tags:
       - 'v*'
+    # Rolling devnet client drop, force-pushed by bundle-sc's client-drop.yml.
+    branches:
+      - client-drop-devnet
 
 jobs:
   release:
+    if: github.ref_type == 'tag'
     uses: sxzz/workflows/.github/workflows/release.yml@v1
     with:
       # Build every public workspace package before the recursive npm publish.
@@ -37,3 +41,60 @@ jobs:
               -f 'client_payload[package]=@neutral-trade/sdk' \
               -f "client_payload[version]=$VERSION"
           done
+
+  # Publishes each push to client-drop-devnet (main plus bundle-sc's devnet
+  # client) as @neutral-trade/sdk@<next minor>-devnet.<UTC time>-<bundle-sc
+  # commit> under the `devnet` dist-tag, so apps can test unreleased program
+  # changes on devnet. It lives in this file because npm trusted publishing
+  # already authorizes release.yml. It never moves `latest`, creates no GitHub
+  # release, and notifies no consumers; testers pin the version explicitly.
+  devnet-prerelease:
+    if: github.ref == 'refs/heads/client-drop-devnet'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    # Only the newest drop publishes, so the dist-tag never moves backwards.
+    concurrency:
+      group: release-devnet-prerelease
+      cancel-in-progress: true
+    steps:
+      - uses: sxzz/workflows/setup-js@v1
+
+      - name: Verify drop manifest
+        run: grep -v '^#' client-drop.manifest | sha256sum -c --quiet
+
+      - name: Set prerelease version
+        id: version
+        run: |
+          set -euo pipefail
+          SRC_SHA="$(sed -n 's|^# source: neutral-trade/bundle-sc@||p' client-drop.manifest)"
+          if [ -z "$SRC_SHA" ]; then
+            echo "::error::client-drop.manifest does not name its bundle-sc source commit"
+            exit 1
+          fi
+          NEXT_MINOR="$(node -p 'const [major, minor] = require("./package.json").version.split("."); major + "." + (Number(minor) + 1) + ".0"')"
+          VERSION="${NEXT_MINOR}-devnet.$(date -u +%Y%m%d%H%M%S)-${SRC_SHA}"
+          npm pkg set "version=$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "source=$SRC_SHA" >> "$GITHUB_OUTPUT"
+
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm test
+
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks --tag devnet
+
+      - name: Summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          SRC_SHA: ${{ steps.version.outputs.source }}
+        run: |
+          {
+            echo "Published \`@neutral-trade/sdk@$VERSION\` under the \`devnet\` dist-tag from neutral-trade/bundle-sc@$SRC_SHA."
+            echo
+            echo "\`\`\`sh"
+            echo "pnpm add @neutral-trade/sdk@$VERSION"
+            echo "\`\`\`"
+          } >> "$GITHUB_STEP_SUMMARY"
