@@ -349,6 +349,12 @@
   getRequestDepositInstructionDataCodec: function
   getRequestDepositInstructionDataDecoder: function
   getRequestDepositInstructionDataEncoder: function
+  getRequestTokenSwitchDiscriminatorBytes: function
+  getRequestTokenSwitchInstruction: function
+  getRequestTokenSwitchInstructionAsync: function
+  getRequestTokenSwitchInstructionDataCodec: function
+  getRequestTokenSwitchInstructionDataDecoder: function
+  getRequestTokenSwitchInstructionDataEncoder: function
   getRequestTokenWithdrawalDiscriminatorBytes: function
   getRequestTokenWithdrawalInstruction: function
   getRequestTokenWithdrawalInstructionAsync: function
@@ -663,6 +669,7 @@
   parseRemoveStrategyInstruction: function
   parseRequestBundleSwitchInstruction: function
   parseRequestDepositInstruction: function
+  parseRequestTokenSwitchInstruction: function
   parseRequestTokenWithdrawalInstruction: function
   parseRequestWithdrawalInstruction: function
   parseSetBundleCreatorInstruction: function
@@ -702,6 +709,7 @@
   REMOVE_STRATEGY_DISCRIMINATOR: object
   REQUEST_BUNDLE_SWITCH_DISCRIMINATOR: object
   REQUEST_DEPOSIT_DISCRIMINATOR: object
+  REQUEST_TOKEN_SWITCH_DISCRIMINATOR: object
   REQUEST_TOKEN_WITHDRAWAL_DISCRIMINATOR: object
   REQUEST_WITHDRAWAL_DISCRIMINATOR: object
   resolveBundleReferralRates: function
@@ -1057,6 +1065,12 @@
   getRequestDepositInstructionDataCodec: function
   getRequestDepositInstructionDataDecoder: function
   getRequestDepositInstructionDataEncoder: function
+  getRequestTokenSwitchDiscriminatorBytes: function
+  getRequestTokenSwitchInstruction: function
+  getRequestTokenSwitchInstructionAsync: function
+  getRequestTokenSwitchInstructionDataCodec: function
+  getRequestTokenSwitchInstructionDataDecoder: function
+  getRequestTokenSwitchInstructionDataEncoder: function
   getRequestTokenWithdrawalDiscriminatorBytes: function
   getRequestTokenWithdrawalInstruction: function
   getRequestTokenWithdrawalInstructionAsync: function
@@ -1358,6 +1372,7 @@
   parseRemoveStrategyInstruction: function
   parseRequestBundleSwitchInstruction: function
   parseRequestDepositInstruction: function
+  parseRequestTokenSwitchInstruction: function
   parseRequestTokenWithdrawalInstruction: function
   parseRequestWithdrawalInstruction: function
   parseSetBundleCreatorInstruction: function
@@ -1395,6 +1410,7 @@
   REMOVE_STRATEGY_DISCRIMINATOR: object
   REQUEST_BUNDLE_SWITCH_DISCRIMINATOR: object
   REQUEST_DEPOSIT_DISCRIMINATOR: object
+  REQUEST_TOKEN_SWITCH_DISCRIMINATOR: object
   REQUEST_TOKEN_WITHDRAWAL_DISCRIMINATOR: object
   REQUEST_WITHDRAWAL_DISCRIMINATOR: object
   SET_BUNDLE_CREATOR_DISCRIMINATOR: object
