@@ -27,7 +27,7 @@
     "vaultAddress": "7opUmfSUpCeobeAFkMYcVTn76CyLwgVDqoDqmnZZ9Zpi",
     "depositToken": "SOL",
     "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsEnabled": true
   },
   {
     "vaultId": 86,
@@ -39,8 +39,8 @@
     "strategyAddress": "0x5ee57E42DF67e5707F0CAE1a18DfeaDB4F0Df86c",
     "accountableLoanId": 608250958,
     "depositToken": "USDC",
-    "pointsMultiplier": 1,
-    "pointsEnabled": false
+    "pointsMultiplier": 2,
+    "pointsEnabled": true
   },
   {
     "vaultId": 85,
