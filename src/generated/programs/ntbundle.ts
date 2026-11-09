@@ -96,6 +96,7 @@ import {
   getRemoveStrategyInstructionAsync,
   getRequestBundleSwitchInstructionAsync,
   getRequestDepositInstructionAsync,
+  getRequestTokenSwitchInstructionAsync,
   getRequestTokenWithdrawalInstructionAsync,
   getRequestWithdrawalInstructionAsync,
   getSetBundleCreatorInstructionAsync,
@@ -152,6 +153,7 @@ import {
   parseRemoveStrategyInstruction,
   parseRequestBundleSwitchInstruction,
   parseRequestDepositInstruction,
+  parseRequestTokenSwitchInstruction,
   parseRequestTokenWithdrawalInstruction,
   parseRequestWithdrawalInstruction,
   parseSetBundleCreatorInstruction,
@@ -228,6 +230,7 @@ import {
   type ParsedRemoveStrategyInstruction,
   type ParsedRequestBundleSwitchInstruction,
   type ParsedRequestDepositInstruction,
+  type ParsedRequestTokenSwitchInstruction,
   type ParsedRequestTokenWithdrawalInstruction,
   type ParsedRequestWithdrawalInstruction,
   type ParsedSetBundleCreatorInstruction,
@@ -264,6 +267,7 @@ import {
   type RemoveStrategyAsyncInput,
   type RequestBundleSwitchAsyncInput,
   type RequestDepositAsyncInput,
+  type RequestTokenSwitchAsyncInput,
   type RequestTokenWithdrawalAsyncInput,
   type RequestWithdrawalAsyncInput,
   type SetBundleCreatorAsyncInput,
@@ -473,6 +477,7 @@ export enum NtbundleInstruction {
   RemoveStrategy,
   RequestBundleSwitch,
   RequestDeposit,
+  RequestTokenSwitch,
   RequestTokenWithdrawal,
   RequestWithdrawal,
   SetBundleCreator,
@@ -859,6 +864,17 @@ export function identifyNtbundleInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([187, 232, 234, 24, 215, 96, 20, 53]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.RequestTokenSwitch;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([138, 108, 216, 213, 7, 119, 182, 63]),
       ),
       0,
@@ -1225,6 +1241,9 @@ export type ParsedNtbundleInstruction<
       instructionType: NtbundleInstruction.RequestDeposit;
     } & ParsedRequestDepositInstruction<TProgram>)
   | ({
+      instructionType: NtbundleInstruction.RequestTokenSwitch;
+    } & ParsedRequestTokenSwitchInstruction<TProgram>)
+  | ({
       instructionType: NtbundleInstruction.RequestTokenWithdrawal;
     } & ParsedRequestTokenWithdrawalInstruction<TProgram>)
   | ({
@@ -1525,6 +1544,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
       return {
         instructionType: NtbundleInstruction.RequestDeposit,
         ...parseRequestDepositInstruction(instruction),
+      };
+    }
+    case NtbundleInstruction.RequestTokenSwitch: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.RequestTokenSwitch,
+        ...parseRequestTokenSwitchInstruction(instruction),
       };
     }
     case NtbundleInstruction.RequestTokenWithdrawal: {
@@ -1871,6 +1897,10 @@ export type NtbundlePluginInstructions = {
     input: RequestDepositAsyncInput,
   ) => ReturnType<typeof getRequestDepositInstructionAsync> &
     SelfPlanAndSendFunctions;
+  requestTokenSwitch: (
+    input: RequestTokenSwitchAsyncInput,
+  ) => ReturnType<typeof getRequestTokenSwitchInstructionAsync> &
+    SelfPlanAndSendFunctions;
   requestTokenWithdrawal: (
     input: RequestTokenWithdrawalAsyncInput,
   ) => ReturnType<typeof getRequestTokenWithdrawalInstructionAsync> &
@@ -2201,6 +2231,11 @@ export function ntbundleProgram() {
             addSelfPlanAndSendFunctions(
               client,
               getRequestDepositInstructionAsync(input),
+            ),
+          requestTokenSwitch: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getRequestTokenSwitchInstructionAsync(input),
             ),
           requestTokenWithdrawal: (input) =>
             addSelfPlanAndSendFunctions(

@@ -5401,6 +5401,256 @@
       ]
     },
     {
+      "name": "request_token_switch",
+      "discriminator": [
+        187,
+        232,
+        234,
+        24,
+        215,
+        96,
+        20,
+        53
+      ],
+      "accounts": [
+        {
+          "name": "token_withdrawal_request",
+          "accounts": [
+            {
+              "name": "user",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "user_bundle_account",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      85,
+                      83,
+                      69,
+                      82,
+                      95,
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "bundle_account",
+              "writable": true
+            },
+            {
+              "name": "bundle_temp_data",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69,
+                      95,
+                      84,
+                      69,
+                      77,
+                      80,
+                      95,
+                      68,
+                      65,
+                      84,
+                      65
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "oracle_data",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      79,
+                      82,
+                      65,
+                      67,
+                      76,
+                      69
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tokenized_bundle_depositor",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      84,
+                      79,
+                      75,
+                      69,
+                      78,
+                      73,
+                      90,
+                      69,
+                      68,
+                      95,
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69,
+                      95,
+                      68,
+                      69,
+                      80,
+                      79,
+                      83,
+                      73,
+                      84,
+                      79,
+                      82
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "mint",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      84,
+                      79,
+                      75,
+                      69,
+                      78,
+                      73,
+                      90,
+                      69,
+                      68,
+                      95,
+                      66,
+                      85,
+                      78,
+                      68,
+                      76,
+                      69,
+                      95,
+                      77,
+                      73,
+                      78,
+                      84
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "bundle_account"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "source_token_account",
+              "writable": true
+            },
+            {
+              "name": "token_program",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            }
+          ]
+        },
+        {
+          "name": "target_bundle_account"
+        },
+        {
+          "name": "target_user_bundle_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_withdrawal_request.user",
+                "account": "RequestTokenWithdrawal"
+              },
+              {
+                "kind": "account",
+                "path": "target_bundle_account"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "tokens_to_burn",
+          "type": "u64"
+        },
+        {
+          "name": "min_shares_out",
+          "type": "u128"
+        }
+      ]
+    },
+    {
       "name": "request_token_withdrawal",
       "discriminator": [
         138,
@@ -7776,6 +8026,19 @@
         29,
         245,
         144
+      ]
+    },
+    {
+      "name": "TokenSwitchRequested",
+      "discriminator": [
+        14,
+        152,
+        212,
+        226,
+        82,
+        255,
+        201,
+        252
       ]
     },
     {
@@ -10384,6 +10647,93 @@
           {
             "name": "receiver_address",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TokenSwitchRequested",
+      "docs": [
+        "Emitted by `request_token_switch` instead of `TokenWithdrawalRequested` and",
+        "`BundleSwitchRequested`, so indexers count the redemption once. The fields",
+        "through `timestamp` match `BundleSwitchRequested`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "source_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "target_bundle",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_amount",
+            "type": "u128"
+          },
+          {
+            "name": "estimated_gross_redemption",
+            "type": "u64"
+          },
+          {
+            "name": "estimated_net_to_destination",
+            "type": "u64"
+          },
+          {
+            "name": "estimated_destination_deposit_fee",
+            "type": "u64"
+          },
+          {
+            "name": "estimated_destination_pending_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "cooldown_end_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "tokens_burned",
+            "type": "u64"
+          },
+          {
+            "name": "export_value",
+            "type": "u64"
+          },
+          {
+            "name": "tokenized_depositor_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "token_supply_after",
+            "type": "u64"
+          },
+          {
+            "name": "user_shares_after",
+            "type": "u128"
+          },
+          {
+            "name": "total_shares",
+            "type": "u128"
+          },
+          {
+            "name": "referred_net_deposits_after",
+            "type": {
+              "option": "i128"
+            }
           }
         ]
       }
