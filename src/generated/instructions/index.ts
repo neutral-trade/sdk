@@ -38,6 +38,7 @@ export * from "./registerReferrer";
 export * from "./removeStrategy";
 export * from "./requestBundleSwitch";
 export * from "./requestDeposit";
+export * from "./requestTokenSwitch";
 export * from "./requestTokenWithdrawal";
 export * from "./requestWithdrawal";
 export * from "./setBundleCreator";
