@@ -7,6 +7,10 @@
  * Auto-generated from the vault registry JSON.
  */
 export enum VaultId {
+  /** Hachiko */
+  hachiko_91 = 91,
+  /** Long Only Systematic Growth */
+  long_only_systematic_growth_90 = 90,
   /** HFT Market Making */
   hft_market_making_89 = 89,
   /** CTA - Momentum LongShort */
