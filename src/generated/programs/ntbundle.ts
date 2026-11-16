@@ -114,6 +114,7 @@ import {
   getSetReferrerActiveInstruction,
   getSetReferrerConfigInstruction,
   getSetReferrerRateOverrideInstruction,
+  getSetShareTokenMetadataInstructionAsync,
   getSetUserFeeOverrideInstructionAsync,
   getSetUserReferrerInstructionAsync,
   getSetUserWithdrawalTimingOverrideInstructionAsync,
@@ -171,6 +172,7 @@ import {
   parseSetReferrerActiveInstruction,
   parseSetReferrerConfigInstruction,
   parseSetReferrerRateOverrideInstruction,
+  parseSetShareTokenMetadataInstruction,
   parseSetUserFeeOverrideInstruction,
   parseSetUserReferrerInstruction,
   parseSetUserWithdrawalTimingOverrideInstruction,
@@ -248,6 +250,7 @@ import {
   type ParsedSetReferrerActiveInstruction,
   type ParsedSetReferrerConfigInstruction,
   type ParsedSetReferrerRateOverrideInstruction,
+  type ParsedSetShareTokenMetadataInstruction,
   type ParsedSetUserFeeOverrideInstruction,
   type ParsedSetUserReferrerInstruction,
   type ParsedSetUserWithdrawalTimingOverrideInstruction,
@@ -285,6 +288,7 @@ import {
   type SetReferrerActiveInput,
   type SetReferrerConfigInput,
   type SetReferrerRateOverrideInput,
+  type SetShareTokenMetadataAsyncInput,
   type SetUserFeeOverrideAsyncInput,
   type SetUserReferrerAsyncInput,
   type SetUserWithdrawalTimingOverrideAsyncInput,
@@ -495,6 +499,7 @@ export enum NtbundleInstruction {
   SetReferrerActive,
   SetReferrerConfig,
   SetReferrerRateOverride,
+  SetShareTokenMetadata,
   SetUserFeeOverride,
   SetUserReferrer,
   SetUserWithdrawalTimingOverride,
@@ -1062,6 +1067,17 @@ export function identifyNtbundleInstruction(
     containsBytes(
       data,
       fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([127, 52, 71, 225, 94, 140, 203, 246]),
+      ),
+      0,
+    )
+  ) {
+    return NtbundleInstruction.SetShareTokenMetadata;
+  }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
         new Uint8Array([207, 40, 210, 198, 66, 33, 153, 209]),
       ),
       0,
@@ -1294,6 +1310,9 @@ export type ParsedNtbundleInstruction<
   | ({
       instructionType: NtbundleInstruction.SetReferrerRateOverride;
     } & ParsedSetReferrerRateOverrideInstruction<TProgram>)
+  | ({
+      instructionType: NtbundleInstruction.SetShareTokenMetadata;
+    } & ParsedSetShareTokenMetadataInstruction<TProgram>)
   | ({
       instructionType: NtbundleInstruction.SetUserFeeOverride;
     } & ParsedSetUserFeeOverrideInstruction<TProgram>)
@@ -1672,6 +1691,13 @@ export function parseNtbundleInstruction<TProgram extends string>(
         ...parseSetReferrerRateOverrideInstruction(instruction),
       };
     }
+    case NtbundleInstruction.SetShareTokenMetadata: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: NtbundleInstruction.SetShareTokenMetadata,
+        ...parseSetShareTokenMetadataInstruction(instruction),
+      };
+    }
     case NtbundleInstruction.SetUserFeeOverride: {
       assertIsInstructionWithAccounts(instruction);
       return {
@@ -1965,6 +1991,10 @@ export type NtbundlePluginInstructions = {
   setReferrerRateOverride: (
     input: SetReferrerRateOverrideInput,
   ) => ReturnType<typeof getSetReferrerRateOverrideInstruction> &
+    SelfPlanAndSendFunctions;
+  setShareTokenMetadata: (
+    input: SetShareTokenMetadataAsyncInput,
+  ) => ReturnType<typeof getSetShareTokenMetadataInstructionAsync> &
     SelfPlanAndSendFunctions;
   setUserFeeOverride: (
     input: SetUserFeeOverrideAsyncInput,
@@ -2312,6 +2342,11 @@ export function ntbundleProgram() {
             addSelfPlanAndSendFunctions(
               client,
               getSetReferrerRateOverrideInstruction(input),
+            ),
+          setShareTokenMetadata: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getSetShareTokenMetadataInstructionAsync(input),
             ),
           setUserFeeOverride: (input) =>
             addSelfPlanAndSendFunctions(
