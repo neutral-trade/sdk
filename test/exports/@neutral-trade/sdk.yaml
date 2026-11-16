@@ -444,6 +444,12 @@
   getSetReferrerRateOverrideInstructionDataCodec: function
   getSetReferrerRateOverrideInstructionDataDecoder: function
   getSetReferrerRateOverrideInstructionDataEncoder: function
+  getSetShareTokenMetadataDiscriminatorBytes: function
+  getSetShareTokenMetadataInstruction: function
+  getSetShareTokenMetadataInstructionAsync: function
+  getSetShareTokenMetadataInstructionDataCodec: function
+  getSetShareTokenMetadataInstructionDataDecoder: function
+  getSetShareTokenMetadataInstructionDataEncoder: function
   getSetUserFeeOverrideDiscriminatorBytes: function
   getSetUserFeeOverrideInstruction: function
   getSetUserFeeOverrideInstructionAsync: function
@@ -573,6 +579,9 @@
   NTBUNDLE_ERROR__MANAGER_SHARES_ZERO: number
   NTBUNDLE_ERROR__MATH_ERROR: number
   NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED: number
+  NTBUNDLE_ERROR__METADATA_NAME_TOO_LONG: number
+  NTBUNDLE_ERROR__METADATA_SYMBOL_TOO_LONG: number
+  NTBUNDLE_ERROR__METADATA_URI_TOO_LONG: number
   NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET: number
   NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET: number
   NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET: number
@@ -687,6 +696,7 @@
   parseSetReferrerActiveInstruction: function
   parseSetReferrerConfigInstruction: function
   parseSetReferrerRateOverrideInstruction: function
+  parseSetShareTokenMetadataInstruction: function
   parseSetUserFeeOverrideInstruction: function
   parseSetUserReferrerInstruction: function
   parseSetUserWithdrawalTimingOverrideInstruction: function
@@ -732,6 +742,7 @@
   SET_REFERRER_ACTIVE_DISCRIMINATOR: object
   SET_REFERRER_CONFIG_DISCRIMINATOR: object
   SET_REFERRER_RATE_OVERRIDE_DISCRIMINATOR: object
+  SET_SHARE_TOKEN_METADATA_DISCRIMINATOR: object
   SET_USER_FEE_OVERRIDE_DISCRIMINATOR: object
   SET_USER_REFERRER_DISCRIMINATOR: object
   SET_USER_WITHDRAWAL_TIMING_OVERRIDE_DISCRIMINATOR: object
@@ -1160,6 +1171,12 @@
   getSetReferrerRateOverrideInstructionDataCodec: function
   getSetReferrerRateOverrideInstructionDataDecoder: function
   getSetReferrerRateOverrideInstructionDataEncoder: function
+  getSetShareTokenMetadataDiscriminatorBytes: function
+  getSetShareTokenMetadataInstruction: function
+  getSetShareTokenMetadataInstructionAsync: function
+  getSetShareTokenMetadataInstructionDataCodec: function
+  getSetShareTokenMetadataInstructionDataDecoder: function
+  getSetShareTokenMetadataInstructionDataEncoder: function
   getSetUserFeeOverrideDiscriminatorBytes: function
   getSetUserFeeOverrideInstruction: function
   getSetUserFeeOverrideInstructionAsync: function
@@ -1277,6 +1294,9 @@
   NTBUNDLE_ERROR__MANAGER_SHARES_ZERO: number
   NTBUNDLE_ERROR__MATH_ERROR: number
   NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED: number
+  NTBUNDLE_ERROR__METADATA_NAME_TOO_LONG: number
+  NTBUNDLE_ERROR__METADATA_SYMBOL_TOO_LONG: number
+  NTBUNDLE_ERROR__METADATA_URI_TOO_LONG: number
   NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET: number
   NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET: number
   NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET: number
@@ -1390,6 +1410,7 @@
   parseSetReferrerActiveInstruction: function
   parseSetReferrerConfigInstruction: function
   parseSetReferrerRateOverrideInstruction: function
+  parseSetShareTokenMetadataInstruction: function
   parseSetUserFeeOverrideInstruction: function
   parseSetUserReferrerInstruction: function
   parseSetUserWithdrawalTimingOverrideInstruction: function
@@ -1428,6 +1449,7 @@
   SET_REFERRER_ACTIVE_DISCRIMINATOR: object
   SET_REFERRER_CONFIG_DISCRIMINATOR: object
   SET_REFERRER_RATE_OVERRIDE_DISCRIMINATOR: object
+  SET_SHARE_TOKEN_METADATA_DISCRIMINATOR: object
   SET_USER_FEE_OVERRIDE_DISCRIMINATOR: object
   SET_USER_REFERRER_DISCRIMINATOR: object
   SET_USER_WITHDRAWAL_TIMING_OVERRIDE_DISCRIMINATOR: object
