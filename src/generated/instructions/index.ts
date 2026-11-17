@@ -56,6 +56,7 @@ export * from "./setReferralTierConfig";
 export * from "./setReferrerActive";
 export * from "./setReferrerConfig";
 export * from "./setReferrerRateOverride";
+export * from "./setShareTokenMetadata";
 export * from "./setUserFeeOverride";
 export * from "./setUserReferrer";
 export * from "./setUserWithdrawalTimingOverride";

@@ -226,6 +226,12 @@ export const NTBUNDLE_ERROR__EXCESSIVE_ISSUANCE_FEE = 0x17d7; // 6103
 export const NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET = 0x17d8; // 6104
 /** InstantMintCapExceeded: Instant mint cap per cycle exceeded */
 export const NTBUNDLE_ERROR__INSTANT_MINT_CAP_EXCEEDED = 0x17d9; // 6105
+/** MetadataNameTooLong: Share token metadata name exceeds 32 UTF-8 bytes */
+export const NTBUNDLE_ERROR__METADATA_NAME_TOO_LONG = 0x17da; // 6106
+/** MetadataSymbolTooLong: Share token metadata symbol exceeds 10 UTF-8 bytes */
+export const NTBUNDLE_ERROR__METADATA_SYMBOL_TOO_LONG = 0x17db; // 6107
+/** MetadataUriTooLong: Share token metadata URI exceeds 200 UTF-8 bytes */
+export const NTBUNDLE_ERROR__METADATA_URI_TOO_LONG = 0x17dc; // 6108
 
 export type NtbundleError =
   | typeof NTBUNDLE_ERROR__ALLOCATION_AMOUNT_ZERO
@@ -277,6 +283,9 @@ export type NtbundleError =
   | typeof NTBUNDLE_ERROR__MANAGER_SHARES_ZERO
   | typeof NTBUNDLE_ERROR__MATH_ERROR
   | typeof NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED
+  | typeof NTBUNDLE_ERROR__METADATA_NAME_TOO_LONG
+  | typeof NTBUNDLE_ERROR__METADATA_SYMBOL_TOO_LONG
+  | typeof NTBUNDLE_ERROR__METADATA_URI_TOO_LONG
   | typeof NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET
   | typeof NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET
   | typeof NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET
@@ -387,6 +396,9 @@ if (process.env["NODE_ENV"] !== "production") {
     [NTBUNDLE_ERROR__MANAGER_SHARES_ZERO]: `Manager shares is zero`,
     [NTBUNDLE_ERROR__MATH_ERROR]: `Math error`,
     [NTBUNDLE_ERROR__MAX_DEPOSIT_AMOUNT_EXCEEDED]: `Max deposit amount exceeded`,
+    [NTBUNDLE_ERROR__METADATA_NAME_TOO_LONG]: `Share token metadata name exceeds 32 UTF-8 bytes`,
+    [NTBUNDLE_ERROR__METADATA_SYMBOL_TOO_LONG]: `Share token metadata symbol exceeds 10 UTF-8 bytes`,
+    [NTBUNDLE_ERROR__METADATA_URI_TOO_LONG]: `Share token metadata URI exceeds 200 UTF-8 bytes`,
     [NTBUNDLE_ERROR__MIN_DEPOSIT_AMOUNT_NOT_MET]: `Min deposit amount not met`,
     [NTBUNDLE_ERROR__MINIMUM_SHARES_OUT_NOT_MET]: `Minimum bundle shares out was not met`,
     [NTBUNDLE_ERROR__MINIMUM_TOKENS_OUT_NOT_MET]: `Minimum share tokens out was not met`,

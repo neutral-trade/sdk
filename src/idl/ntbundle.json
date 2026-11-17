@@ -6649,6 +6649,280 @@
       ]
     },
     {
+      "name": "set_share_token_metadata",
+      "discriminator": [
+        127,
+        52,
+        71,
+        225,
+        94,
+        140,
+        203,
+        246
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bundle_account"
+        },
+        {
+          "name": "tokenized_bundle_depositor",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  84,
+                  79,
+                  75,
+                  69,
+                  78,
+                  73,
+                  90,
+                  69,
+                  68,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  68,
+                  69,
+                  80,
+                  79,
+                  83,
+                  73,
+                  84,
+                  79,
+                  82
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  84,
+                  79,
+                  75,
+                  69,
+                  78,
+                  73,
+                  90,
+                  69,
+                  68,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  77,
+                  73,
+                  78,
+                  84
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  84,
+                  79,
+                  75,
+                  69,
+                  78,
+                  73,
+                  90,
+                  69,
+                  68,
+                  95,
+                  66,
+                  85,
+                  78,
+                  68,
+                  76,
+                  69,
+                  95,
+                  84,
+                  79,
+                  75,
+                  69,
+                  78,
+                  95,
+                  65,
+                  85,
+                  84,
+                  72,
+                  79,
+                  82,
+                  73,
+                  84,
+                  89
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bundle_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata",
+          "docs": [
+            "Existing accounts must belong to Metaplex, whose CPI validates their contents and authority."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  11,
+                  112,
+                  101,
+                  177,
+                  227,
+                  209,
+                  124,
+                  69,
+                  56,
+                  157,
+                  82,
+                  127,
+                  107,
+                  4,
+                  195,
+                  205,
+                  88,
+                  184,
+                  108,
+                  115,
+                  26,
+                  160,
+                  253,
+                  181,
+                  73,
+                  182,
+                  209,
+                  188,
+                  3,
+                  248,
+                  41,
+                  70
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                11,
+                112,
+                101,
+                177,
+                227,
+                209,
+                124,
+                69,
+                56,
+                157,
+                82,
+                127,
+                107,
+                4,
+                195,
+                205,
+                88,
+                184,
+                108,
+                115,
+                26,
+                160,
+                253,
+                181,
+                73,
+                182,
+                209,
+                188,
+                3,
+                248,
+                41,
+                70
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_metadata_program",
+          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "set_user_fee_override",
       "discriminator": [
         207,
@@ -8728,6 +9002,21 @@
       "code": 6105,
       "name": "InstantMintCapExceeded",
       "msg": "Instant mint cap per cycle exceeded"
+    },
+    {
+      "code": 6106,
+      "name": "MetadataNameTooLong",
+      "msg": "Share token metadata name exceeds 32 UTF-8 bytes"
+    },
+    {
+      "code": 6107,
+      "name": "MetadataSymbolTooLong",
+      "msg": "Share token metadata symbol exceeds 10 UTF-8 bytes"
+    },
+    {
+      "code": 6108,
+      "name": "MetadataUriTooLong",
+      "msg": "Share token metadata URI exceeds 200 UTF-8 bytes"
     }
   ],
   "types": [
