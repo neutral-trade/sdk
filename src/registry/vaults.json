@@ -1,5 +1,25 @@
 [
   {
+    "vaultId": 91,
+    "name": "Hachiko",
+    "type": "Bundle",
+    "category": "Market Neutral",
+    "vaultAddress": "7974f3xGs6utPBfZgwCAB4EZyajbERyogHwdyZLqD71C",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
+    "vaultId": 90,
+    "name": "Long Only Systematic Growth",
+    "type": "Bundle",
+    "category": "Directional",
+    "vaultAddress": "6ckTxcr5Lav5QbZjKpD2xm5hfLmx3qPu5qGBWs9Pa58V",
+    "depositToken": "USDC",
+    "pointsMultiplier": 1,
+    "pointsEnabled": true
+  },
+  {
     "vaultId": 89,
     "name": "HFT Market Making",
     "type": "Bundle",
